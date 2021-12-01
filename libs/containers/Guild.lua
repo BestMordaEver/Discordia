@@ -208,6 +208,29 @@ function Guild:getChannel(id)
 end
 
 --[=[
+@m createChannel
+@t http
+@p properties table
+@r GuildTextChannel/GuildVoiceChannel/GuildCategoryChannel
+@d Creates a new channel in this guild. For list of channel properties see (Discord documentation)[https://discord.com/developers/docs/resources/guild#create-guild-channel]
+]=]
+function Guild:createChannel(properties)
+	local data, err = self.client._api:createGuildChannel(self._id, properties)
+	if data then
+		local t = data.type
+		if t == channelType.text or t == channelType.news then
+			return self._text_channels:_insert(data)
+		elseif t == channelType.voice then
+			return self._voice_channels:_insert(data)
+		elseif t == channelType.category then
+			return self._categories:_insert(data)
+		end
+	else
+		return nil, err
+	end
+end
+
+--[=[
 @m createTextChannel
 @t http
 @p name string
