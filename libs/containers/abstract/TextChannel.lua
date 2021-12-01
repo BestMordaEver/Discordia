@@ -293,6 +293,7 @@ function TextChannel:send(content)
 			embed = tbl.embed,
 			message_reference = refMessage,
 			allowed_mentions = refMention,
+			components = tbl.components
 		}, files)
 
 	else
