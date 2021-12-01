@@ -32,24 +32,20 @@ local activities = setmetatable({}, {__mode = 'v'})
 
 function UserPresence:_loadPresence(presence)
 	self._status = presence.status
-	local status = presence.client_status
-	if status then
-		self._web_status = status.web
-		self._mobile_status = status.mobile
-		self._desktop_status = status.desktop
-	end
-	local game = presence.game
-	if game == null then
-		self._activity = nil
-	elseif game then
-		local arr = presence.activities
-		if arr and arr[2] then
-			for i = 2, #arr do
+	local game = {}
+	
+	local arr = presence.activities
+	if arr and arr[2] then
+		for i = 2, #arr do
+			if arr[i].type == 0 then
 				for k, v in pairs(arr[i]) do
 					game[k] = v
 				end
 			end
 		end
+	end
+	
+	if next(game) then
 		if self._activity then
 			self._activity:_load(game)
 		else
@@ -62,6 +58,8 @@ function UserPresence:_loadPresence(presence)
 			end
 			self._activity = activity
 		end
+	else
+		self._activity = nil
 	end
 end
 
