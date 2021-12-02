@@ -13,7 +13,7 @@ local insert, concat = table.insert, table.concat
 local sleep = timer.sleep
 local running = coroutine.running
 
-local BASE_URL = "https://discord.com/api/v7"
+local BASE_URL = "https://discord.com/api/v9"
 
 local JSON = 'application/json'
 local PRECISION = 'millisecond'
@@ -447,7 +447,7 @@ function API:modifyGuildMember(guild_id, user_id, payload) -- various Member met
 end
 
 function API:modifyCurrentUsersNick(guild_id, payload) -- Member:setNickname
-	local endpoint = f(endpoints.GUILD_MEMBER_ME_NICK, guild_id)
+	local endpoint = f(endpoints.GUILD_MEMBERS_ME_NICK, guild_id)
 	return self:request("PATCH", endpoint, payload)
 end
 
@@ -551,21 +551,6 @@ function API:deleteGuildIntegration(guild_id, integration_id) -- not exposed, ma
 	return self:request("DELETE", endpoint)
 end
 
-function API:syncGuildIntegration(guild_id, integration_id, payload) -- not exposed, maybe in the future
-	local endpoint = f(endpoints.GUILD_INTEGRATION_SYNC, guild_id, integration_id)
-	return self:request("POST", endpoint, payload)
-end
-
-function API:getGuildEmbed(guild_id) -- not exposed, maybe in the future
-	local endpoint = f(endpoints.GUILD_EMBED, guild_id)
-	return self:request("GET", endpoint)
-end
-
-function API:modifyGuildEmbed(guild_id, payload) -- not exposed, maybe in the future
-	local endpoint = f(endpoints.GUILD_EMBED, guild_id)
-	return self:request("PATCH", endpoint, payload)
-end
-
 function API:getInvite(invite_code, query) -- Client:getInvite
 	local endpoint = f(endpoints.INVITE, invite_code)
 	return self:request("GET", endpoint, nil, query)
@@ -582,7 +567,7 @@ function API:acceptInvite(invite_code, payload) -- not exposed, invalidates toke
 end
 
 function API:getCurrentUser() -- API:authenticate
-	local endpoint = endpoints.USER_ME
+	local endpoint = endpoints.USERS_ME
 	return self:request("GET", endpoint)
 end
 
@@ -592,37 +577,37 @@ function API:getUser(user_id) -- Client:getUser
 end
 
 function API:modifyCurrentUser(payload) -- Client:_modify
-	local endpoint = endpoints.USER_ME
+	local endpoint = endpoints.USERS_ME
 	return self:request("PATCH", endpoint, payload)
 end
 
 function API:getCurrentUserGuilds() -- not exposed, use cache
-	local endpoint = endpoints.USER_ME_GUILDS
+	local endpoint = endpoints.USERS_ME_GUILDS
 	return self:request("GET", endpoint)
 end
 
 function API:leaveGuild(guild_id) -- Guild:leave
-	local endpoint = f(endpoints.USER_ME_GUILD, guild_id)
+	local endpoint = f(endpoints.USERS_ME_GUILD, guild_id)
 	return self:request("DELETE", endpoint)
 end
 
 function API:getUserDMs() -- not exposed, use cache
-	local endpoint = endpoints.USER_ME_CHANNELS
+	local endpoint = endpoints.USERS_ME_CHANNELS
 	return self:request("GET", endpoint)
 end
 
 function API:createDM(payload) -- User:getPrivateChannel fallback
-	local endpoint = endpoints.USER_ME_CHANNELS
+	local endpoint = endpoints.USERS_ME_CHANNELS
 	return self:request("POST", endpoint, payload)
 end
 
 function API:createGroupDM(payload) -- Client:createGroupChannel
-	local endpoint = endpoints.USER_ME_CHANNELS
+	local endpoint = endpoints.USERS_ME_CHANNELS
 	return self:request("POST", endpoint, payload)
 end
 
 function API:getUsersConnections() -- Client:getConnections
-	local endpoint = endpoints.USER_ME_CONNECTIONS
+	local endpoint = endpoints.USERS_ME_CONNECTIONS
 	return self:request("GET", endpoint)
 end
 
@@ -702,8 +687,43 @@ function API:getGatewayBot() -- Client:run
 end
 
 function API:getCurrentApplicationInformation() -- Client:run
-	local endpoint = endpoints.OAUTH2_APPLICATION_ME
+	local endpoint = endpoints.OAUTH2_APPLICATIONS_ME
 	return self:request("GET", endpoint)
+end
+
+function API:createInteractionResponse(interaction_id, interaction_token, payload, query, files)
+	local endpoint = f(endpoints.INTERACTION_TOKEN_CALLBACK, interaction_id, interaction_token)
+	return self:request("POST", endpoint, payload, query, files)
+end
+
+function API:getOriginalInteractionResponse(application_id, interaction_token)
+	local endpoint = f(endpoints.WEBHOOK_TOKEN_MESSAGES_ORIGINAL, application_id, interaction_token)
+	return self:request("GET", endpoint)
+end
+
+function API:editOriginalInteractionResponse(application_id, interaction_token, payload, query, files)
+	local endpoint = f(endpoints.WEBHOOK_TOKEN_MESSAGES_ORIGINAL, application_id, interaction_token)
+	return self:request("PATCH", endpoint, payload, query, files)
+end
+
+function API:deleteOriginalInteractionResponse(application_id, interaction_token)
+	local endpoint = f(endpoints.WEBHOOK_TOKEN_MESSAGES_ORIGINAL, application_id, interaction_token)
+	return self:request("DELETE", endpoint)
+end
+
+function API:createFollowupMessage(application_id, interaction_token, payload, query, files)
+	local endpoint = f(endpoints.WEBHOOK_TOKEN, application_id, interaction_token)
+	return self:request("POST", endpoint, payload, query, files)
+end
+
+function API:editFollowupMessage(application_id, interaction_token, message_id, payload, query, files)
+	local endpoint = f(endpoints.WEBHOOK_TOKEN_MESSAGE, application_id, interaction_token, message_id)
+	return self:request("PATCH", endpoint, payload, query, files)
+end
+
+function API:deleteFollowupMessage(application_id, interaction_token, message_id)
+	local endpoint = f(endpoints.WEBHOOK_TOKEN_MESSAGE, application_id, interaction_token, message_id)
+	return self:request("DELETE", endpoint)
 end
 
 -- end of auto-generated methods --

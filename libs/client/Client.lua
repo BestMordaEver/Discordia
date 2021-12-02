@@ -28,6 +28,7 @@ local User = require('containers/User')
 local Invite = require('containers/Invite')
 local Webhook = require('containers/Webhook')
 local Relationship = require('containers/Relationship')
+local Interaction = require('containers/Interaction')
 
 local Cache = require('iterables/Cache')
 local WeakCache = require('iterables/WeakCache')
@@ -118,6 +119,7 @@ function Client:__init(options)
 	self._emoji_map = {}
 	self._channel_map = {}
 	self._events = require('client/EventHandler')
+	self._interactions = WeakCache({}, Interaction, self)
 end
 
 for name, level in pairs(logLevel) do

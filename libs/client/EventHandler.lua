@@ -13,6 +13,7 @@ local function checkReady(shard)
 	for _, v in pairs(shard._loading) do
 		if next(v) then return end
 	end
+	
 	shard._ready = true
 	shard._loading = nil
 	collectgarbage()
@@ -24,6 +25,7 @@ local function checkReady(shard)
 	return client:emit('ready')
 end
 
+--- @return Channel
 local function getChannel(client, id)
 	local guild = client._channel_map[id]
 	if guild then
@@ -535,6 +537,11 @@ function EventHandler.WEBHOOKS_UPDATE(d, client) -- webhook object is not provid
 	local channel = guild._text_channels:get(d.channel_id)
 	if not channel then return warning(client, 'TextChannel', d.channel_id, 'WEBHOOKS_UPDATE') end
 	return client:emit('webhooksUpdate', channel)
+end
+
+function EventHandler.INTERACTION_CREATE(d, client)
+	local interaction = client._interactions:_insert(d)
+	return client:emit('interactionCreate', interaction)
 end
 
 return EventHandler
