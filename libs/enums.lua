@@ -163,6 +163,7 @@ enums.messageFlag = enum {
 	suppressEmbeds       = 0x00000004,
 	sourceMessageDeleted = 0x00000008,
 	urgent               = 0x00000010,
+	ephemeral            = 0x00000040,
 }
 
 enums.actionType = enum {
@@ -225,10 +226,6 @@ enums.callbackType = enum {
 	acknowledge  = 6,
 	update       = 7,
 	autocomplete = 8,
-}
-
-enums.callbackFlag = enum {
-	ephemeral = 0x00000040,
 }
 
 return enums
