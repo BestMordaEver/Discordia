@@ -23,22 +23,31 @@ local Interaction, get = require('class')('Interaction', Snowflake)
 
 function Interaction:__init(data, parent)
 	Snowflake.__init(self, data, parent)
-	self._token = data.token
-	self._version = data.version
 	if data.member then
-		data.member.user = data.user
+		data.user = data.member.user
 		self._parent._parent._members:_insert(data.member)
 	end
 	self._user = self.client._users:_insert(data.user)
-	self._timestamp = nil -- waste of space; can be calculated from Snowflake ID
-	if data.reactions and #data.reactions > 0 then
-		self._reactions = Cache(data.reactions, Reaction, self)
-	end
-	return self:_loadMore(data)
+	--resolve data
 end
 
-function Interaction:_createResponse()
+function Interaction:_callback(callbackType, payload, files)
+	local data, err = self.client._api:createInteractionResponse(self._id, self._token, {type = callbackType, data = payload}, nil, files)
+	if data then
+		return true
+	else
+		return nil, err
+	end
+end
 
+function Interaction:_followup(content)
+	local data, err = self.client._api:createFollowupMessage(content)
+	if data then
+		local message = self._parent._messages:_insert(data)
+		return message
+	else
+		return nil, err
+	end
 end
 
 function Interaction:_modify(payload)
@@ -50,6 +59,14 @@ function Interaction:_modify(payload)
 	else
 		return false, err
 	end
+end
+
+function Interaction:callback(callbackType, payload, files)
+	return Interaction:_callback(callbackType, payload, files)
+end
+
+function Interaction:followup(content)
+	return Interaction:_followup(content)
 end
 
 --[=[

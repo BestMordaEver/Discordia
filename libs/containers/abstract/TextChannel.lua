@@ -7,6 +7,7 @@
 local pathjoin = require('pathjoin')
 local Channel = require('containers/abstract/Channel')
 local Message = require('containers/Message')
+local Interaction = require('containers/Interaction')
 local WeakCache = require('iterables/WeakCache')
 local SecondaryCache = require('iterables/SecondaryCache')
 local Resolver = require('client/Resolver')
@@ -22,6 +23,7 @@ local TextChannel, get = require('class')('TextChannel', Channel)
 function TextChannel:__init(data, parent)
 	Channel.__init(self, data, parent)
 	self._messages = WeakCache({}, Message, self)
+	self._interactions = WeakCache({}, Interaction, self)
 end
 
 --[=[

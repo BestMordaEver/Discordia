@@ -211,4 +211,24 @@ enums.logLevel = enum {
 	debug   = 4,
 }
 
+enums.interactionType = enum {
+	ping               = 1,
+	applicationCommand = 2,
+	messageComponent   = 3,
+	autocomplete       = 4,
+}
+
+enums.callbackType = enum {
+	pong         = 1,
+	reply        = 4,
+	ponder       = 5,
+	acknowledge  = 6,
+	update       = 7,
+	autocomplete = 8,
+}
+
+enums.callbackFlag = enum {
+	ephemeral = 0x00000040,
+}
+
 return enums

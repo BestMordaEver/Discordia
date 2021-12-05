@@ -25,7 +25,6 @@ local function checkReady(shard)
 	return client:emit('ready')
 end
 
---- @return Channel
 local function getChannel(client, id)
 	local guild = client._channel_map[id]
 	if guild then
@@ -540,7 +539,9 @@ function EventHandler.WEBHOOKS_UPDATE(d, client) -- webhook object is not provid
 end
 
 function EventHandler.INTERACTION_CREATE(d, client)
-	local interaction = client._interactions:_insert(d)
+	local channel = getChannel(client, d.channel_id)
+	if not channel then return warning(client, 'TextChannel', d.channel_id, 'INTERACTION_CREATE') end
+	local interaction = channel._interactions:_insert(d)
 	return client:emit('interactionCreate', interaction)
 end
 
