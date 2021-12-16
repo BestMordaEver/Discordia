@@ -16,7 +16,7 @@ local Resolver = require('client/Resolver')
 local insert = table.insert
 local null = json.null
 local format = string.format
-local messageFlag = enums.messageFlag
+local messageFlag, callbackType = enums.messageFlag, enums.callbackType
 local band, bor, bnot = bit.band, bit.bor, bit.bnot
 
 local Interaction, get = require('class')('Interaction', Snowflake)
@@ -28,26 +28,6 @@ function Interaction:__init(data, parent)
 		self._parent._parent._members:_insert(data.member)
 	end
 	self._user = self.client._users:_insert(data.user)
-	--resolve data
-end
-
-function Interaction:_callback(callbackType, payload, files)
-	local data, err = self.client._api:createInteractionResponse(self._id, self._token, {type = callbackType, data = payload}, nil, files)
-	if data then
-		return true
-	else
-		return nil, err
-	end
-end
-
-function Interaction:_followup(content)
-	local data, err = self.client._api:createFollowupMessage(content)
-	if data then
-		local message = self._parent._messages:_insert(data)
-		return message
-	else
-		return nil, err
-	end
 end
 
 function Interaction:_modify(payload)
@@ -59,14 +39,6 @@ function Interaction:_modify(payload)
 	else
 		return false, err
 	end
-end
-
-function Interaction:callback(callbackType, payload, files)
-	return Interaction:_callback(callbackType, payload, files)
-end
-
-function Interaction:followup(content)
-	return Interaction:_followup(content)
 end
 
 --[=[
@@ -262,10 +234,10 @@ end
 @p content string/table
 @r Message
 @d Equivalent to `Message.channel:send(content)`.
-]=]
+
 function Interaction:reply(content)
 	return self._parent:send(content)
-end
+end]=]
 
 --[=[@p reactions Cache An iterable cache of all reactions that exist for this message.]=]
 function get.applicationId(self)

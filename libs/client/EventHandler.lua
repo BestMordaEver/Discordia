@@ -1,7 +1,7 @@
 local enums = require('enums')
 local json = require('json')
 
-local channelType = enums.channelType
+local channelType, interactionType = enums.channelType, enums.interactionType
 local insert = table.insert
 local null = json.null
 
@@ -541,8 +541,19 @@ end
 function EventHandler.INTERACTION_CREATE(d, client)
 	local channel = getChannel(client, d.channel_id)
 	if not channel then return warning(client, 'TextChannel', d.channel_id, 'INTERACTION_CREATE') end
-	local interaction = channel._interactions:_insert(d)
-	return client:emit('interactionCreate', interaction)
+	if d.type == interactionType.applicationCommand then
+		local interaction = channel._command_interactions:_insert(d)
+		print(interaction)
+		return client:emit('commandInteraction', interaction)
+	elseif d.type == interactionType.messageComponent then
+		local interaction = channel._component_interactions:_insert(d)
+		return client:emit('componentInteraction', interaction)
+	elseif d.type == interactionType.autocomplete then
+		local interaction = channel._autocomplete_interactions:_insert(d)
+		return client:emit('autocompleteInteraction', interaction)
+	else
+		return warning(client, 'Interaction', d.id, 'INTERACTION_CREATE')
+	end
 end
 
 return EventHandler

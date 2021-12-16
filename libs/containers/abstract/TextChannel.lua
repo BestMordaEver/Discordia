@@ -7,7 +7,9 @@
 local pathjoin = require('pathjoin')
 local Channel = require('containers/abstract/Channel')
 local Message = require('containers/Message')
-local Interaction = require('containers/Interaction')
+local CommandInteraction = require('containers/CommandInteraction')
+local ComponentInteraction = require('containers/ComponentInteraction')
+local AutocompleteInteraction = require('containers/AutocompleteInteraction')
 local WeakCache = require('iterables/WeakCache')
 local SecondaryCache = require('iterables/SecondaryCache')
 local Resolver = require('client/Resolver')
@@ -23,7 +25,134 @@ local TextChannel, get = require('class')('TextChannel', Channel)
 function TextChannel:__init(data, parent)
 	Channel.__init(self, data, parent)
 	self._messages = WeakCache({}, Message, self)
-	self._interactions = WeakCache({}, Interaction, self)
+	self._command_interactions = WeakCache({}, CommandInteraction, self)
+	self._component_interactions = WeakCache({}, ComponentInteraction, self)
+	self._autocomplete_interactions = WeakCache({}, AutocompleteInteraction, self)
+end
+
+
+local function parseFile(obj, files)
+	if type(obj) == 'string' then
+		local data, err = readFileSync(obj)
+		if not data then
+			return nil, err
+		end
+		files = files or {}
+		insert(files, {remove(splitPath(obj)), data})
+	elseif type(obj) == 'table' and type(obj[1]) == 'string' and type(obj[2]) == 'string' then
+		files = files or {}
+		insert(files, obj)
+	else
+		return nil, 'Invalid file object: ' .. tostring(obj)
+	end
+	return files
+end
+
+local function parseMention(obj, mentions)
+	if type(obj) == 'table' and obj.mentionString then
+		mentions = mentions or {}
+		insert(mentions, obj.mentionString)
+	else
+		return nil, 'Unmentionable object: ' .. tostring(obj)
+	end
+	return mentions
+end
+
+local function parseContent(content)
+	if type(content) == 'table' then
+
+		local tbl, err = content
+		content = tbl.content
+
+		-- check flags
+
+		if type(tbl.code) == 'string' then
+			content = format('```%s\n%s\n```', tbl.code, content)
+		elseif tbl.code == true then
+			content = format('```\n%s\n```', content)
+		end
+
+		local mentions
+		if tbl.mention then
+			mentions, err = parseMention(tbl.mention)
+			if err then
+				return nil, err
+			end
+		end
+		if type(tbl.mentions) == 'table' then
+			for _, mention in ipairs(tbl.mentions) do
+				mentions, err = parseMention(mention, mentions)
+				if err then
+					return nil, err
+				end
+			end
+		end
+
+		if mentions then
+			insert(mentions, content)
+			content = concat(mentions, ' ')
+		end
+
+		local files
+		if tbl.file then
+			files, err = parseFile(tbl.file)
+			if err then
+				return nil, err
+			end
+		end
+		if type(tbl.files) == 'table' then
+			for _, file in ipairs(tbl.files) do
+				files, err = parseFile(file, files)
+				if err then
+					return nil, err
+				end
+			end
+		end
+
+		local refMessage, refMention
+		if tbl.reference then
+			refMessage = {message_id = Resolver.messageId(tbl.reference.message)}
+			refMention = {
+				parse = {'users', 'roles', 'everyone'},
+				replied_user = not not tbl.reference.mention,
+			}
+		end
+
+		return {
+			content = content,
+			tts = tbl.tts,
+			flags = tbl.flags,
+			nonce = tbl.nonce,
+			embeds = tbl.embeds,
+			message_reference = refMessage,
+			allowed_mentions = refMention,
+			components = tbl.components
+		}, files
+
+	else
+		return {content = content}
+
+	end
+end
+
+function TextChannel:_callback(interaction, callbackType, payload)
+	local content, files = parseContent(payload)
+	local data, err = self.client._api:createInteractionResponse(interaction._id, interaction._token, {type = callbackType, data = content}, files)
+	if data then
+		return data
+	else
+		return nil, err
+	end
+end
+
+function TextChannel:_followup(interaction, payload)
+	local data, err = self.client._api:createFollowupMessage(interaction._application_id, interaction._token, parseContent(payload))
+	if data then
+		local message = self._messages:_insert(data)
+		return message
+	else
+		return nil, err
+	end
 end
 
 --[=[
@@ -191,33 +320,6 @@ function TextChannel:broadcastTyping()
 	end
 end
 
-local function parseFile(obj, files)
-	if type(obj) == 'string' then
-		local data, err = readFileSync(obj)
-		if not data then
-			return nil, err
-		end
-		files = files or {}
-		insert(files, {remove(splitPath(obj)), data})
-	elseif type(obj) == 'table' and type(obj[1]) == 'string' and type(obj[2]) == 'string' then
-		files = files or {}
-		insert(files, obj)
-	else
-		return nil, 'Invalid file object: ' .. tostring(obj)
-	end
-	return files
-end
-
-local function parseMention(obj, mentions)
-	if type(obj) == 'table' and obj.mentionString then
-		mentions = mentions or {}
-		insert(mentions, obj.mentionString)
-	else
-		return nil, 'Unmentionable object: ' .. tostring(obj)
-	end
-	return mentions
-end
-
 --[=[
 @m send
 @t http
@@ -231,78 +333,12 @@ function TextChannel:send(content)
 
 	local data, err
 
-	if type(content) == 'table' then
-
-		local tbl = content
-		content = tbl.content
-
-		if type(tbl.code) == 'string' then
-			content = format('```%s\n%s\n```', tbl.code, content)
-		elseif tbl.code == true then
-			content = format('```\n%s\n```', content)
-		end
-
-		local mentions
-		if tbl.mention then
-			mentions, err = parseMention(tbl.mention)
-			if err then
-				return nil, err
-			end
-		end
-		if type(tbl.mentions) == 'table' then
-			for _, mention in ipairs(tbl.mentions) do
-				mentions, err = parseMention(mention, mentions)
-				if err then
-					return nil, err
-				end
-			end
-		end
-
-		if mentions then
-			insert(mentions, content)
-			content = concat(mentions, ' ')
-		end
-
-		local files
-		if tbl.file then
-			files, err = parseFile(tbl.file)
-			if err then
-				return nil, err
-			end
-		end
-		if type(tbl.files) == 'table' then
-			for _, file in ipairs(tbl.files) do
-				files, err = parseFile(file, files)
-				if err then
-					return nil, err
-				end
-			end
-		end
-
-		local refMessage, refMention
-		if tbl.reference then
-			refMessage = {message_id = Resolver.messageId(tbl.reference.message)}
-			refMention = {
-				parse = {'users', 'roles', 'everyone'},
-				replied_user = not not tbl.reference.mention,
-			}
-		end
-
-		data, err = self.client._api:createMessage(self._id, {
-			content = content,
-			tts = tbl.tts,
-			nonce = tbl.nonce,
-			embed = tbl.embed,
-			message_reference = refMessage,
-			allowed_mentions = refMention,
-			components = tbl.components
-		}, files)
-
-	else
-
-		data, err = self.client._api:createMessage(self._id, {content = content})
-
+	content, err = parseContent(content)
+	if not content then
+		return nil, err
 	end
+
+	data, err = self.client._api:createMessage(self._id, content, err)
 
 	if data then
 		return self._messages:_insert(data)
