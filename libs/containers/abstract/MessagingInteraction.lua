@@ -23,7 +23,9 @@ local MessagingInteraction, get = require('class')('MessagingInteraction', Inter
 
 function MessagingInteraction:__init(data, parent)
     Interaction.__init(self, data, parent)
+	self._is_deferrable = true
 end
+
 --[=[
 @m reply
 @t http
@@ -35,10 +37,14 @@ more advanced formatting is allowed. See [[managing messages]] for more informat
 This method doesn't return sent message
 ]=]
 function MessagingInteraction:reply(payload)
+	assert(self._is_deferrable, "interaction is already deferred")
+	self._is_deferrable = false
 	return self._parent:_callback(self, callbackType.reply, payload)
 end
 
 function MessagingInteraction:defer()
+	assert(self._is_deferrable, "interaction is already deferred")
+	self._is_deferrable = false
 	return self._parent:_callback(self, callbackType.defer)
 end
 
@@ -55,8 +61,8 @@ function MessagingInteraction:getCallbackMessage()
 	end
 end
 
-function MessagingInteraction:editCallbackMessage(content)
-	local data, err = self.client._api:editCallbackMessage(self._application_id, self._token, content)
+function MessagingInteraction:updateCallbackMessage(content)
+	local data, err = self.client._api:editOriginalInteractionResponse(self._application_id, self._token, content)
 	if data then
 		return self._parent._messages:_insert(data)
 	else
