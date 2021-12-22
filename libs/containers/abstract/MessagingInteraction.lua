@@ -38,8 +38,8 @@ function MessagingInteraction:reply(payload)
 	return self._parent:_callback(self, callbackType.reply, payload)
 end
 
-function MessagingInteraction:ponder()
-	return self._parent:_callback(self, callbackType.ponder)
+function MessagingInteraction:defer()
+	return self._parent:_callback(self, callbackType.defer)
 end
 
 function MessagingInteraction:followup(content)
@@ -48,6 +48,15 @@ end
 
 function MessagingInteraction:getCallbackMessage()
 	local data, err = self.client._api:getOriginalInteractionResponse(self._application_id, self._token)
+	if data then
+		return self._parent._messages:_insert(data)
+	else
+		return nil, err
+	end
+end
+
+function MessagingInteraction:editCallbackMessage(content)
+	local data, err = self.client._api:editCallbackMessage(self._application_id, self._token, content)
 	if data then
 		return self._parent._messages:_insert(data)
 	else
