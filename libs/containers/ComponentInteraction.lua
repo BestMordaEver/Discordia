@@ -1,8 +1,7 @@
 --[=[
-@c Interaction x Snowflake
-@d Represents a message that your application receives when a user uses
-an application command or a message component. Messages can contain
-simple content strings, rich embeds, attachments, or reactions.
+@c ComponentInteraction x MessagingInteraction
+@d Represents an interaction that your application receives when a user uses
+a message component.
 ]=]
 
 local json = require('json')

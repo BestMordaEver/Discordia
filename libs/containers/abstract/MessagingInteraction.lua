@@ -1,8 +1,7 @@
 --[=[
-@c Interaction x Snowflake
-@d Represents a message that your application receives when a user uses
-an application command or a message component. Messages can contain
-simple content strings, rich embeds, attachments, or reactions.
+@c MessagingInteraction x Interaction
+@d Defines the base methods and properties for Discord interactions
+that can be replied to with messages.
 ]=]
 
 local json = require('json')
