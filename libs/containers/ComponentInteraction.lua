@@ -4,19 +4,10 @@
 a message component.
 ]=]
 
-local json = require('json')
 local enums = require('enums')
-local constants = require('constants')
-local Cache = require('iterables/Cache')
-local ArrayIterable = require('iterables/ArrayIterable')
 local MessagingInteraction = require('containers/abstract/MessagingInteraction')
-local Reaction = require('containers/Reaction')
 local Resolver = require('client/Resolver')
-local insert = table.insert
-local null = json.null
-local format = string.format
-local messageFlag, callbackType = enums.messageFlag, enums.callbackType
-local band, bor, bnot = bit.band, bit.bor, bit.bnot
+local callbackType = enums.callbackType
 
 local ComponentInteraction, get = require('class')('ComponentInteraction', MessagingInteraction)
 

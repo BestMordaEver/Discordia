@@ -1,28 +1,31 @@
 --[=[
 @c MessagingInteraction x Interaction
+@t abc
 @d Defines the base methods and properties for Discord interactions
 that can be replied to with messages.
 ]=]
 
-local json = require('json')
 local enums = require('enums')
-local constants = require('constants')
-local Cache = require('iterables/Cache')
-local ArrayIterable = require('iterables/ArrayIterable')
 local Interaction = require('containers/abstract/Interaction')
-local Reaction = require('containers/Reaction')
+local MessageContainer = require('utils/MessageContainer')
 local Resolver = require('client/Resolver')
-local insert = table.insert
-local null = json.null
-local format = string.format
-local messageFlag, callbackType = enums.messageFlag, enums.callbackType
-local band, bor, bnot = bit.band, bit.bor, bit.bnot
+local callbackType = enums.callbackType
 
 local MessagingInteraction, get = require('class')('MessagingInteraction', Interaction)
 
 function MessagingInteraction:__init(data, parent)
     Interaction.__init(self, data, parent)
 	self._is_deferrable = true
+end
+
+function Interaction:_followup(payload)
+	local data, err = self.client._api:createFollowupMessage(self._application_id, self._token, MessageContainer.parseContent(payload))
+	if data then
+		local message = self._messages:_insert(data)
+		return message
+	else
+		return nil, err
+	end
 end
 
 --[=[
