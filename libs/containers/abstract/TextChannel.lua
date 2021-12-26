@@ -135,11 +135,19 @@ local function parseContent(content)
 	end
 end
 
-function TextChannel:_callback(interaction, callbackType, payload)
-	local content, files = parseContent(payload)
-	local data, err = self.client._api:createInteractionResponse(interaction._id, interaction._token, {type = callbackType, data = content}, files)
+function TextChannel:_callback(interaction, callbackType, content)
+
+	local data, err
+
+	content, err = parseContent(content)
+	if not content then
+		return nil, err
+	end
+
+	data, err = self.client._api:createInteractionResponse(interaction._id, interaction._token, {type = callbackType, data = content}, err)
+
 	if data then
-		return data
+		return self._messages:_insert(data)
 	else
 		return nil, err
 	end
