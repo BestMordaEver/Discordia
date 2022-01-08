@@ -3,7 +3,8 @@
 @d Defines the base methods and properties for all Discord text channels.
 ]=]
 
-local Class = require('class')
+local class = require('class')
+local classes = class.classes
 local pathjoin = require('pathjoin')
 local Resolver = require('client/Resolver')
 local fs = require('fs')
@@ -13,7 +14,7 @@ local insert, remove, concat = table.insert, table.remove, table.concat
 local format = string.format
 local readFileSync = fs.readFileSync
 
-local MessageContent, get = Class('MessageContent')
+local MessageContent, get = class('MessageContent')
 
 function MessageContent:__init(data)
 	local message, files = MessageContent.parseContent(data)
@@ -129,7 +130,7 @@ function MessageContent.parseContent(content)
 end
 
 function MessageContent:send(textChannel)
-    assert(textChannel.send and not Class.isInstance(textChannel, MessageContent), "provided object is not a text channel") -- more explicit class checks would help
+    assert(class.isInstance(textChannel, classes.TextChannel), "provided object is not a text channel")
     return textChannel:send(self)
 end
 
