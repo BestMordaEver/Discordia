@@ -172,3 +172,5 @@ end
 get.files = function (self)
     return self._files
 end
+
+return MessageContent

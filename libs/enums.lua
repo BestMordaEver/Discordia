@@ -222,8 +222,8 @@ enums.interactionType = enum {
 enums.callbackType = enum {
 	pong         = 1,
 	reply        = 4,
-	defer        = 5,
-	acknowledge  = 6,
+	deferReply   = 5,
+	deferUpdate  = 6,
 	update       = 7,
 	autocomplete = 8,
 }

@@ -15,17 +15,15 @@ local MessagingInteraction, get = require('class')('MessagingInteraction', Inter
 
 function MessagingInteraction:__init(data, parent)
     Interaction.__init(self, data, parent)
-	self._is_deferrable = true
 end
 
-function Interaction:_followup(payload)
-	local data, err = self.client._api:createFollowupMessage(self._application_id, self._token, MessageContainer.parseContent(payload))
-	if data then
-		local message = self._messages:_insert(data)
-		return message
-	else
-		return nil, err
+function MessagingInteraction:_callbackWithContent(callbackType, payload)
+	local content, files = MessageContainer.parseContent(payload)
+	if not content then
+		return nil, files
 	end
+
+	return self:_callback(callbackType, content, files)
 end
 
 --[=[
@@ -39,19 +37,20 @@ more advanced formatting is allowed. See [[managing messages]] for more informat
 This method doesn't return sent message
 ]=]
 function MessagingInteraction:reply(payload)
-	assert(self._is_deferrable, "interaction is already deferred")
-	self._is_deferrable = false
-	return self._parent:_callback(self, callbackType.reply, payload)
+	return self:_callbackWithContent(callbackType.reply, payload)
 end
 
-function MessagingInteraction:defer()
-	assert(self._is_deferrable, "interaction is already deferred")
-	self._is_deferrable = false
-	return self._parent:_callback(self, callbackType.defer)
+function MessagingInteraction:deferReply()
+	return self:_callback(callbackType.deferReply)
 end
 
 function MessagingInteraction:followup(content)
-	return self._parent:_followup(self, content)
+	local data, err = self.client._api:createFollowupMessage(self._application_id, self._token, MessageContainer.parseContent(content))
+	if data then
+		return self._parent._messages:_insert(data)
+	else
+		return nil, err
+	end
 end
 
 function MessagingInteraction:getCallbackMessage()
@@ -63,8 +62,8 @@ function MessagingInteraction:getCallbackMessage()
 	end
 end
 
-function MessagingInteraction:updateCallbackMessage(content)
-	local data, err = self.client._api:editOriginalInteractionResponse(self._application_id, self._token, content)
+function MessagingInteraction:setCallbackContent(content)
+	local data, err = self.client._api:editOriginalInteractionResponse(self._application_id, self._token, MessageContainer.parseContent(content))
 	if data then
 		return self._parent._messages:_insert(data)
 	else
@@ -84,6 +83,13 @@ function MessagingInteraction:getFollowupMessage(id)
 		else
 			return nil, err
 		end
+	end
+end
+
+function MessagingInteraction:setFollowupContent(id, content)
+	id = Resolver.messageId(id)
+	if id then
+		return self.client._api:editFollowupMessage(self._application_id, self._token, id, MessageContainer.parseContent(content))
 	end
 end
 

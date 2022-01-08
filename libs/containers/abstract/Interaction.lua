@@ -5,7 +5,6 @@
 ]=]
 
 local Snowflake = require('containers/abstract/Snowflake')
-local MessageContainer = require('utils/MessageContainer')
 
 local Interaction, get = require('class')('Interaction', Snowflake)
 
@@ -17,38 +16,24 @@ function Interaction:__init(data, parent)
 		self._parent._parent._members:_insert(data.member)
 	end
 	self._user = self.client._users:_insert(data.user)
+	self._is_replied = false
 end
 
-function Interaction:_callback(callbackType, content)
-
-	local data, err
-
-	content, err = MessageContainer.parseContent(content)
-	if not content then
-		return nil, err
-	end
-
-	data, err = self.client._api:createInteractionResponse(self._id, self._token, {type = callbackType, data = content}, err)
+function Interaction:_callback(callbackType, content, files)
+	assert(not self._is_replied, "interaction is already replied to")
+	local data, err = self.client._api:createInteractionResponse(self._id, self._token, {type = callbackType, data = content}, files)
 
 	if data then
-		return self._messages:_insert(data)
+		self._is_replied = true
+		return true
 	else
 		return nil, err
 	end
 end
 
-function get.applicationId(self)
-	return self._application_id
-end
-
-
+--[=[@p type number The interaction type. See the `interactionType` enumeration for a human-readable representation.]=]
 function get.type(self)
 	return self._type
-end
-
-
-function get.data(self)
-	return self._data
 end
 
 --[=[@p guild Guild/nil The guild in which this interaction happened. This will not exist if the interaction
@@ -75,14 +60,15 @@ function get.user(self)
 	return self._user
 end
 
-
+--[=[@p token string A continuation token for responding to the interaction.
+Valid for 15 minutes.]=]
 function get.token(self)
 	return self._token
 end
 
-
+--[[
 function get.version(self)
 	return self._version
-end
+end]]
 
 return Interaction

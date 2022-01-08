@@ -14,13 +14,8 @@ function AutocompleteInteraction:__init(data, parent)
 	Interaction.__init(self, data, parent)
 end
 
-function AutocompleteInteraction:proposeAutocomplete(choices)
-	local data, err = self.client._api:createInteractionResponse(self._id, self._token, {type = callbackType.autocomplete, data = {choices = choices}})
-	if data then
-		return data
-	else
-		return nil, err
-	end
+function AutocompleteInteraction:respond(choices)
+	return self._callback(callbackType.autocomplete, {choices = choices})
 end
 
 return AutocompleteInteraction

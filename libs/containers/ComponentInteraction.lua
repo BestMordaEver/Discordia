@@ -27,18 +27,13 @@ function ComponentInteraction:__init(data, parent)
 
 end
 
-
-function ComponentInteraction:updateComponentMessage(payload)
-	return self._parent:_callback(self, callbackType.update, payload)
+function ComponentInteraction:update(payload)
+	return self:_callbackWithContent(callbackType.update, payload)
 end
 
-
-function ComponentInteraction:acknowledge()
-	assert(self._is_deferrable, "interaction is already deferred")
-	self._is_deferrable = false
-	return self._parent:_callback(self, callbackType.acknowledge)
+function ComponentInteraction:deferUpdate()
+	return self:_callback(callbackType.deferUpdate)
 end
-
 
 function get.message(self)
     return self._message
