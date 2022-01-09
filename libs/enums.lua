@@ -253,4 +253,12 @@ enums.componentType = enum {
 	select = 3
 }
 
+enums.buttonStyle = enum {
+	primary = 1,
+	secondary = 2,
+	success = 3,
+	danger = 4,
+	link = 5
+}
+
 return enums
