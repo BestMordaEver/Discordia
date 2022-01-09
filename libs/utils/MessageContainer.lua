@@ -13,6 +13,8 @@ local splitPath = pathjoin.splitPath
 local insert, remove, concat = table.insert, table.remove, table.concat
 local format = string.format
 local readFileSync = fs.readFileSync
+local messageFlag = require('enums').messageFlag
+local bor = bit.bor
 
 local MessageContent, get = class('MessageContent')
 
@@ -110,6 +112,10 @@ function MessageContent.parseContent(content)
 				parse = {'users', 'roles', 'everyone'},
 				replied_user = not not tbl.reference.mention,
 			}
+		end
+
+		if tbl.ephemeral then
+			tbl.flags = bor(tbl.flags or 0, messageFlag.ephemeral)
 		end
 
 		return {
