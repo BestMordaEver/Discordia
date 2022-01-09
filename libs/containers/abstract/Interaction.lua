@@ -17,6 +17,8 @@ function Interaction:__init(data, parent)
 	end
 	self._user = self.client._users:_insert(data.user)
 	self._is_replied = false
+
+	self._data = data.data
 end
 
 function Interaction:_callback(callbackType, content, files)

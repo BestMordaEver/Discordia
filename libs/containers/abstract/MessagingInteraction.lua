@@ -11,7 +11,7 @@ local MessageContainer = require('utils/MessageContainer')
 local Resolver = require('client/Resolver')
 local callbackType = enums.callbackType
 
-local MessagingInteraction, get = require('class')('MessagingInteraction', Interaction)
+local MessagingInteraction = require('class')('MessagingInteraction', Interaction)
 
 function MessagingInteraction:__init(data, parent)
     Interaction.__init(self, data, parent)
@@ -34,17 +34,35 @@ end
 @d Reply to interaction with a message. If `content` is a string,
 then this is simply sent as the message content. If it is a table,
 more advanced formatting is allowed. See [[managing messages]] for more information.
-This method doesn't return sent message
+This method doesn't return sent message.
 ]=]
 function MessagingInteraction:reply(payload)
 	return self:_callbackWithContent(callbackType.reply, payload)
 end
 
+--[=[
+@m deferReply
+@t http
+@r boolean
+@d Acknowledge the interaction and edit the response later. The user will
+see the loading state. In order to resolve the loading state, use
+MessagingInteraction:updateReply(content) method.
+]=]
 function MessagingInteraction:deferReply()
 	return self:_callback(callbackType.deferReply)
 end
 
+--[=[
+@m followup
+@t http
+@p content string/table
+@r Message
+@d Send a followup message. If `content` is a string, then this is simply sent as the message content.
+If it is a table, more advanced formatting is allowed. See [[managing messages]] for more information.
+You must first reply or acknowledge the interaction before following up!
+]=]
 function MessagingInteraction:followup(content)
+	assert(self._is_replied, "interaction must be replied to before following up")
 	local data, err = self.client._api:createFollowupMessage(self._application_id, self._token, MessageContainer.parseContent(content))
 	if data then
 		return self._parent._messages:_insert(data)
@@ -53,7 +71,13 @@ function MessagingInteraction:followup(content)
 	end
 end
 
-function MessagingInteraction:getCallbackMessage()
+--[=[
+@m getReply
+@t http
+@r Message
+@d Get the message object that was sent as the initial reply.
+]=]
+function MessagingInteraction:getReply()
 	local data, err = self.client._api:getOriginalInteractionResponse(self._application_id, self._token)
 	if data then
 		return self._parent._messages:_insert(data)
@@ -62,7 +86,14 @@ function MessagingInteraction:getCallbackMessage()
 	end
 end
 
-function MessagingInteraction:setCallbackContent(content)
+--[=[
+@m updateReply
+@t http
+@p content string/table
+@r Message
+@d Set content of the message object that was sent as the initial reply simmilarly to Message:update(data).
+]=]
+function MessagingInteraction:updateReply(content)
 	local data, err = self.client._api:editOriginalInteractionResponse(self._application_id, self._token, MessageContainer.parseContent(content))
 	if data then
 		return self._parent._messages:_insert(data)
@@ -71,6 +102,14 @@ function MessagingInteraction:setCallbackContent(content)
 	end
 end
 
+--[=[
+@m getFollowupMessage
+@t http
+@p id Message-ID-Resolvable
+@r Message
+@d Gets a folloup message object by ID. If the object is already cached, then the cached
+object will be returned; otherwise, an HTTP request is made. Does not support ephemeral followups.
+]=]
 function MessagingInteraction:getFollowupMessage(id)
 	id = Resolver.messageId(id)
 	local message = self._parent._messages:get(id)
@@ -86,7 +125,14 @@ function MessagingInteraction:getFollowupMessage(id)
 	end
 end
 
-function MessagingInteraction:setFollowupContent(id, content)
+--[=[
+@m updateFollowup
+@t http
+@p content string/table
+@r Message
+@d Set content of the followup message simmilarly to Message:update(data). Does not support ephemeral followups.
+]=]
+function MessagingInteraction:updateFollowup(id, content)
 	id = Resolver.messageId(id)
 	if id then
 		return self.client._api:editFollowupMessage(self._application_id, self._token, id, MessageContainer.parseContent(content))

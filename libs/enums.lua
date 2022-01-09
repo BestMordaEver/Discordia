@@ -228,4 +228,29 @@ enums.callbackType = enum {
 	autocomplete = 8,
 }
 
+enums.applicationCommandType = enum {
+	chatInput = 1,
+	user      = 2,
+	message   = 3
+}
+
+enums.applicationCommandOptionType = enum {
+	subcommand = 1,
+	subcommandGroup = 2,
+	string = 3,
+	integer = 4,
+	boolean = 5,
+	user = 6,
+	channel = 7,
+	role = 8,
+	mentionable = 9,
+	number = 10
+}
+
+enums.componentType = enum {
+	row = 1,
+	button = 2,
+	select = 3
+}
+
 return enums
