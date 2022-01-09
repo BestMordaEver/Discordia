@@ -12,6 +12,7 @@ local ArrayIterable = require('iterables/ArrayIterable')
 local Snowflake = require('containers/abstract/Snowflake')
 local Reaction = require('containers/Reaction')
 local Resolver = require('client/Resolver')
+local MessageContainer = require('utils/MessageContainer')
 
 local insert = table.insert
 local null = json.null
@@ -166,8 +167,8 @@ function Message:_setOldContent(d)
 	end
 end
 
-function Message:_modify(payload)
-	local data, err = self.client._api:editMessage(self._parent._id, self._id, payload)
+function Message:_modify(payload, files)
+	local data, err = self.client._api:editMessage(self._parent._id, self._id, payload, files)
 	if data then
 		self:_setOldContent(data)
 		self:_load(data)
@@ -242,16 +243,16 @@ end
 @p data table
 @r boolean
 @d Sets multiple properties of the message at the same time using a table similar
-to the one supported by `TextChannel.send`, except only `content` and `embed`
-are valid fields; `mention(s)`, `file(s)`, etc are not supported. The message
-must be authored by the current user. (ie: you cannot change the embed of messages
-sent by other users).
+to the one supported by `TextChannel.send`. The message must be authored by the current user.
+(ie: you cannot change the embed of messages sent by other users).
 ]=]
-function Message:update(data)
-	return self:_modify({
-		content = data.content or null,
-		embed = data.embed or null,
-	})
+function Message:update(content)
+	local data, files = MessageContainer.parseContent(content)
+	if not data then
+		return nil, files
+	end
+
+	return self:_modify(data, files)
 end
 
 --[=[

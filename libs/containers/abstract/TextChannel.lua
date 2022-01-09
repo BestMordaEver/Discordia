@@ -202,19 +202,17 @@ allowed. See [[managing messages]] for more information.
 ]=]
 function TextChannel:send(content)
 
-	local data, err
-
-	content, err = MessageContainer.parseContent(content)
-	if not content then
-		return nil, err
+	local data, files = MessageContainer.parseContent(content)
+	if not data then
+		return nil, files
 	end
 
-	data, err = self.client._api:createMessage(self._id, content, err)
+	data, files = self.client._api:createMessage(self._id, data, files)
 
 	if data then
 		return self._messages:_insert(data)
 	else
-		return nil, err
+		return nil, files
 	end
 
 end
