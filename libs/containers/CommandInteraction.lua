@@ -77,7 +77,9 @@ function CommandInteraction:__init(data, parent)
 		end
 	end
 
-	self._target = self._messages:get(data.target_id) or self._members:get(data.target_id)
+	if data.target_id then
+		self._target = self._messages:get(data.target_id) or self._members:get(data.target_id)
+	end
 
 	if data.data.options then
 		self._options = Cache(data.data.options, CommandOption, self)
