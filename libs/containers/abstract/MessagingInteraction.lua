@@ -43,13 +43,14 @@ end
 --[=[
 @m deferReply
 @t http
+@op ephemeral boolean
 @r boolean
 @d Acknowledge the interaction and edit the response later. The user will
 see the loading state. In order to resolve the loading state, use
 MessagingInteraction:updateReply(content) method.
 ]=]
-function MessagingInteraction:deferReply()
-	return self:_callback(callbackType.deferReply)
+function MessagingInteraction:deferReply(ephemeral)
+	return self:_callback(callbackType.deferReply, {flags = ephemeral and 64 or 0})
 end
 
 --[=[
@@ -94,6 +95,7 @@ end
 @d Set content of the message object that was sent as the initial reply simmilarly to Message:update(data).
 ]=]
 function MessagingInteraction:updateReply(content)
+	p(MessageContainer.parseContent(content))
 	local data, err = self.client._api:editOriginalInteractionResponse(self._application_id, self._token, MessageContainer.parseContent(content))
 	if data then
 		return self._parent._messages:_insert(data)
