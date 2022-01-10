@@ -84,7 +84,7 @@ function CommandInteraction:__init(data, parent)
 	if data.data.options then
 		self._options = Cache(data.data.options, CommandOption, self)
 		if #self._options == 1 then
-			local _, val = next(self._options)
+			local _, val = next(self._options._objects)
 			self._option = val
 		end
 	end
