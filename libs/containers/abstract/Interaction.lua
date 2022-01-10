@@ -57,7 +57,7 @@ function get.member(self)
 	return guild and guild._members:get(self._user._id)
 end
 
---[=[@p author User The object of the user that created the interaction.]=]
+--[=[@p user User The object of the user that created the interaction.]=]
 function get.user(self)
 	return self._user
 end
