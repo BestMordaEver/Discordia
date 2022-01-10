@@ -90,32 +90,32 @@ function CommandInteraction:__init(data, parent)
 	end
 end
 
---[=[@p type string The ID of the invoked command.]=]
+--[=[@p commandId string The ID of the invoked command.]=]
 function get.commandId(self)
 	return self._data.id
 end
 
---[=[@p type string The name of the invoked command.]=]
+--[=[@p commandName string The name of the invoked command.]=]
 function get.commandName(self)
 	return self._data.name
 end
 
---[=[@p type number The type of the invoked command. See the `applicationCommandType` enumeration for a human-readable representation.]=]
+--[=[@p commandType number The type of the invoked command. See the `applicationCommandType` enumeration for a human-readable representation.]=]
 function get.commandType(self)
 	return self._data.type
 end
 
---[=[@p type Member/Message/nil Member or message targetted by a user or message command.]=]
+--[=[@p target Member/Message/nil Member or message targetted by a user or message command.]=]
 function get.target(self)
 	return self._target
 end
 
---[=[@p type Cache/nil Cache of command options received from the user.]=]
+--[=[@p options Cache/nil Cache of command options received from the user.]=]
 function get.options(self)
 	return self._options
 end
 
---[=[@p type CommandOption/nil Suboption if this option is a group or subcommand. Only exists when there's one suboption.]=]
+--[=[@p option CommandOption/nil Suboption if this option is a group or subcommand. Only exists when there's one suboption.]=]
 function get.option(self)
 	return self._option
 end
