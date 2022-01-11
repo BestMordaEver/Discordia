@@ -9,6 +9,7 @@ local enums = require('enums')
 local class = require('class')
 local Channel = require('containers/abstract/Channel')
 local PermissionOverwrite = require('containers/PermissionOverwrite')
+local Permissions = require('utils/Permissions')
 local Invite = require('containers/Invite')
 local Cache = require('iterables/Cache')
 local Resolver = require('client/Resolver')
@@ -27,6 +28,7 @@ function GuildChannel:__init(data, parent)
 	Channel.__init(self, data, parent)
 	self.client._channel_map[self._id] = parent
 	self._permission_overwrites = Cache({}, PermissionOverwrite, self)
+	self._permissions = Permissions(data.permissions)
 	return self:_loadMore(data)
 end
 
@@ -248,6 +250,12 @@ end
 overwrite that may exist, but is not cached, use `GuildChannel:getPermissionOverwriteFor`.]=]
 function get.permissionOverwrites(self)
 	return self._permission_overwrites
+end
+
+--[=[@p permissions Permissions/nil Computed permissions for the invoking user in the channel, including overwrites.
+Only included when part of the resolved data received on a slash command interaction.]=]
+function get.permissions(self)
+	return self._permissions
 end
 
 --[=[@p name string The name of the channel. This should be between 2 and 100 characters in length.]=]
