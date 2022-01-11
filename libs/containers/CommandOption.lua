@@ -10,7 +10,7 @@ function CommandOption:__init(data, parent)
 	Container.__init(self, data, parent)
 
 	if data.options then
-		self._options = Cache(data.options, CommandOption, self)
+		self._options = Cache(data.options, CommandOption, parent)
 		if #self._options == 1 then
 			local _, val = next(self._options)
 			self._option = val
@@ -18,16 +18,16 @@ function CommandOption:__init(data, parent)
 	end
 
     if data.type == optionType.user then
-        self._value = self._parent._members:get(self._value) or self._parent._users:get(self._value)
+        self._value = self._parent._users[self._value]
     elseif data.type == optionType.channel then
-        self._value = self._channels:get(self._value)
+        self._value = self._parent._channels[self._value]
     elseif data.type == optionType.role then
-        self._value = self._roles:get(self._value)
+        self._value = self._parent._roles[self._value]
     end
 end
 
 function CommandOption:__hash()
-	return format("%s option '%s'", self._parent, self._name)
+	return format("%s option '%s'", self._parent._id, self._name)
 end
 
 --[=[@p type string The name of the parameter.]=]

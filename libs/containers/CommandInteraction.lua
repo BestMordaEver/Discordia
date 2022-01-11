@@ -6,79 +6,67 @@ an application command.
 
 local channelType = require('enums').channelType
 local MessagingInteraction = require('containers/abstract/MessagingInteraction')
-local Cache = require('iterables/Cache')
-local User = require('containers/User')
-local Member = require('containers/Member')
-local Role = require('containers/Role')
-local Channel = require('containers/abstract/Channel')
-local Message = require('containers/Message')
-local Resolver = require('client/Resolver')
 local CommandOption = require('containers/CommandOption')
+local Cache = require('iterables/Cache')
 
 local CommandInteraction, get = require('class')('CommandInteraction', MessagingInteraction)
 
 function CommandInteraction:__init(data, parent)
 	MessagingInteraction.__init(self, data, parent)
 
-	if data.resolved then
-		local guild = self._guild
+	if data.data.resolved then
+		local resolved = data.data.resolved
+		local guild = self.guild
 		local client = self._parent._parent._parent or self._parent._parent
 
-		self._users = Cache({}, User, self)
-		for snowflake, obj in pairs(data.resolved.users) do
-			local user = Resolver.userId(snowflake)
-			if not user then
-				user = client._users:_insert(obj)
+		if resolved.users then
+			self._users = {}
+			for snowflake, obj in pairs(resolved.users) do
+				self._users[snowflake] = client._users:get(snowflake) or client._users:_insert(obj)
 			end
-			self._users:_insert(user)
 		end
 
-		self._members = Cache({}, Member, self)
-		for snowflake, obj in pairs(data.resolved.members) do
-			local member = Resolver.memberId(snowflake)
-			if not member then
-				member.user = data.resolved[snowflake]
-				member = guild._members:_insert(obj)
+		if resolved.members then
+			self._members = {}
+			for snowflake, obj in pairs(resolved.members) do
+				obj.user = resolved.users[snowflake]
+				self._members[snowflake] = guild._members:get(snowflake) or guild._members:_insert(obj)
 			end
-			self._members:_insert(member)
 		end
 
-		self._roles = Cache(data.resolved.roles, Role, self)
-		for snowflake, obj in pairs(data.resolved.roles) do
-			local role = Resolver.roleId(snowflake)
-			if not role then
-				role = guild._roles:_insert(obj)
+		if resolved.roles then
+			self._roles = {}
+			for snowflake, obj in pairs(resolved.roles) do
+				self._roles[snowflake] = guild._roles:get(snowflake) or guild._roles:_insert(obj)
 			end
-			self._roles:_insert(role)
 		end
 
-		self._channels = Cache(data.resolved.channels, Channel, self)
-		for snowflake, obj in pairs(data.resolved.channels) do
-			local channel = Resolver.channelId(snowflake)
-			if not channel then
+		if resolved.channels then
+			self._channels = {}
+			for snowflake, obj in pairs(resolved.channels) do
+				local channelCache
 				if obj.type == channelType.text then
-					channel = guild._text_channels:_insert(obj)
+					channelCache = guild._text_channels
 				elseif obj.type == channelType.voice then
-					channel = guild._voice_channels:_insert(obj)
+					channelCache = guild._voice_channels
 				elseif obj.type == channelType.category then
-					channel = guild._categories:_insert(obj)
+					channelCache = guild._categories
 				end
+
+				self._channels[snowflake] = channelCache:get(snowflake) or channelCache:_insert(obj)
 			end
-			self._channels:_insert(channel)
 		end
 
-		self._messages = Cache(data.resolved.messages, Message, self)
-		for snowflake, obj in pairs(data.resolved.messages) do
-			local message = Resolver.messageId(snowflake)
-			if not message then
-				message = self._parent._messages:_insert(obj)
+		if resolved.messages then
+			self._messages = {}
+			for snowflake, obj in pairs(resolved.messages) do
+				self._messages[snowflake] = self._parent._messages:get(snowflake) or self._parent._messages:_insert(obj)
 			end
-			self._messages:_insert(message)
 		end
 	end
 
 	if data.target_id then
-		self._target = self._messages:get(data.target_id) or self._members:get(data.target_id)
+		self._target = self._messages[data.target_id] or self._members[data.target_id]
 	end
 
 	if data.data.options then
