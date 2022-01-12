@@ -7,7 +7,6 @@ an application command.
 local channelType = require('enums').channelType
 local MessagingInteraction = require('containers/abstract/MessagingInteraction')
 local CommandOption = require('containers/CommandOption')
-local Cache = require('iterables/Cache')
 
 local CommandInteraction, get = require('class')('CommandInteraction', MessagingInteraction)
 
@@ -70,9 +69,12 @@ function CommandInteraction:__init(data, parent)
 	end
 
 	if data.data.options then
-		self._options = Cache(data.data.options, CommandOption, self)
+		self._options = {}
+		for i, option in ipairs(data.data.options) do
+			self._options[option.name] = CommandOption(option, self)
+		end
 		if #self._options == 1 then
-			local _, val = next(self._options._objects)
+			local _, val = next(self._options)
 			self._option = val
 		end
 	end
@@ -98,7 +100,7 @@ function get.target(self)
 	return self._target
 end
 
---[=[@p options Cache/nil Cache of command options received from the user.]=]
+--[=[@p options table/nil Cache of command options received from the user.]=]
 function get.options(self)
 	return self._options
 end
