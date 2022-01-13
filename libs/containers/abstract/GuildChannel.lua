@@ -28,7 +28,7 @@ function GuildChannel:__init(data, parent)
 	Channel.__init(self, data, parent)
 	self.client._channel_map[self._id] = parent
 	self._permission_overwrites = Cache({}, PermissionOverwrite, self)
-	self._permissions = Permissions(data.permissions)
+	self._permissions = data.permissions and Permissions(data.permissions) or nil
 	return self:_loadMore(data)
 end
 
