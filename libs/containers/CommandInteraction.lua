@@ -6,7 +6,7 @@ an application command.
 
 local channelType = require('enums').channelType
 local MessagingInteraction = require('containers/abstract/MessagingInteraction')
-local CommandOption = require('containers/CommandOption')
+local CommandOption = require('utils/CommandOption')
 
 local CommandInteraction, get = require('class')('CommandInteraction', MessagingInteraction)
 
@@ -68,12 +68,16 @@ function CommandInteraction:__init(data, parent)
 		self._target = self._messages[data.target_id] or self._members[data.target_id]
 	end
 
-	if data.data.options then
+	return self:_loadOptions(data.data.options, self)
+end
+
+function CommandInteraction:_loadOptions(options, parent)
+	if options then
 		self._options = {}
-		for i, option in ipairs(data.data.options) do
-			self._options[option.name] = CommandOption(option, self)
+		for i, option in ipairs(options) do
+			self._options[option.name] = CommandOption(option, parent)
 		end
-		if #self._options == 1 then
+		if #options == 1 then
 			local _, val = next(self._options)
 			self._option = val
 		end

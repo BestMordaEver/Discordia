@@ -4,17 +4,7 @@ local CommandOption, get = require('class')('CommandOption')
 local types = {['string'] = true, ['number'] = true, ['boolean'] = true}
 
 function CommandOption:__init(data, parent)
-	if data.options then
-		self._options = {}
-		for i, option in ipairs(data.options) do
-			self._options[option.name] = CommandOption(option, parent)
-		end
-		if #self._options == 1 then
-			local _, val = next(self._options)
-			self._option = val
-		end
-	end
-
+	parent._loadOptions(self, data.options, parent)
 	for k, v in pairs(data) do
 		if types[type(v)] then
 			self['_' .. k] = v
