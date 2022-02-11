@@ -407,6 +407,24 @@ function EventHandler.MESSAGE_REACTION_REMOVE_ALL(d, client)
 	end
 end
 
+function EventHandler.MESSAGE_REACTION_REMOVE_EMOJI(d, client)
+	local channel = getChannel(client, d.channel_id)
+	if not channel then return warning(client, 'TextChannel', d.channel_id, 'MESSAGE_REACTION_REMOVE_ALL') end
+	local message = channel._messages:get(d.message_id)
+	if message then
+		local reactions = message._reactions
+		if reactions then
+			local reaction = reactions:get(d.emoji.id or d.emoji.name)
+			if reaction then
+				reaction._count = 0
+			end
+		end
+		return client:emit('reactionRemoveEmoji', message)
+	else
+		return client:emit('reactionRemoveEmojiUncached', channel, d.message_id)
+	end
+end
+
 function EventHandler.CHANNEL_PINS_UPDATE(d, client)
 	local channel = getChannel(client, d.channel_id)
 	if not channel then return warning(client, 'TextChannel', d.channel_id, 'CHANNEL_PINS_UPDATE') end
