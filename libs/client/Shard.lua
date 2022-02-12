@@ -226,6 +226,7 @@ function Shard:identify()
 			['$referrer'] = '',
 			['$referring_domain'] = '',
 		},
+		intents = client.gatewayIntents,
 		compress = options.compress,
 		large_threshold = options.largeThreshold,
 		shard = {self._id, client._total_shard_count},
