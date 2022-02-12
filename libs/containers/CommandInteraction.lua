@@ -72,7 +72,7 @@ function CommandInteraction:__init(data, parent)
 end
 
 function CommandInteraction:_loadOptions(options, parent)
-	if options then
+	if options and next(options) then
 		self._options = {}
 		for i, option in ipairs(options) do
 			self._options[option.name] = CommandOption(option, parent)
