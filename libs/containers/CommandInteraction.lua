@@ -71,9 +71,18 @@ function CommandInteraction:__init(data, parent)
 	return self:_loadOptions(data.data.options, self)
 end
 
+local meta = {__len = function (self)
+	local a,i = -1
+	repeat
+		a = a + 1
+		i = next(self,i)
+	until not i
+	return a
+end}
+
 function CommandInteraction:_loadOptions(options, parent)
 	if options and next(options) then
-		self._options = {}
+		self._options = setmetatable({}, meta)
 		for i, option in ipairs(options) do
 			self._options[option.name] = CommandOption(option, parent)
 		end
