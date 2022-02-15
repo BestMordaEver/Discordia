@@ -1,5 +1,6 @@
 local enums = require('enums')
 local json = require('json')
+local timer = require ('timer')
 
 local channelType, interactionType = enums.channelType, enums.interactionType
 local insert = table.insert
@@ -9,11 +10,24 @@ local function warning(client, object, id, event)
 	return client:warning('Uncached %s (%s) on %s', object, id, event)
 end
 
-local function checkReady(shard)
-	for _, v in pairs(shard._loading) do
-		if next(v) then return end
+local checkReady, timeout
+local function clearLoading(shard)
+	shard._loading = nil
+	checkReady(shard)
+end
+
+function checkReady(shard)
+	if shard._loading then
+		for _, v in pairs(shard._loading) do
+			if next(v) then
+				if timeout then timer.clearTimeout(timeout) end
+				timeout = timer.setTimeout(60000, clearLoading, shard)
+				return
+			end
+		end
 	end
-	
+
+	if timeout then timer.clearTimeout(timeout) end
 	shard._ready = true
 	shard._loading = nil
 	collectgarbage()
@@ -41,8 +55,9 @@ local EventHandler = setmetatable({}, {__index = function(self, k)
 	return self[k]
 end})
 
+local goods = {}
 function EventHandler.READY(d, client, shard)
-
+for i,guild in ipairs(d.guilds) do goods[guild.id] = true end
 	shard:info('Received READY')
 	shard:emit('READY')
 
@@ -213,7 +228,15 @@ function EventHandler.CHANNEL_RECIPIENT_REMOVE(d, client)
 	return client:emit('recipientRemove', channel, user)
 end
 
+local count = 0
 function EventHandler.GUILD_CREATE(d, client, shard)
+	goods[d.id] = nil
+	count = count + 1
+	print(count)
+	if count > 1300 then
+		for k,v in pairs(goods) do print(k) end
+	end
+
 	if client._options.syncGuilds and not d.unavailable and not client._user._bot then
 		shard:syncGuilds({d.id})
 	end
