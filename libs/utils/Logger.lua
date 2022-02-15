@@ -15,6 +15,7 @@ local fs = require('fs')
 
 local date = os.date
 local format = string.format
+---@diagnostic disable-next-line: undefined-field
 local stdout = _G.process.stdout.handle
 local openSync, writeSync = fs.openSync, fs.writeSync
 
@@ -22,7 +23,7 @@ local openSync, writeSync = fs.openSync, fs.writeSync
 local RED     = 31
 local GREEN   = 32
 local YELLOW  = 33
--- local BLUE    = 34
+local BLUE    = 34
 -- local MAGENTA = 35
 local CYAN    = 36
 -- local WHITE   = 37
@@ -32,6 +33,8 @@ local config = {
 	{'[WARNING]', YELLOW},
 	{'[INFO]   ', GREEN},
 	{'[DEBUG]  ', CYAN},
+	{'[STORAGE]', BLUE},
+	{'[MEMORY] ', BLUE}
 }
 
 do -- parse config

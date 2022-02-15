@@ -68,7 +68,7 @@ local defaultOptions = {
 	gatewayFile = 'gateway.json',
 	dateTime = '%F %T',
 	syncGuilds = false,
-	intents = 98303,
+	intents = 0x00017fff,
 }
 
 local function parseOptions(customOptions)
