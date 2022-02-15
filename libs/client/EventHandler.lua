@@ -55,9 +55,8 @@ local EventHandler = setmetatable({}, {__index = function(self, k)
 	return self[k]
 end})
 
-local goods = {}
 function EventHandler.READY(d, client, shard)
-for i,guild in ipairs(d.guilds) do goods[guild.id] = true end
+
 	shard:info('Received READY')
 	shard:emit('READY')
 
@@ -228,15 +227,7 @@ function EventHandler.CHANNEL_RECIPIENT_REMOVE(d, client)
 	return client:emit('recipientRemove', channel, user)
 end
 
-local count = 0
 function EventHandler.GUILD_CREATE(d, client, shard)
-	goods[d.id] = nil
-	count = count + 1
-	print(count)
-	if count > 1300 then
-		for k,v in pairs(goods) do print(k) end
-	end
-
 	if client._options.syncGuilds and not d.unavailable and not client._user._bot then
 		shard:syncGuilds({d.id})
 	end
