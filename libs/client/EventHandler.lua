@@ -213,7 +213,13 @@ function EventHandler.CHANNEL_RECIPIENT_REMOVE(d, client)
 	return client:emit('recipientRemove', channel, user)
 end
 
+local garbageCount = 0
 function EventHandler.GUILD_CREATE(d, client, shard)
+	garbageCount = (garbageCount + 1) % 30
+	if garbageCount == 0 then
+		collectgarbage();collectgarbage()
+	end
+
 	if client._options.syncGuilds and not d.unavailable and not client._user._bot then
 		shard:syncGuilds({d.id})
 	end
