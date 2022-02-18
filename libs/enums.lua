@@ -83,10 +83,12 @@ enums.relationshipType = enum {
 }
 
 enums.activityType = enum {
-	default   = 0,
+	game   = 0,
 	streaming = 1,
 	listening = 2,
+	watching  = 3,
 	custom    = 4,
+	competing = 5,
 }
 
 enums.status = enum {

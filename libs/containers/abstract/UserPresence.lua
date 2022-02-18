@@ -7,16 +7,18 @@ exists for the User class is also available in the UserPresence class and its
 subclasses.
 ]=]
 
-local null = require('json').null
 local User = require('containers/User')
 local Activity = require('containers/Activity')
 local Container = require('containers/abstract/Container')
+
+local activityType = require('enums').activityType
 
 local UserPresence, get = require('class')('UserPresence', Container)
 
 function UserPresence:__init(data, parent)
 	Container.__init(self, data, parent)
 	self._user = self.client._users:_insert(data.user)
+	self._activity = {}
 end
 
 --[=[
@@ -32,50 +34,44 @@ local activities = setmetatable({}, {__mode = 'v'})
 
 function UserPresence:_loadPresence(presence)
 	self._status = presence.status
-	local game = {}
-	
-	local arr = presence.activities
-	if arr and arr[2] then
-		for i = 2, #arr do
-			if arr[i].type == 0 then
-				for k, v in pairs(arr[i]) do
-					game[k] = v
-				end
-			end
+
+	if next(presence.activities) then
+		local activities = {}
+		for i, activity in pairs(presence.activities) do
+			activities[activity.type] = activity
 		end
-	end
-	
-	if next(game) then
-		if self._activity then
-			self._activity:_load(game)
-		else
-			local activity = activities[self:__hash()]
-			if activity then
-				activity:_load(game)
+
+		for _, type in pairs(activityType) do
+			if activities[type] then
+				if self._activity[type] then
+					self._activity[type]:_load(activities[type])
+				else
+					self._activity[type] = Activity(activities[type], self)
+				end
 			else
-				activity = Activity(game, self)
-				activities[self:__hash()] = activity
+				self._activity[type] = nil
 			end
-			self._activity = activity
 		end
 	else
-		self._activity = nil
+		for k,_ in pairs(self._activity) do
+			self._activity[k] = nil
+		end
 	end
 end
 
 function get.gameName(self)
 	self.client:_deprecated(self.__name, 'gameName', 'activity.name')
-	return self._activity and self._activity._name
+	return self._activity[0] and self._activity[0]._name
 end
 
 function get.gameType(self)
 	self.client:_deprecated(self.__name, 'gameType', 'activity.type')
-	return self._activity and self._activity._type
+	return self._activity[0] and self._activity[0]._type
 end
 
 function get.gameURL(self)
 	self.client:_deprecated(self.__name, 'gameURL', 'activity.url')
-	return self._activity and self._activity._url
+	return self._activity[0] and self._activity[0]._url
 end
 
 --[=[@p status string The user's overall status (online, dnd, idle, offline).]=]
@@ -103,9 +99,34 @@ function get.user(self)
 	return self._user
 end
 
---[=[@p activity Activity/nil The Activity that this presence represents.]=]
-function get.activity(self)
-	return self._activity
+--[=[@p playing Activity/nil The game Activity that this presence represents.]=]
+function get.playing(self)
+	return self._activity[0]
+end
+
+--[=[@p streaming Activity/nil The streaming Activity that this presence represents.]=]
+function get.streaming(self)
+	return self._activity[1]
+end
+
+--[=[@p listening Activity/nil The listening Activity that this presence represents.]=]
+function get.listening(self)
+	return self._activity[2]
+end
+
+--[=[@p watching Activity/nil The watching Activity that this presence represents.]=]
+function get.watching(self)
+	return self._activity[3]
+end
+
+--[=[@p custom Activity/nil The custom status Activity that this presence represents.]=]
+function get.custom(self)
+	return self._activity[4]
+end
+
+--[=[@p competing Activity/nil The competing Activity that this presence represents.]=]
+function get.competing(self)
+	return self._activity[5]
 end
 
 -- user shortcuts
