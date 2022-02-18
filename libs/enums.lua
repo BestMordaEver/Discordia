@@ -222,6 +222,7 @@ enums.gatewayIntent = enum {
 	directMessage         = 0x00001000, -- 1 << 12
 	directMessageRections = 0x00002000, -- 1 << 13
 	directMessageTyping   = 0x00004000, -- 1 << 14
+	messageContent        = 0x00008000, -- 1 << 15
 	guildScheduledEvents  = 0x00010000, -- 1 << 16
 }
 
