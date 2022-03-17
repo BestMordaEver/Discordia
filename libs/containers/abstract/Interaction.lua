@@ -68,6 +68,16 @@ function get.token(self)
 	return self._token
 end
 
+--[=[@p locale string The selected language of the invoking user.]=]
+function get.locale(self)
+	return self._locale
+end
+
+--[=[@p guild_locale string/nil The guild's preferred locale, if invoked in a guild.]=]
+function get.guild_locale(self)
+	return self._guild_locale
+end
+
 --[[
 function get.version(self)
 	return self._version

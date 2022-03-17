@@ -239,6 +239,7 @@ enums.interactionType = enum {
 	applicationCommand = 2,
 	messageComponent   = 3,
 	autocomplete       = 4,
+	modalSubmit        = 5,
 }
 
 enums.callbackType = enum {
@@ -248,12 +249,13 @@ enums.callbackType = enum {
 	deferUpdate  = 6,
 	update       = 7,
 	autocomplete = 8,
+	modal        = 9,
 }
 
 enums.applicationCommandType = enum {
 	chatInput = 1,
 	user      = 2,
-	message   = 3
+	message   = 3,
 }
 
 enums.applicationCommandOptionType = enum {
@@ -266,13 +268,15 @@ enums.applicationCommandOptionType = enum {
 	channel = 7,
 	role = 8,
 	mentionable = 9,
-	number = 10
+	number = 10,
+	attachment = 11,
 }
 
 enums.componentType = enum {
 	row = 1,
 	button = 2,
-	select = 3
+	select = 3,
+	input = 4,
 }
 
 enums.buttonStyle = enum {
@@ -280,7 +284,12 @@ enums.buttonStyle = enum {
 	secondary = 2,
 	success = 3,
 	danger = 4,
-	link = 5
+	link = 5,
+}
+
+enums.inputStyle = enum {
+	short = 1,
+	paragraph = 2,
 }
 
 return enums

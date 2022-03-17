@@ -588,6 +588,9 @@ function EventHandler.INTERACTION_CREATE(d, client)
 	elseif d.type == interactionType.autocomplete then
 		local interaction = channel._autocomplete_interactions:_insert(d)
 		return client:emit('autocompleteInteraction', interaction)
+	elseif d.type == interactionType.modalSubmit then
+		local interaction = channel._modal_interactions:_insert(d)
+		return client:emit('modalInteraction', interaction)
 	else
 		return warning(client, 'Interaction', d.id, 'INTERACTION_CREATE')
 	end

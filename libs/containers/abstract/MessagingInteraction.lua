@@ -54,6 +54,20 @@ function MessagingInteraction:deferReply(ephemeral)
 end
 
 --[=[
+@m createModal
+@t http
+@p id string
+@p title string
+@p components table
+@r Message
+@d Acknowledge the interaction and respond with a popup modal. Components
+must be an array of 1-5 message components
+]=]
+function MessagingInteraction:createModal(id, title, components)
+	return self:_callback(callbackType.modal, {custom_id = id, title = title, components = components})
+end
+
+--[=[
 @m followup
 @t http
 @p content string/table
