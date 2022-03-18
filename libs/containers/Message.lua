@@ -103,6 +103,10 @@ function Message:_loadMore(data)
 		self._attachments = #data.attachments > 0 and data.attachments or nil
 	end
 
+	if data.components then
+		self._components = #data.components > 0 and data.components or nil
+	end
+
 end
 
 function Message:_addReaction(d)
@@ -560,6 +564,12 @@ end
 there are none, this table will not be present.]=]
 function get.embeds(self)
 	return self._embeds
+end
+
+--[=[@p components table A raw data table that contains all components that exist for this message. If
+there are none, this table will not be present.]=]
+function get.components(self)
+	return self._components
 end
 
 --[=[@p attachments table A raw data table that contains all attachments that exist for this message. If
