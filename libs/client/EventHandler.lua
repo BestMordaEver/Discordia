@@ -64,17 +64,6 @@ function EventHandler.READY(d, client, shard)
 	client._user = client._users:_insert(d.user)
 
 	local guilds = client._guilds
-	local group_channels = client._group_channels
-	local private_channels = client._private_channels
-	local relationships = client._relationships
-
-	for _, channel in ipairs(d.private_channels) do
-		if channel.type == channelType.private then
-			private_channels:_insert(channel)
-		elseif channel.type == channelType.group then
-			group_channels:_insert(channel)
-		end
-	end
 
 	local loading = shard._loading
 
@@ -96,15 +85,6 @@ function EventHandler.READY(d, client, shard)
 			shard:syncGuilds(ids)
 		else
 			guilds:_load(d.guilds)
-		end
-	end
-
-	relationships:_load(d.relationships)
-
-	for _, presence in ipairs(d.presences) do
-		local relationship = relationships:get(presence.user.id)
-		if relationship then
-			relationship:_loadPresence(presence)
 		end
 	end
 
