@@ -10,8 +10,8 @@ local callbackType = enums.callbackType
 
 local AutocompleteInteraction = require('class')('AutocompleteInteraction', SlashInteraction)
 
-function AutocompleteInteraction:__init(data, parent)
-	SlashInteraction.__init(self, data, parent)
+function AutocompleteInteraction:__init(data, client)
+	SlashInteraction.__init(self, data, client)
 end
 
 --[=[

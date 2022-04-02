@@ -5,20 +5,37 @@
 ]=]
 
 local Snowflake = require('containers/abstract/Snowflake')
+local enums = require('enums')
+local channelType = enums.channelType
 
 local Interaction, get = require('class')('Interaction', Snowflake)
 
-function Interaction:__init(data, parent)
-	Snowflake.__init(self, data, parent)
+function Interaction:__init(data, client)
+	Snowflake.__init(self, data, client)
 
 	if data.member then
+		self._guild = client._guilds:get(data.guild_id)
+		self._guild._members:_insert(data.member)
+		self._channel = self._guild._text_channels:get(data.channel_id)
 		data.user = data.member.user
-		self._parent._parent._members:_insert(data.member)
+	else
+		self._channel = client._private_channels:get(data.channel_id) or client._group_channels:get(data.channel_id)
+		if not self._channel then
+			local d = client._api:getChannel(data.channel_id)
+			if d.type == channelType.private then
+				self._channel = client._private_channels:_insert(d)
+			elseif d.type == channelType.group then
+				self._channel = client._group_channels:_insert(d)
+			end
+		end
 	end
-	self._user = self.client._users:_insert(data.user)
+
+	self._user = client._users:_insert(data.user)
+	self._data = data.data
 	self._is_replied = false
 
-	self._data = data.data
+	self._guild_id = nil
+	self._channel_id = nil
 end
 
 function Interaction:_callback(callbackType, content, files)
@@ -41,12 +58,12 @@ end
 --[=[@p guild Guild/nil The guild in which this interaction happened. This will not exist if the interaction
 was not sent in a guild text channel. Equivalent to `Interaction.channel.guild`.]=]
 function get.guild(self)
-	return self._parent.guild
+	return self._guild
 end
 
 --[=[@p channel TextChannel The channel in which this interaction happened.]=]
 function get.channel(self)
-	return self._parent
+	return self._channel
 end
 
 --[=[@p member Member/nil The member object of the interaction user. This will not exist if the interaction

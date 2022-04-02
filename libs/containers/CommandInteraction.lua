@@ -9,9 +9,9 @@ local SlashInteraction = require('containers/abstract/SlashInteraction')
 
 local CommandInteraction = require('class')('CommandInteraction', MessagingInteraction, SlashInteraction)
 
-function CommandInteraction:__init(data, parent)
-	MessagingInteraction.__init(self, data, parent)
-	SlashInteraction.__init(self, data, parent)
+function CommandInteraction:__init(data, client)
+	MessagingInteraction.__init(self, data, client)
+	SlashInteraction.__init(self, data, client)
 end
 
 return CommandInteraction

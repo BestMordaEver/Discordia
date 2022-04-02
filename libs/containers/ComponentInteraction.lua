@@ -11,8 +11,8 @@ local callbackType = enums.callbackType
 
 local ComponentInteraction, get = require('class')('ComponentInteraction', MessagingInteraction)
 
-function ComponentInteraction:__init(data, parent)
-    MessagingInteraction.__init(self, data, parent)
+function ComponentInteraction:__init(data, client)
+    MessagingInteraction.__init(self, data, client)
 
     local id = Resolver.messageId(data.message.id)
 	local message = self._parent._messages:get(id)

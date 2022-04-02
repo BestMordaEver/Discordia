@@ -7,10 +7,6 @@
 local Channel = require('containers/abstract/Channel')
 local Message = require('containers/Message')
 local MessageContainer = require('utils/MessageContainer')
-local CommandInteraction = require('containers/CommandInteraction')
-local ComponentInteraction = require('containers/ComponentInteraction')
-local AutocompleteInteraction = require('containers/AutocompleteInteraction')
-local ModalInteraction = require('containers/ModalInteraction')
 local WeakCache = require('iterables/WeakCache')
 local SecondaryCache = require('iterables/SecondaryCache')
 local Resolver = require('client/Resolver')
@@ -22,10 +18,6 @@ local TextChannel, get = require('class')('TextChannel', Channel)
 function TextChannel:__init(data, parent)
 	Channel.__init(self, data, parent)
 	self._messages = WeakCache({}, Message, self)
-	self._command_interactions = WeakCache({}, CommandInteraction, self)
-	self._component_interactions = WeakCache({}, ComponentInteraction, self)
-	self._autocomplete_interactions = WeakCache({}, AutocompleteInteraction, self)
-	self._modal_interactions = WeakCache({}, ModalInteraction, self)
 end
 
 --[=[

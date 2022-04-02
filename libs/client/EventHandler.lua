@@ -557,22 +557,20 @@ function EventHandler.WEBHOOKS_UPDATE(d, client) -- webhook object is not provid
 end
 
 function EventHandler.INTERACTION_CREATE(d, client)
-	local channel = getChannel(client, d.channel_id)
-	if not channel then return warning(client, 'TextChannel', d.channel_id, 'INTERACTION_CREATE') end
 	if d.type == interactionType.applicationCommand then
-		local interaction = channel._command_interactions:_insert(d)
+		local interaction = client._command_interactions:_insert(d)
 		return client:emit('commandInteraction', interaction)
 	elseif d.type == interactionType.messageComponent then
-		local interaction = channel._component_interactions:_insert(d)
+		local interaction = client._component_interactions:_insert(d)
 		return client:emit('componentInteraction', interaction)
 	elseif d.type == interactionType.autocomplete then
-		local interaction = channel._autocomplete_interactions:_insert(d)
+		local interaction = client._autocomplete_interactions:_insert(d)
 		return client:emit('autocompleteInteraction', interaction)
 	elseif d.type == interactionType.modalSubmit then
-		local interaction = channel._modal_interactions:_insert(d)
+		local interaction = client._modal_interactions:_insert(d)
 		return client:emit('modalInteraction', interaction)
 	else
-		return warning(client, 'Interaction', d.id, 'INTERACTION_CREATE')
+		return client:warning('Unhandled Interaction type: %s', d.type)
 	end
 end
 

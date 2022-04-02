@@ -4,15 +4,12 @@
 a message component.
 ]=]
 
-local enums = require('enums')
 local MessagingInteraction = require('containers/abstract/MessagingInteraction')
-local Resolver = require('client/Resolver')
-local callbackType = enums.callbackType
 
 local ModalInteraction, get = require('class')('ModalInteraction', MessagingInteraction)
 
-function ModalInteraction:__init(data, parent)
-    MessagingInteraction.__init(self, data, parent)
+function ModalInteraction:__init(data, client)
+    MessagingInteraction.__init(self, data, client)
 
 	self._custom_id = data.data.customId
 	self._components = data.data.components

@@ -591,11 +591,6 @@ function API:leaveGuild(guild_id) -- Guild:leave
 	return self:request("DELETE", endpoint)
 end
 
-function API:getUserDMs() -- not exposed, use cache
-	local endpoint = endpoints.USERS_ME_CHANNELS
-	return self:request("GET", endpoint)
-end
-
 function API:createDM(payload) -- User:getPrivateChannel fallback
 	local endpoint = endpoints.USERS_ME_CHANNELS
 	return self:request("POST", endpoint, payload)

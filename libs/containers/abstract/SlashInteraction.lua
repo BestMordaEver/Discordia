@@ -10,13 +10,12 @@ local CommandOption = require('utils/CommandOption')
 
 local SlashInteraction, get = require('class')('SlashInteraction', Interaction)
 
-function SlashInteraction:__init(data, parent)
-	Interaction.__init(self, data, parent)
+function SlashInteraction:__init(data, client)
+	Interaction.__init(self, data, client)
 
 	if data.data.resolved then
 		local resolved = data.data.resolved
 		local guild = self.guild
-		local client = self._parent._parent._parent or self._parent._parent
 
 		if resolved.users then
 			self._users = {}
@@ -59,7 +58,7 @@ function SlashInteraction:__init(data, parent)
 		if resolved.messages then
 			self._messages = {}
 			for snowflake, obj in pairs(resolved.messages) do
-				self._messages[snowflake] = self._parent._messages:get(snowflake) or self._parent._messages:_insert(obj)
+				self._messages[snowflake] = self._channel._messages:get(snowflake) or self._channel._messages:_insert(obj)
 			end
 		end
 	end
