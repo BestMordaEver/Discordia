@@ -11,7 +11,7 @@ local ModalInteraction, get = require('class')('ModalInteraction', MessagingInte
 function ModalInteraction:__init(data, client)
     MessagingInteraction.__init(self, data, client)
 
-	self._custom_id = data.data.customId
+	self._custom_id = data.data.custom_id
 	self._components = data.data.components
 end
 

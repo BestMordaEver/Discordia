@@ -15,11 +15,11 @@ function ComponentInteraction:__init(data, client)
     MessagingInteraction.__init(self, data, client)
 
     local id = Resolver.messageId(data.message.id)
-	local message = self._parent._messages:get(id)
+	local message = self._channel._messages:get(id)
 	if message then
 		self._message = message
 	else
-		self._message = self.parent._messages:_insert(data.message)
+		self._message = self._channel._messages:_insert(data.message)
 	end
 
 	self._custom_id = data.data.custom_id
