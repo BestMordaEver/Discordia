@@ -188,6 +188,11 @@ enums.permission = enum {
 	moderateMembers        = 0x0000010000000000,
 }
 
+enums.overwriteType = enum {
+	role = 0,
+	member = 1,
+}
+
 enums.messageFlag = enum {
 	crossposted                      = 0x00000001,
 	isCrosspost                      = 0x00000002,
