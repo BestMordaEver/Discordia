@@ -1,5 +1,5 @@
 --[=[
-@c GuildVoiceChannel x GuildChannel
+@c GuildVoiceChannel x GuildChannel x TextChannel
 @d Represents a voice channel in a Discord guild, where guild members can connect
 and communicate via voice chat.
 ]=]
@@ -7,13 +7,15 @@ and communicate via voice chat.
 local json = require('json')
 
 local GuildChannel = require('containers/abstract/GuildChannel')
+local TextChannel = require('containers/abstract/TextChannel')
 local VoiceConnection = require('voice/VoiceConnection')
 local TableIterable = require('iterables/TableIterable')
 
-local GuildVoiceChannel, get = require('class')('GuildVoiceChannel', GuildChannel)
+local GuildVoiceChannel, get = require('class')('GuildVoiceChannel', GuildChannel, TextChannel)
 
 function GuildVoiceChannel:__init(data, parent)
 	GuildChannel.__init(self, data, parent)
+	TextChannel.__init(self, data, parent)
 end
 
 --[=[
@@ -133,6 +135,16 @@ end
 --[=[@p connection VoiceConnection/nil The VoiceConnection for this channel if one exists.]=]
 function get.connection(self)
 	return self._connection
+end
+
+--[=[@p textEnabled boolean Whether this voice channel has a text channel attached to it.]=]
+function get.textEnabled(self)
+	for _, feature in ipairs(self._parent._features) do
+		if feature == 'TEXT_IN_VOICE_ENABLED' then
+			return true
+		end
+	end
+	return false
 end
 
 return GuildVoiceChannel
