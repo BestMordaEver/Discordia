@@ -10,7 +10,7 @@ local function warning(client, object, id, event)
 	return client:warning('Uncached %s (%s) on %s', object, id, event)
 end
 
-local checkReady, timeout
+local timeouts, checkReady = {}
 local function clearLoading(shard)
 	shard._loading = nil
 	checkReady(shard)
@@ -20,14 +20,14 @@ function checkReady(shard)
 	if shard._loading then
 		for _, v in pairs(shard._loading) do
 			if next(v) then
-				if timeout then timer.clearTimeout(timeout) end
-				timeout = timer.setTimeout(60000, clearLoading, shard)
+				if timeouts[shard] then timer.clearTimeout(timeouts[shard]) end
+				timeouts[shard] = timer.setTimeout(60000, clearLoading, shard)
 				return
 			end
 		end
 	end
 
-	if timeout then timer.clearTimeout(timeout) end
+	if timeouts[shard] then timer.clearTimeout(timeouts[shard]) end
 	shard._ready = true
 	shard._loading = nil
 	collectgarbage()
