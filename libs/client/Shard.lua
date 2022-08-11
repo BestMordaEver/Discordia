@@ -227,11 +227,11 @@ function Shard:identify()
 	return self:_send(IDENTIFY, {
 		token = client._token,
 		properties = {
-			['$os'] = jit.os,
-			['$browser'] = 'Discordia',
-			['$device'] = 'Discordia',
-			['$referrer'] = '',
-			['$referring_domain'] = '',
+			['os'] = jit.os,
+			['browser'] = 'Discordia',
+			['device'] = 'Discordia',
+			['referrer'] = '',
+			['referring_domain'] = '',
 		},
 		intents = options.intents,
 		compress = options.compress,
