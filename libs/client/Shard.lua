@@ -103,13 +103,13 @@ function Shard:handleDisconnect(url, path)
 	self._client:emit('shardDisconnect', self._id)
 	if self._reconnect then
 		self:info('Reconnecting...')
-		return self:connect(url, path)
+		return self:connect(self._resume_gateway_url or url, path)
 	elseif self._reconnect == nil and self._client._options.autoReconnect then
 		local backoff = getReconnectTime(self, 0.9, 1.1)
 		incrementReconnectTime(self)
 		self:info('Reconnecting after %i ms...', backoff)
 		sleep(backoff)
-		return self:connect(url, path)
+		return self:connect(self._resume_gateway_url or url, path)
 	end
 end
 
