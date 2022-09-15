@@ -50,6 +50,11 @@ function Interaction:_callback(callbackType, content, files)
 	end
 end
 
+--[=[@p isReplied boolean Whether the interaction was already replied to.]=]
+function get.isReplied(self)
+	return self._is_replied
+end
+
 --[=[@p type number The interaction type. See the `interactionType` enumeration for a human-readable representation.]=]
 function get.type(self)
 	return self._type
