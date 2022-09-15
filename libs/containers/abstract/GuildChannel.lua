@@ -224,9 +224,9 @@ in the same guild as the channel does.
 function GuildChannel:getPermissionOverwriteFor(obj)
 	local id, type
 	if isInstance(obj, classes.Role) and self._parent == obj._parent then
-		id, type = obj._id, 'role'
+		id, type = obj._id, 0
 	elseif isInstance(obj, classes.Member) and self._parent == obj._parent then
-		id, type = obj._user._id, 'member'
+		id, type = obj._user._id, 1
 	else
 		return nil, 'Invalid Role or Member: ' .. tostring(obj)
 	end
