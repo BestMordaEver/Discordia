@@ -4,7 +4,8 @@
 that are received when a user uses a slash command.
 ]=]
 
-local channelType = require('enums').channelType
+local enums = require('enums')
+local channelType, applicationCommandType = enums.channelType, enums.applicationCommandType
 local Interaction = require('containers/abstract/Interaction')
 local CommandOption = require('utils/CommandOption')
 
@@ -13,8 +14,9 @@ local SlashInteraction, get = require('class')('SlashInteraction', Interaction)
 function SlashInteraction:__init(data, client)
 	Interaction.__init(self, data, client)
 
-	if data.data.resolved then
-		local resolved = data.data.resolved
+	data = data.data
+	if data.resolved then
+		local resolved = data.resolved
 		local guild = self.guild
 
 		if resolved.users then
@@ -64,10 +66,14 @@ function SlashInteraction:__init(data, client)
 	end
 
 	if data.target_id then
-		self._target = self._messages[data.target_id] or self._members[data.target_id]
+		if data.type == applicationCommandType.message then
+			self._target = self._messages[data.target_id]
+		elseif data.type == applicationCommandType.user then
+			self._target = self._members[data.target_id]
+		end
 	end
 
-	return self:_loadOptions(data.data.options, self)
+	return self:_loadOptions(data.options, self)
 end
 
 local meta = {__len = function (self)
