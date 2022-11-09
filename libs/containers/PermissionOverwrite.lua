@@ -206,7 +206,7 @@ function PermissionOverwrite:clearAllPermissions()
 	return setPermissions(self, allowed._value, denied._value)
 end
 
---[=[@p type string The overwrite type; either "role" or "member".]=]
+--[=[@p type number The overwrite type; either 0 for Role or 1 for Member.]=]
 function get.type(self)
 	return self._type
 end
