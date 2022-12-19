@@ -57,6 +57,8 @@ enums.channelType = enum {
 	publicThread  = 11,
 	privateThread = 12,
 	stage         = 13,
+	directory     = 14,
+	forum         = 15,
 }
 
 enums.webhookType = enum {
