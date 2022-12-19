@@ -357,8 +357,12 @@ enums.applicationCommandOptionType = enum {
 enums.componentType = enum {
 	row = 1,
 	button = 2,
-	select = 3,
-	input = 4,
+	stringSelect = 3,
+	textInput = 4,
+	userSelect = 5,
+	roleSelect = 6,
+	mentionableSelect = 7,
+	channelSelect = 8
 }
 
 enums.buttonStyle = enum {
