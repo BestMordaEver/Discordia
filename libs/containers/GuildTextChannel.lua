@@ -11,7 +11,6 @@ local TextChannel = require('containers/abstract/TextChannel')
 local FilteredIterable = require('iterables/FilteredIterable')
 local Webhook = require('containers/Webhook')
 local Cache = require('iterables/Cache')
-local Resolver = require('client/Resolver')
 
 local GuildTextChannel, get = require('class')('GuildTextChannel', GuildChannel, TextChannel)
 
@@ -56,29 +55,6 @@ function GuildTextChannel:getWebhooks()
 		return Cache(data, Webhook, self.client)
 	else
 		return nil, err
-	end
-end
-
---[=[
-@m bulkDelete
-@t http
-@p messages Message-ID-Resolvables
-@r boolean
-@d Bulk deletes multiple messages, from 2 to 100, from the channel. Messages over
-2 weeks old cannot be deleted and will return an error.
-]=]
-function GuildTextChannel:bulkDelete(messages)
-	messages = Resolver.messageIds(messages)
-	local data, err
-	if #messages == 1 then
-		data, err = self.client._api:deleteMessage(self._id, messages[1])
-	else
-		data, err = self.client._api:bulkDeleteMessages(self._id, {messages = messages})
-	end
-	if data then
-		return true
-	else
-		return false, err
 	end
 end
 
