@@ -276,6 +276,11 @@ function API:createMessage(channel_id, payload, files) -- TextChannel:send
 	return self:request("POST", endpoint, payload, nil, files)
 end
 
+function API:crosspostMessage(channel_id, message_id) -- Message:crosspost
+	local endpoint = f(endpoints.CHANNEL_MESSAGE_CROSSPOST, channel_id, message_id)
+	return self:request("POST", endpoint)
+end
+
 function API:createReaction(channel_id, message_id, emoji, payload) -- Message:addReaction
 	local endpoint = f(endpoints.CHANNEL_MESSAGE_REACTION_ME, channel_id, message_id, urlencode(emoji))
 	return self:request("PUT", endpoint, payload)
@@ -298,6 +303,11 @@ end
 
 function API:deleteAllReactions(channel_id, message_id) -- Message:clearReactions
 	local endpoint = f(endpoints.CHANNEL_MESSAGE_REACTIONS, channel_id, message_id)
+	return self:request("DELETE", endpoint)
+end
+
+function API:deleteAllReactionsForEmoji(channel_id, message_id, emoji) -- Message:clearEmoji
+	local endpoint = f(endpoints.CHANNEL_MESSAGE_REACTION, channel_id, message_id, emoji)
 	return self:request("DELETE", endpoint)
 end
 
@@ -334,6 +344,11 @@ end
 function API:deleteChannelPermission(channel_id, overwrite_id) -- PermissionOverwrite:delete
 	local endpoint = f(endpoints.CHANNEL_PERMISSION, channel_id, overwrite_id)
 	return self:request("DELETE", endpoint)
+end
+
+function API:followNewsChannel(channel_id, payload) -- GuildTextChannel:follow
+	local endpoint = f(endpoints.CHANNEL_FOLLOWERS, channel_id)
+	return self:request("POST", endpoint, payload)
 end
 
 function API:triggerTypingIndicator(channel_id, payload) -- TextChannel:broadcastTyping

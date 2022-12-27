@@ -342,6 +342,23 @@ function Message:removeReaction(emoji, id)
 end
 
 --[=[
+@m clearEmoji
+@t http
+@p emoji Emoji-Resolvable
+@r boolean
+@d Removes all reactions for a given emoji from the message.
+]=]
+function Message:clearEmoji(emoji)
+	emoji = Resolver.emoji(emoji)
+	local data, err = self.client._api:deleteAllReactionsForEmoji(self._parent._id, self._id, emoji)
+	if data then
+		return true
+	else
+		return false, err
+	end
+end
+
+--[=[
 @m clearReactions
 @t http
 @r boolean
@@ -384,6 +401,22 @@ end
 ]=]
 function Message:reply(content)
 	return self._parent:send(content)
+end
+
+--[=[
+@m crosspost
+@t http
+@r boolean
+@d Crosspost a message in the channel to following channels. Works only
+for Announcement Channels (`channelType.news`). Returns the crossposted message
+]=]
+function Message:crosspost()
+	local data, err = self.client._api:crosspostMessage(self._parent._id, self._id)
+	if data then
+		return true
+	else
+		return false, err
+	end
 end
 
 --[=[@p reactions Cache An iterable cache of all reactions that exist for this message.]=]

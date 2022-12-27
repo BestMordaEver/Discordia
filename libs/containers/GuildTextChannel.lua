@@ -11,6 +11,7 @@ local TextChannel = require('containers/abstract/TextChannel')
 local FilteredIterable = require('iterables/FilteredIterable')
 local Webhook = require('containers/Webhook')
 local Cache = require('iterables/Cache')
+local Resolver = require('client/Resolver')
 
 local GuildTextChannel, get = require('class')('GuildTextChannel', GuildChannel, TextChannel)
 
@@ -80,6 +81,23 @@ Passing 0 or `nil` will clear the limit.
 ]=]
 function GuildTextChannel:setRateLimit(limit)
 	return self:_modify({rate_limit_per_user = limit or json.null})
+end
+
+--[=[
+@m follow
+@t http
+@p channel GuildTextChannel
+@r boolean
+@d Follow the given Announcement Channel
+]=]
+function GuildTextChannel:follow(channel)
+	channel = Resolver.channelId(channel)
+	local data, err =  self.client._api:followNewsChannel(self._id, {webhook_channel_id = channel})
+	if data then
+		return true
+	else
+		return false, err
+	end
 end
 
 --[=[
