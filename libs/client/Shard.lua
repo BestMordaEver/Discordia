@@ -7,7 +7,7 @@ local WebSocket = require('client/WebSocket')
 local constants = require('constants')
 local enums = require('enums')
 
-local logLevel = enums.logLevel
+local logLevel = assert(enums.logLevel)
 local min, max, random = math.min, math.max, math.random
 local null = json.null
 local format = string.format
