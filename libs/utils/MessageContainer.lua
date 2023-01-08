@@ -89,6 +89,14 @@ function MessageContent.parseContent(content)
 			content = concat(mentions, ' ')
 		end
 
+		local embeds
+		if tbl.embed then
+			embeds = {tbl.embed}
+		end
+		if type(tbl.embeds) == 'table' and #tbl.embeds > 0 then
+			embeds = tbl.embeds
+		end
+
 		local files
 		if tbl.file then
 			files, err = MessageContent.parseFile(tbl.file)
@@ -123,7 +131,7 @@ function MessageContent.parseContent(content)
 			tts = tbl.tts,
 			flags = tbl.flags,
 			nonce = tbl.nonce,
-			embeds = tbl.embeds,
+			embeds = embeds,
 			message_reference = refMessage,
 			allowed_mentions = refMention,
 			components = tbl.components
