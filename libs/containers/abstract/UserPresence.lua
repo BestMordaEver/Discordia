@@ -30,10 +30,14 @@ function UserPresence:__hash()
 	return self._user._id
 end
 
-local activities = setmetatable({}, {__mode = 'v'})
-
 function UserPresence:_loadPresence(presence)
 	self._status = presence.status
+	local status = presence.client_status
+	if status then
+		self._web_status = status.web
+		self._mobile_status = status.mobile
+		self._desktop_status = status.desktop
+	end
 
 	if next(presence.activities) then
 		local activities = {}
