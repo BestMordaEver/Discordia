@@ -416,6 +416,11 @@ function API:getGuild(guild_id) -- not exposed, use cache
 	return self:request("GET", endpoint)
 end
 
+function API:getGuildPreview(guild_id) -- client:getGuildPreview
+	local endpoint = f(endpoints.GUILD_PREVIEW, guild_id)
+	return self:request("GET", endpoint)
+end
+
 function API:modifyGuild(guild_id, payload) -- Guild:_modify
 	local endpoint = f(endpoints.GUILD, guild_id)
 	return self:request("PATCH", endpoint, payload)
@@ -451,6 +456,11 @@ function API:listGuildMembers(guild_id) -- not exposed, use cache
 	return self:request("GET", endpoint)
 end
 
+function API:searchGuildMembers(guild_id) -- not exposed, use cache
+	local endpoint = f(endpoints.GUILD_MEMBERS, guild_id)
+	return self:request("GET", endpoint)
+end
+
 function API:addGuildMember(guild_id, user_id, payload) -- not exposed, limited use
 	local endpoint = f(endpoints.GUILD_MEMBER, guild_id, user_id)
 	return self:request("PUT", endpoint, payload)
@@ -461,7 +471,12 @@ function API:modifyGuildMember(guild_id, user_id, payload) -- various Member met
 	return self:request("PATCH", endpoint, payload)
 end
 
-function API:modifyCurrentUsersNick(guild_id, payload) -- Member:setNickname
+function API:modifyCurrentMember(guild_id, payload) -- Member:setNickname
+	local endpoint = f(endpoints.GUILD_MEMBERS_ME, guild_id)
+	return self:request("PATCH", endpoint, payload)
+end
+
+function API:modifyCurrentUsersNick(guild_id, payload) -- deprecated in favor of modifyCurrentMember
 	local endpoint = f(endpoints.GUILD_MEMBERS_ME_NICK, guild_id)
 	return self:request("PATCH", endpoint, payload)
 end
@@ -476,9 +491,9 @@ function API:removeGuildMemberRole(guild_id, user_id, role_id) -- Member:removeR
 	return self:request("DELETE", endpoint)
 end
 
-function API:removeGuildMember(guild_id, user_id, query) -- Guild:kickUser
+function API:removeGuildMember(guild_id, user_id) -- Guild:kickUser
 	local endpoint = f(endpoints.GUILD_MEMBER, guild_id, user_id)
-	return self:request("DELETE", endpoint, nil, query)
+	return self:request("DELETE", endpoint)
 end
 
 function API:getGuildBans(guild_id) -- Guild:getBans
@@ -491,14 +506,14 @@ function API:getGuildBan(guild_id, user_id) -- Guild:getBan
 	return self:request("GET", endpoint)
 end
 
-function API:createGuildBan(guild_id, user_id, query) -- Guild:banUser
+function API:createGuildBan(guild_id, user_id) -- Guild:banUser
 	local endpoint = f(endpoints.GUILD_BAN, guild_id, user_id)
-	return self:request("PUT", endpoint, nil, query)
+	return self:request("PUT", endpoint)
 end
 
-function API:removeGuildBan(guild_id, user_id, query) -- Guild:unbanUser / Ban:delete
+function API:removeGuildBan(guild_id, user_id) -- Guild:unbanUser / Ban:delete
 	local endpoint = f(endpoints.GUILD_BAN, guild_id, user_id)
-	return self:request("DELETE", endpoint, nil, query)
+	return self:request("DELETE", endpoint)
 end
 
 function API:getGuildRoles(guild_id) -- not exposed, use cache
@@ -521,6 +536,11 @@ function API:modifyGuildRole(guild_id, role_id, payload) -- Role:_modify
 	return self:request("PATCH", endpoint, payload)
 end
 
+function API:modifyGuildMFALevel(guild_id, payload) -- Guild:setMFA
+	local endpoint = f(endpoints.GUILD_MFA, guild_id)
+	return self:request("POST", endpoint, payload)
+end
+
 function API:deleteGuildRole(guild_id, role_id) -- Role:delete
 	local endpoint = f(endpoints.GUILD_ROLE, guild_id, role_id)
 	return self:request("DELETE", endpoint)
@@ -531,9 +551,9 @@ function API:getGuildPruneCount(guild_id, query) -- Guild:getPruneCount
 	return self:request("GET", endpoint, nil, query)
 end
 
-function API:beginGuildPrune(guild_id, payload, query) -- Guild:pruneMembers
+function API:beginGuildPrune(guild_id, payload) -- Guild:pruneMembers
 	local endpoint = f(endpoints.GUILD_PRUNE, guild_id)
-	return self:request("POST", endpoint, payload, query)
+	return self:request("POST", endpoint, payload)
 end
 
 function API:getGuildVoiceRegions(guild_id) -- Guild:listVoiceRegions
@@ -566,6 +586,46 @@ function API:deleteGuildIntegration(guild_id, integration_id) -- not exposed, ma
 	return self:request("DELETE", endpoint)
 end
 
+function API:getGuildWidgetSettings(guild_id) -- not exposed, maybe in the future
+	local endpoint = f(endpoints.GUILD_WIDGET, guild_id)
+	return self:request("GET", endpoint)
+end
+
+function API:modifyGuildWidget(guild_id, payload) -- not exposed, maybe in the future
+	local endpoint = f(endpoints.GUILD_WIDGET, guild_id, payload)
+	return self:request("PATCH", endpoint)
+end
+
+function API:getGuildWidget(guild_id) -- not exposed, maybe in the future
+	local endpoint = f(endpoints.GUILD_WIDGET_JSON, guild_id)
+	return self:request("GET", endpoint)
+end
+
+function API:getGuildWidgetImage(guild_id, query) -- not exposed, maybe in the future
+	local endpoint = f(endpoints.GUILD_WIDGET_PNG, guild_id)
+	return self:request("GET", endpoint, nil, query)
+end
+
+function API:modifyGuildWelcomeScreen(guild_id, payload) -- not exposed, maybe in the future
+	local endpoint = f(endpoints.GUILD_WELCOME_SCREEN, guild_id)
+	return self:request("PATCH", endpoint, payload)
+end
+
+function API:modifyCurrentUserVoiceState(guild_id, payload) -- various StageChannel methods
+	local endpoint = f(endpoints.GUILD_VOICE_STATES_ME, guild_id)
+	return self:request("PATCH", endpoint, payload)
+end
+
+function API:modifyUserVoiceState(guild_id, user_id, payload) -- various StageChannel methods
+	local endpoint = f(endpoints.GUILD_VOICE_STATE, guild_id, user_id)
+	return self:request("PATCH", endpoint, payload)
+end
+
+function API:getGuildVanityURL(guild_id) -- not exposed, use cache
+	local endpoint = f(endpoints.GUILD_VANITY_URL, guild_id)
+	return self:request("GET", endpoint)
+end
+
 function API:getInvite(invite_code, query) -- Client:getInvite
 	local endpoint = f(endpoints.INVITE, invite_code)
 	return self:request("GET", endpoint, nil, query)
@@ -579,6 +639,26 @@ end
 function API:acceptInvite(invite_code, payload) -- not exposed, invalidates tokens
 	local endpoint = f(endpoints.INVITE, invite_code)
 	return self:request("POST", endpoint, payload)
+end
+
+function API:createStageInstance(payload) -- not exposed, maybe in the future
+	local endpoint = endpoints.STAGE_INSTANCES
+	return self:request("POST", endpoint, payload)
+end
+
+function API:getStageInstance(channel_id) -- not exposed, maybe in the future
+	local endpoint = f(endpoints.STAGE_INSTANCE, channel_id)
+	return self:request("GET", endpoint)
+end
+
+function API:modifyStageInstance(channel_id, payload) -- not exposed, maybe in the future
+	local endpoint = f(endpoints.STAGE_INSTANCE, channel_id)
+	return self:request("PATCH", endpoint, payload)
+end
+
+function API:deleteStageInstance(channel_id) -- not exposed, maybe in the future
+	local endpoint = f(endpoints.STAGE_INSTANCE, channel_id)
+	return self:request("DELETE", endpoint)
 end
 
 function API:getCurrentUser() -- API:authenticate
@@ -598,6 +678,11 @@ end
 
 function API:getCurrentUserGuilds() -- not exposed, use cache
 	local endpoint = endpoints.USERS_ME_GUILDS
+	return self:request("GET", endpoint)
+end
+
+function API:getCurrentUserGuildMember(guild_id) -- not exposed, use cache
+	local endpoint = f(endpoints.USERS_ME_GUILD_MEMBER, guild_id)
 	return self:request("GET", endpoint)
 end
 
