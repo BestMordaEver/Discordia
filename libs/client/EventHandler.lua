@@ -42,7 +42,7 @@ end
 local function getChannel(client, id)
 	local guild = client._channel_map[id]
 	if guild then
-		return guild._text_channels:get(id) or guild._voice_channels:get(id)
+		return guild._text_channels:get(id) or guild._voice_channels:get(id) or guild._threads:get(id)
 	else
 		return client._private_channels:get(id) or client._group_channels:get(id)
 	end
@@ -206,6 +206,63 @@ function EventHandler.CHANNEL_RECIPIENT_REMOVE(d, client)
 	if not channel then return warning(client, 'GroupChannel', d.channel_id, 'CHANNEL_RECIPIENT_REMOVE') end
 	local user = channel._recipients:_remove(d.user)
 	return client:emit('recipientRemove', channel, user)
+end
+
+function EventHandler.THREAD_CREATE(d, client)
+	local guild = client._guilds:get(d.guild_id)
+	if not guild then return warning(client, 'Guild', d.guild_id, 'THREAD_CREATE') end
+	local thread = guild._threads:_insert(d)
+	return client:emit('threadCreate', thread)
+end
+
+function EventHandler.THREAD_UPDATE(d, client)
+	local guild = client._guilds:get(d.guild_id)
+	if not guild then return warning(client, 'Guild', d.guild_id, 'THREAD_UPDATE') end
+	local thread = guild._threads:_insert(d)
+	return client:emit('threadUpdate', thread)
+end
+
+function EventHandler.THREAD_DELETE(d, client)
+	local guild = client._guilds:get(d.guild_id)
+	if not guild then return warning(client, 'Guild', d.guild_id, 'THREAD_DELETE') end
+	local thread = guild._threads:_remove(d)
+	return client:emit('threadDelete', thread)
+end
+
+function EventHandler.THREAD_MEMBER_UPDATE(d, client)
+	local guild = client._guilds:get(d.guild_id)
+	if not guild then return warning(client, 'Guild', d.guild_id, 'THREAD_MEMBER_UPDATE') end
+	local thread = guild._threads:get(d.id)
+	return client:emit('threadMemberUpdate', thread)
+end
+
+function EventHandler.THREAD_MEMBERS_UPDATE(d, client)
+	local guild = client._guilds:get(d.guild_id)
+	if not guild then return warning(client, 'Guild', d.guild_id, 'THREAD_MEMBERS_UPDATE') end
+	local thread = guild._threads:get(d.id)
+	if not thread then return warning(client, 'Thread', d.id, 'THREAD_MEMBERS_UPDATE') end
+
+	if #d.added_members ~= 0 then
+		for _, thread_member in ipairs(d.added_members) do
+			local member = guild._members:_insert(thread_member.member) or guild._members:get(thread_member.user_id)
+			if member then
+				client:emit('threadMemberJoin', thread, member)
+			else
+				client:emit('threadMemberJoinUncached', thread, thread_member.user_id)
+			end
+		end
+	end
+
+	if #d.remobed_members ~= 0 then
+		for _, thread_member in ipairs(d.added_members) do
+			local member = guild._members:get(thread_member.user_id)
+			if member then
+				client:emit('threadMemberLeave', thread, member)
+			else
+				client:emit('threadMemberLeaveUncached', thread, thread_member.user_id)
+			end
+		end
+	end
 end
 
 local garbageCount = 0

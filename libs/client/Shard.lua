@@ -32,12 +32,6 @@ local HEARTBEAT_ACK         = 11
 local GUILD_SYNC            = 12
 
 local ignore = {
-	['THREAD_CREATE'] = true,
-	['THREAD_UPDATE'] = true,
-	['THREAD_DELETE'] = true,
-	['THREAD_LIST_SYNC'] = true,
-	['THREAD_MEMBER_UPDATE'] = true,
-	['THREAD_MEMBERS_UPDATE'] = true,
 	['GUILD_STICKERS_UPDATE'] = true,
 	['GUILD_INTEGRATIONS_UPDATE'] = true,
 	['GUILD_SCHEDULED_EVENT_CREATE'] = true,

@@ -381,6 +381,66 @@ function API:groupDMRemoveRecipient(channel_id, user_id) -- GroupChannel:removeR
 	return self:request("DELETE", endpoint)
 end
 
+function API:startThreadFromMessage(channel_id, message_id, payload) -- GuildTextChannel:startThread
+	local endpoint = f(endpoints.CHANNEL_MESSAGE_THREADS, channel_id, message_id)
+	return self:request("POST", endpoint, payload)
+end
+
+function API:startThread(channel_id, payload) -- GuildTextChannel:startThread
+	local endpoint = f(endpoints.CHANNEL_THREADS, channel_id)
+	return self:request("POST", endpoint, payload)
+end
+
+function API:startThreadInForumChannel(channel_id, payload) -- ForumChannel:startThread
+	local endpoint = f(endpoints.CHANNEL_THREADS, channel_id)
+	return self:request("POST", endpoint, payload)
+end
+
+function API:joinThread(channel_id) -- Thread:join
+	local endpoint = f(endpoints.CHANNEL_THREAD_MEMBERS_ME, channel_id)
+	return self:request("PUT", endpoint)
+end
+
+function API:addThreadMember(channel_id, user_id) -- Thread:addMember
+	local endpoint = f(endpoints.CHANNEL_THREAD_MEMBER, channel_id, user_id)
+	return self:request("PUT", endpoint)
+end
+
+function API:leaveThread(channel_id) -- Thread:leave
+	local endpoint = f(endpoints.CHANNEL_THREAD_MEMBERS_ME, channel_id)
+	return self:request("PUT", endpoint)
+end
+
+function API:removeThreadMember(channel_id, user_id) -- Thread:removeMember
+	local endpoint = f(endpoints.CHANNEL_THREAD_MEMBER, channel_id, user_id)
+	return self:request("PUT", endpoint)
+end
+
+function API:getThreadMember(channel_id, user_id) -- not exposed, use cache
+	local endpoint = f(endpoints.CHANNEL_THREAD_MEMBER, channel_id, user_id)
+	return self:request("GET", endpoint)
+end
+
+function API:listThreadMembers(channel_id) -- not exposed, use cache
+	local endpoint = f(endpoints.CHANNEL_THREAD_MEMBERS, channel_id)
+	return self:request("GET", endpoint)
+end
+
+function API:listPublicArchivedThreads(channel_id, query) -- GuildTextChannel:getPublicArchivedThreads and ForumChannel:getPublicArchivedThreads
+	local endpoint = f(endpoints.CHANNEL_THREADS_ARCHIVED_PUBLIC, channel_id)
+	return self:request("GET", endpoint, nil, query)
+end
+
+function API:listPrivateArchivedThreads(channel_id, query) -- GuildTextChannel:getPrivateArchivedThreads and ForumChannel:getPrivateArchivedThreads
+	local endpoint = f(endpoints.CHANNEL_THREADS_ARCHIVED_PRIVATE, channel_id)
+	return self:request("GET", endpoint, nil, query)
+end
+
+function API:listJoinedPrivateArchivedThreads(channel_id, query) -- GuildTextChannel:getJoinedPrivateArchivedThreads and ForumChannel:getJoinedPrivateArchivedThreads
+	local endpoint = f(endpoints.CHANNEL_USERS_ME_THREADS_ARCHIVED_PRIVATE, channel_id)
+	return self:request("GET", endpoint, nil, query)
+end
+
 function API:listGuildEmojis(guild_id) -- not exposed, use cache
 	local endpoint = f(endpoints.GUILD_EMOJIS, guild_id)
 	return self:request("GET", endpoint)
@@ -444,6 +504,11 @@ end
 function API:modifyGuildChannelPositions(guild_id, payload) -- GuildChannel:move[Up|Down]
 	local endpoint = f(endpoints.GUILD_CHANNELS, guild_id)
 	return self:request("PATCH", endpoint, payload)
+end
+
+function API:listActiveGuildThreads(guild_id) -- not exposed, use cache
+	local endpoint = f(endpoints.GUILD_THREADS_ACTIVE, guild_id)
+	return self:request("GET", endpoint)
 end
 
 function API:getGuildMember(guild_id, user_id) -- Guild:getMember fallback

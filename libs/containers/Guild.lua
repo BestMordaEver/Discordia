@@ -16,6 +16,8 @@ local AuditLogEntry = require('containers/AuditLogEntry')
 local GuildTextChannel = require('containers/GuildTextChannel')
 local GuildVoiceChannel = require('containers/GuildVoiceChannel')
 local GuildCategoryChannel = require('containers/GuildCategoryChannel')
+local ForumChannel = require('containers/ForumChannel')
+local Thread = require('containers/Thread')
 local Snowflake = require('containers/abstract/Snowflake')
 
 local json = require('json')
@@ -34,7 +36,9 @@ function Guild:__init(data, parent)
 	self._members = Cache({}, Member, self)
 	self._text_channels = Cache({}, GuildTextChannel, self)
 	self._voice_channels = Cache({}, GuildVoiceChannel, self)
+	self._forum_channels = Cache({}, ForumChannel, self)
 	self._categories = Cache({}, GuildCategoryChannel, self)
+	self._threads = Cache({}, Thread, self)
 	self._voice_states = {}
 	if not data.unavailable then
 		return self:_makeAvailable(data)
@@ -68,6 +72,7 @@ function Guild:_makeAvailable(data)
 	local text_channels = self._text_channels
 	local voice_channels = self._voice_channels
 	local categories = self._categories
+	local forum_channels = self._forum_channels
 
 	for _, channel in ipairs(data.channels) do
 		local t = channel.type
@@ -77,7 +82,15 @@ function Guild:_makeAvailable(data)
 			voice_channels:_insert(channel)
 		elseif t == channelType.category then
 			categories:_insert(channel)
+		elseif t == channelType.forum then
+			forum_channels:_insert(channel)
 		end
+	end
+
+	local threads = self._threads
+
+	for _, thread in ipairs(data.threads) do
+		threads:_insert(thread)
 	end
 
 	return self:_loadMembers(data)

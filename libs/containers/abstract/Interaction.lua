@@ -16,7 +16,7 @@ function Interaction:__init(data, client)
 	if data.member then
 		self._guild = client._guilds:get(data.guild_id)
 		self._guild._members:_insert(data.member)
-		self._channel = self._guild._text_channels:get(data.channel_id) or self._guild._voice_channels:get(data.channel_id)
+		self._channel = self._guild._text_channels:get(data.channel_id) or self._guild._voice_channels:get(data.channel_id) or self._guild._threads:get(data.channel_id)
 		data.user = data.member.user
 	else
 		self._channel = client._private_channels:get(data.channel_id) or client._group_channels:get(data.channel_id)

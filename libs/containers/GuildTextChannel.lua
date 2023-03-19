@@ -6,23 +6,23 @@ can send and receive messages.
 
 local json = require('json')
 
-local GuildChannel = require('containers/abstract/GuildChannel')
 local TextChannel = require('containers/abstract/TextChannel')
+local ForumChannel = require('containers/ForumChannel')
 local FilteredIterable = require('iterables/FilteredIterable')
 local Webhook = require('containers/Webhook')
 local Cache = require('iterables/Cache')
 local Resolver = require('client/Resolver')
 
-local GuildTextChannel, get = require('class')('GuildTextChannel', GuildChannel, TextChannel)
+local GuildTextChannel, get = require('class')('GuildTextChannel', TextChannel, ForumChannel)
 
 function GuildTextChannel:__init(data, parent)
-	GuildChannel.__init(self, data, parent)
 	TextChannel.__init(self, data, parent)
+	ForumChannel.__init(self, data, parent)
 end
 
 function GuildTextChannel:_load(data)
-	GuildChannel._load(self, data)
 	TextChannel._load(self, data)
+	ForumChannel._load(self, data)
 end
 
 --[=[
