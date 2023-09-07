@@ -127,6 +127,12 @@ function get.username(self)
 	return self._username
 end
 
+--[=[@p globalName string The user's display name. If set, this should be between 2 and 32
+characters in length, otherwise it will be null.]=]
+function get.globalName(self)
+	return self._global_name
+end
+
 --[=[@p discriminator number The discriminator of the user. This is a 4-digit string that is used to
 discriminate the user from other users with the same username.]=]
 function get.discriminator(self)
@@ -151,7 +157,12 @@ end
 --[=[@p defaultAvatar number The user's default avatar. See the `defaultAvatar` enumeration for a
 human-readable representation.]=]
 function get.defaultAvatar(self)
-	return self._discriminator % DEFAULT_AVATARS
+	return
+		--[[self._discriminator == "0"
+	and
+		self._id / 4194304 % 6
+	or]]
+		self._discriminator % DEFAULT_AVATARS
 end
 
 --[=[@p avatarURL string Equivalent to the result of calling `User:getAvatarURL()`.]=]
