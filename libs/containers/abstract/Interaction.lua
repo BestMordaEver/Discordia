@@ -6,7 +6,7 @@
 
 local Snowflake = require('containers/abstract/Snowflake')
 local enums = require('enums')
-local channelType = enums.channelType
+local channelType = assert(enums.channelType)
 
 local Interaction, get = require('class')('Interaction', Snowflake)
 

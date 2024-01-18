@@ -62,6 +62,8 @@ return {
 	GUILD_REGIONS                             = "/guilds/%s/regions",
 	GUILD_ROLE                                = "/guilds/%s/roles/%s",
 	GUILD_ROLES                               = "/guilds/%s/roles",
+	GUILD_STICKER                             = "/guilds/%s/stickers/%s",
+	GUILD_STICKERS                            = "/guilds/%s/stickers",
 	GUILD_TEMPLATE                            = "/guilds/%s/templates/%s",
 	GUILD_TEMPLATES                           = "/guilds/%s/templates",
 	GUILD_VANITY_URL                          = "/guilds/%s/vanity-url",

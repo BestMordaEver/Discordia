@@ -40,7 +40,7 @@ local config = {
 do -- parse config
 	local bold = 1
 	for _, v in ipairs(config) do
-		v[2] = format('\27[%i;%im%s\27[0m', bold, v[2], v[1])
+		v[3] = format('\27[%i;%im%s\27[0m', bold, v[2], v[1])
 	end
 end
 
@@ -76,7 +76,7 @@ function Logger:log(level, msg, ...)
 	if self._file then
 		writeSync(self._file, -1, format('%s | %s | %s\n', d, tag[1], msg))
 	end
-	stdout:write(format('%s | %s | %s\n', d, tag[2], msg))
+	stdout:write(format('%s | %s | %s\n', d, tag[3], msg))
 
 	return msg
 

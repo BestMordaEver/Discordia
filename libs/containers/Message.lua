@@ -17,7 +17,7 @@ local MessageContainer = require('utils/MessageContainer')
 local insert = table.insert
 local null = json.null
 local format = string.format
-local messageFlag = enums.messageFlag
+local messageFlag = assert(enums.messageFlag)
 local band, bor, bnot = bit.band, bit.bor, bit.bnot
 
 local Message, get = require('class')('Message', Snowflake)
@@ -105,6 +105,13 @@ function Message:_loadMore(data)
 
 	if data.components then
 		self._components = #data.components > 0 and data.components or nil
+	end
+
+	if data.sticker_items then
+		self._sticker_items = #data.sticker_items > 0 and data.sticker_items or nil
+	end
+	if data.sticker_items then
+		self._sticker_items = #data.sticker_items > 0 and data.sticker_items or nil
 	end
 
 end
@@ -253,8 +260,10 @@ end
 @p data table
 @r boolean
 @d Sets multiple properties of the message at the same time using a table similar
-to the one supported by `TextChannel.send`. The message must be authored by the current user.
-(ie: you cannot change the embed of messages sent by other users).
+to the one supported by `TextChannel.send`, except only `content` and `embeds`
+are valid fields; `mention(s)`, `file(s)`, etc are not supported. The message
+must be authored by the current user. (ie: you cannot change the embed of messages
+sent by other users).
 ]=]
 function Message:update(content)
 	local data, files = MessageContainer.parseContent(content)
@@ -465,7 +474,7 @@ function get.mentionedEmojis(self)
 		local mentions = parseMentions(self._content, '<a?:[%w_]+:(%d+)>')
 		self._mentioned_emojis = ArrayIterable(mentions, function(id)
 			local guild = client._emoji_map[id]
-			return guild and guild._emojis:get(id)
+			return guild and guild._emojis:get(id) or nil
 		end)
 	end
 	return self._mentioned_emojis
@@ -487,6 +496,27 @@ function get.mentionedChannels(self)
 		end)
 	end
 	return self._mentioned_channels
+end
+
+--[=[@p Sticker ArrayIterable An iterable array of all stickers that are sent in this message.]=]
+function get.stickers(self)
+	if not self._stickers then
+		local client = self.client
+		self._stickers = ArrayIterable(self._sticker_items, function(sticker)
+			if sticker.format_type == 1 then
+				local guild = client._sticker_map[sticker.id]
+				return guild and guild._stickers:get(sticker.id) or nil
+			else
+				-- return client:getSticker(sticker.id) ??
+			end
+		end)
+	end
+	return self._stickers
+end
+
+--[=[@p Sticker The first sticker that is sent in this message.]=]
+function get.sticker(self)
+	return self.stickers and self.stickers.first or nil
 end
 
 local usersMeta = {__index = function(_, k) return '@' .. k end}

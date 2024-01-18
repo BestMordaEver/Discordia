@@ -9,7 +9,7 @@ local enums = require('enums')
 local Interaction = require('containers/abstract/Interaction')
 local MessageContainer = require('utils/MessageContainer')
 local Resolver = require('client/Resolver')
-local callbackType = enums.callbackType
+local callbackType = assert(enums.callbackType)
 
 local MessagingInteraction = require('class')('MessagingInteraction', Interaction)
 

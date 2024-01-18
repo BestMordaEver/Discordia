@@ -7,7 +7,7 @@ a message component.
 local enums = require('enums')
 local MessagingInteraction = require('containers/abstract/MessagingInteraction')
 local Resolver = require('client/Resolver')
-local callbackType = enums.callbackType
+local callbackType = assert(enums.callbackType)
 
 local ComponentInteraction, get = require('class')('ComponentInteraction', MessagingInteraction)
 

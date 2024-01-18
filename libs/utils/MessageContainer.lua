@@ -1,6 +1,6 @@
 --[=[
-@c MessageContent
-@d Defines the base methods and properties for all Discord text channels.
+@c MessageContainer
+@d Defines the base methods and properties for all Discord messages and message-like objects.
 ]=]
 
 local class = require('class')
@@ -16,18 +16,9 @@ local readFileSync = fs.readFileSync
 local messageFlag = require('enums').messageFlag
 local bor = bit.bor
 
-local MessageContent, get = class('MessageContent')
+local MessageContainer, get = class('MessageContainer')
 
-function MessageContent:__init(data)
-	local message, files = MessageContent.parseContent(data)
-    if message then
-        self._message, self._files = message, files
-    else
-        error(files)
-    end
-end
-
-function MessageContent.parseFile(obj, files)
+local function parseFile(obj, files)
 	if type(obj) == 'string' then
 		local data, err = readFileSync(obj)
 		if not data then
@@ -44,7 +35,7 @@ function MessageContent.parseFile(obj, files)
 	return files
 end
 
-function MessageContent.parseMention(obj, mentions)
+local function parseMention(obj, mentions)
 	if type(obj) == 'table' and obj.mentionString then
 		mentions = mentions or {}
 		insert(mentions, obj.mentionString)
@@ -54,7 +45,17 @@ function MessageContent.parseMention(obj, mentions)
 	return mentions
 end
 
-function MessageContent.parseContent(content)
+local function parseEmbed(obj, embeds)
+	if type(obj) == 'table' and next(obj) then
+		embeds = embeds or {}
+		insert(embeds, obj)
+	else
+		return nil, 'Invalid embed object: ' .. tostring(obj)
+	end
+	return embeds
+end
+
+function MessageContainer.parseContent(content)
 	if type(content) == 'table' then
 
 		local tbl, err = content
@@ -70,14 +71,14 @@ function MessageContent.parseContent(content)
 
 		local mentions
 		if tbl.mention then
-			mentions, err = MessageContent.parseMention(tbl.mention)
+			mentions, err = parseMention(tbl.mention)
 			if err then
 				return nil, err
 			end
 		end
 		if type(tbl.mentions) == 'table' then
 			for _, mention in ipairs(tbl.mentions) do
-				mentions, err = MessageContent.parseMention(mention, mentions)
+				mentions, err = parseMention(mention, mentions)
 				if err then
 					return nil, err
 				end
@@ -89,16 +90,32 @@ function MessageContent.parseContent(content)
 			content = concat(mentions, ' ')
 		end
 
+		local embeds
+		if tbl.embed then
+			embeds, err = parseEmbed(tbl.embed)
+			if err then
+				return nil, err
+			end
+		end
+		if type(tbl.embeds) == 'table' then
+			for _, embed in ipairs(tbl.embeds) do
+				embeds, err = parseEmbed(embed, embeds)
+				if err then
+					return nil, err
+				end
+			end
+		end
+
 		local files
 		if tbl.file then
-			files, err = MessageContent.parseFile(tbl.file)
+			files, err = parseFile(tbl.file)
 			if err then
 				return nil, err
 			end
 		end
 		if type(tbl.files) == 'table' then
 			for _, file in ipairs(tbl.files) do
-				files, err = MessageContent.parseFile(file, files)
+				files, err = parseFile(file, files)
 				if err then
 					return nil, err
 				end
@@ -114,19 +131,29 @@ function MessageContent.parseContent(content)
 			}
 		end
 
+		local sticker
+		if tbl.sticker then
+			sticker = {Resolver.stickerId(tbl.sticker)}
+		end
+
 		if tbl.ephemeral then
 			tbl.flags = bor(tbl.flags or 0, messageFlag.ephemeral)
+		end
+
+		if tbl.silent then
+			tbl.flags = bor(tbl.flags or 0, messageFlag.suppressNotification)
 		end
 
 		return {
 			content = content,
 			tts = tbl.tts,
-			flags = tbl.flags,
+			flags = tbl.flags ~= 0 and tbl.flags or nil,
 			nonce = tbl.nonce,
 			embeds = tbl.embeds,
 			message_reference = refMessage,
 			allowed_mentions = refMention,
-			components = tbl.components
+			components = tbl.components,
+			sticker_ids = sticker,
 		}, files
 
 	else
@@ -135,7 +162,16 @@ function MessageContent.parseContent(content)
 	end
 end
 
-function MessageContent:send(textChannel)
+function MessageContainer:__init(data)
+	local message, files = MessageContainer.parseContent(data)
+    if message then
+        self._message, self._files = message, files
+    else
+        error(files)
+    end
+end
+
+function MessageContainer:send(textChannel)
     assert(class.isInstance(textChannel, classes.TextChannel), "provided object is not a text channel")
     return textChannel:send(self)
 end
@@ -180,4 +216,4 @@ get.files = function (self)
     return self._files
 end
 
-return MessageContent
+return MessageContainer

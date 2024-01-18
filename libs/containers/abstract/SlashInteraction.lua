@@ -5,7 +5,7 @@ that are received when a user uses a slash command.
 ]=]
 
 local enums = require('enums')
-local channelType, applicationCommandType = enums.channelType, enums.applicationCommandType
+local channelType, applicationCommandType = assert(enums.channelType), assert(enums.applicationCommandType)
 local Interaction = require('containers/abstract/Interaction')
 local CommandOption = require('utils/CommandOption')
 

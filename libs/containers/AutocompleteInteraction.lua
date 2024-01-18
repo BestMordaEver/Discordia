@@ -6,7 +6,7 @@ start typing slash command that has autocomplete option.
 
 local enums = require('enums')
 local SlashInteraction = require('containers/abstract/SlashInteraction')
-local callbackType = enums.callbackType
+local callbackType = assert(enums.callbackType)
 
 local AutocompleteInteraction = require('class')('AutocompleteInteraction', SlashInteraction)
 
