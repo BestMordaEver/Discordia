@@ -228,11 +228,11 @@ function Shard:identify()
 			['referrer'] = '',
 			['referring_domain'] = '',
 		},
-		intents = options.intents,
 		compress = options.compress,
 		large_threshold = options.largeThreshold,
 		shard = {self._id, client._total_shard_count},
 		presence = next(client._presence) and client._presence,
+		intents = client._intents,
 	}, true)
 
 end
