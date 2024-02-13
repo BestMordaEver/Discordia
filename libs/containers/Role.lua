@@ -5,16 +5,21 @@ and a color to guild members.
 ]=]
 
 local json = require('json')
+local enums = require('enums')
+local class = require('class')
 local Snowflake = require('containers/abstract/Snowflake')
 local Color = require('utils/Color')
 local Permissions = require('utils/Permissions')
 local Resolver = require('client/Resolver')
+local GuildChannel = require('containers/abstract/GuildChannel')
 local FilteredIterable = require('iterables/FilteredIterable')
 
 local format = string.format
 local insert, sort = table.insert, table.sort
 local min, max, floor = math.min, math.max, math.floor
+local isInstance = class.isInstance
 local huge = math.huge
+local permission = assert(enums.permission)
 
 local Role, get = require('class')('Role', Snowflake)
 
@@ -295,16 +300,105 @@ end
 function Role:getColor()
 	return Color(self._color)
 end
+--[=[
+@m hasPermission
+@t mem
+@p channel GuildChannel
+@p perm Permissions-Resolvable
+@r boolean
+@d Checks whether the role has a specific permission. This is a relatively
+expensive operation. If you need to check multiple permissions at once,
+use the `getPermissions` method and check the resulting object.
+]=]
+
+function Role:hasPermission(channel, perm)
+
+	local guild = self._parent
+	if not isInstance(channel, GuildChannel) or channel.guild ~= guild then
+		return error('Invalid GuildChannel: ' .. tostring(channel), 2)
+	end
+
+	local n = Resolver.permission(perm)
+	if not n then
+		return error('Invalid permission: ' .. tostring(perm), 2)
+	end
+
+	local rolePermissions = Permissions(self._permissions_new or self._permissions)
+
+	if rolePermissions:has(permission.administrator) then
+		return true
+	end
+
+	local overwrites = channel.permissionOverwrites
+
+	local overwrite = overwrites:get(self.id)
+	if overwrite then
+		if overwrite:getAllowedPermissions():has(n) then
+			return true
+		end
+		if overwrite:getDeniedPermissions():has(n) then
+			return false
+		end
+	end
+
+	local everyone = overwrites:get(guild.id)
+	if everyone then
+		if everyone:getAllowedPermissions():has(n) then
+			return true
+		end
+		if everyone:getDeniedPermissions():has(n) then
+			return false
+		end
+	end
+
+	return rolePermissions:has(n)
+
+end
 
 --[=[
 @m getPermissions
 @t mem
+@op channel GuildChannel
 @r Permissions
 @d Returns a permissions object that represents the permissions that this role
-has enabled.
+has enabled for the guild, or for a specific channel if one is provided. If
+you just need to check one permission, use the `hasPermission` method.
 ]=]
-function Role:getPermissions()
-	return Permissions(self._permissions_new or self._permissions)
+function Role:getPermissions(channel)
+
+	local guild = self._parent
+	if channel then
+		if not isInstance(channel, GuildChannel) or channel.guild ~= guild then
+			return error('Invalid GuildChannel: ' .. tostring(channel), 2)
+		end
+	end
+
+	local ret = Permissions(self._permissions_new or self._permissions)
+
+	if ret:has(permission.administrator) then
+		return Permissions.all()
+	end
+
+	if channel then
+
+		local overwrites = channel.permissionOverwrites
+
+		local everyone = overwrites:get(guild.id)
+		if everyone then
+			ret = everyone:getDeniedPermissions():complement(ret)
+			ret = ret:union(everyone:getAllowedPermissions())
+		end
+
+		local overwrite = overwrites:get(self.id)
+		if overwrite then
+			ret = overwrite:getDeniedPermissions():complement(ret)
+			ret = ret:union(overwrite:getAllowedPermissions())
+		end
+
+	end
+
+	return ret
+
 end
 
 --[=[@p hoisted boolean Whether members with this role should be shown separated from other members
