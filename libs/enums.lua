@@ -214,6 +214,31 @@ enums.messageFlag = enum {
 	loading              = flag(7),
 }
 
+enums.gatewayIntent = enum {
+	guilds                = flag(0),
+	guildMembers          = flag(1), -- privileged
+	guildBans             = flag(2),
+	guildEmojis           = flag(3),
+	guildIntegrations     = flag(4),
+	guildWebhooks         = flag(5),
+	guildInvites          = flag(6),
+	guildVoiceStates      = flag(7),
+	guildPresences        = flag(8), -- privileged
+	guildMessages         = flag(9),
+	guildMessageReactions = flag(10),
+	guildMessageTyping    = flag(11),
+	directMessage         = flag(12),
+	directMessageRections = flag(13),
+	directMessageTyping   = flag(14),
+	messageContent        = flag(15), -- privileged
+	guildScheduledEvents  = flag(16),
+	-- unused             = flag(17),
+	-- unused             = flag(18),
+	-- unused             = flag(19),
+	autoModConfiguration  = flag(20),
+	autoModExecution      = flag(21),
+}
+
 enums.actionType = enum {
 	guildUpdate            = 1,
 	channelCreate          = 10,
@@ -265,29 +290,9 @@ enums.actionType = enum {
 	autoModRuleCreate      = 140,
 	autoModRuleUpdate      = 141,
 	autoModRuleDelete      = 142,
-	autoModMessageBlock    = 144,
+	autoModMessageBlock    = 143,
 	autoModMessageFlag     = 144,
 	autoModUserTimeout     = 145,
-}
-
-enums.gatewayIntent = enum {
-	guilds                = 0x00000001,
-	guildMembers          = 0x00000002,
-	guildBans             = 0x00000004,
-	guildEmojis           = 0x00000008,
-	guildIntegrations     = 0x00000010,
-	guildWebhooks         = 0x00000020,
-	guildInvites          = 0x00000040,
-	guildVoiceStates      = 0x00000080,
-	guildPresences        = 0x00000100,
-	guildMessages         = 0x00000200,
-	guildMessageReactions = 0x00000400,
-	guildMessageTyping    = 0x00000800,
-	directMessage         = 0x00001000,
-	directMessageRections = 0x00002000,
-	directMessageTyping   = 0x00004000,
-	messageContent        = 0x00008000,
-	guildScheduledEvents  = 0x00010000,
 }
 
 enums.locale = enum {
