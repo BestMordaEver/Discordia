@@ -137,14 +137,4 @@ function get.connection(self)
 	return self._connection
 end
 
---[=[@p textEnabled boolean Whether this voice channel has a text channel attached to it.]=]
-function get.textEnabled(self)
-	for _, feature in ipairs(self._parent._features) do
-		if feature == 'TEXT_IN_VOICE_ENABLED' then
-			return true
-		end
-	end
-	return false
-end
-
 return GuildVoiceChannel

@@ -30,8 +30,6 @@ function UserPresence:__hash()
 	return self._user._id
 end
 
-local activities = setmetatable({}, {__mode = 'v'})
-
 function UserPresence:_loadPresence(presence)
 	self._status = presence.status
 
@@ -61,17 +59,17 @@ end
 
 function get.gameName(self)
 	self.client:_deprecated(self.__name, 'gameName', 'activity.name')
-	return self._activity[0] and self._activity[0]._name
+	return self._activity[activityType.game] and self._activity[activityType.game]._name
 end
 
 function get.gameType(self)
 	self.client:_deprecated(self.__name, 'gameType', 'activity.type')
-	return self._activity[0] and self._activity[0]._type
+	return self._activity[activityType.game] and self._activity[activityType.game]._type
 end
 
 function get.gameURL(self)
 	self.client:_deprecated(self.__name, 'gameURL', 'activity.url')
-	return self._activity[0] and self._activity[0]._url
+	return self._activity[activityType.game] and self._activity[activityType.game]._url
 end
 
 --[=[@p status string The user's overall status (online, dnd, idle, offline).]=]
@@ -101,32 +99,32 @@ end
 
 --[=[@p playing Activity/nil The game Activity that this presence represents.]=]
 function get.playing(self)
-	return self._activity[0]
+	return self._activity[activityType.game]
 end
 
 --[=[@p streaming Activity/nil The streaming Activity that this presence represents.]=]
 function get.streaming(self)
-	return self._activity[1]
+	return self._activity[activityType.streaming]
 end
 
 --[=[@p listening Activity/nil The listening Activity that this presence represents.]=]
 function get.listening(self)
-	return self._activity[2]
+	return self._activity[activityType.listening]
 end
 
 --[=[@p watching Activity/nil The watching Activity that this presence represents.]=]
 function get.watching(self)
-	return self._activity[3]
+	return self._activity[activityType.watching]
 end
 
 --[=[@p custom Activity/nil The custom status Activity that this presence represents.]=]
 function get.custom(self)
-	return self._activity[4]
+	return self._activity[activityType.custom]
 end
 
 --[=[@p competing Activity/nil The competing Activity that this presence represents.]=]
 function get.competing(self)
-	return self._activity[5]
+	return self._activity[activityType.competing]
 end
 
 -- user shortcuts
