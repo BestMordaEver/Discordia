@@ -386,6 +386,12 @@ enums.applicationCommandType = enum {
 	message   = 3,
 }
 
+enums.interactionContextType = enum {
+	guild          = 0,
+	dm             = 1,
+	privateChannel = 2,
+}
+
 enums.applicationCommandOptionType = enum {
 	subcommand = 1,
 	subcommandGroup = 2,

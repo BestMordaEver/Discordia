@@ -7,6 +7,7 @@
 local Snowflake = require('containers/abstract/Snowflake')
 local enums = require('enums')
 local channelType = assert(enums.channelType)
+local Permissions = require('utils/Permissions')
 
 local Interaction, get = require('class')('Interaction', Snowflake)
 
@@ -98,6 +99,16 @@ end
 --[=[@p guild_locale string/nil The guild's preferred locale, if invoked in a guild.]=]
 function get.guild_locale(self)
 	return self._guild_locale
+end
+
+--[=[@p appPermissions Permissions Set of permissions the app has in the source location of the interaction]=]
+function get.appPermissions(self)
+	return Permissions.fromMany(self._app_permissions)
+end
+
+--[=[@p context number Context where the interaction was triggered from]=]
+function get.context(self)
+	return self._context
 end
 
 --[[
