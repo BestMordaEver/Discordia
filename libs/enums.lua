@@ -118,7 +118,7 @@ enums.relationshipType = enum {
 }
 
 enums.activityType = enum {
-	game   = 0,
+	game      = 0,
 	streaming = 1,
 	listening = 2,
 	watching  = 3,
@@ -219,7 +219,7 @@ enums.permission = enum {
 }
 
 enums.overwriteType = enum {
-	role = 0,
+	role   = 0,
 	member = 1,
 }
 
@@ -393,40 +393,40 @@ enums.interactionContextType = enum {
 }
 
 enums.applicationCommandOptionType = enum {
-	subcommand = 1,
+	subcommand      = 1,
 	subcommandGroup = 2,
-	string = 3,
-	integer = 4,
-	boolean = 5,
-	user = 6,
-	channel = 7,
-	role = 8,
-	mentionable = 9,
-	number = 10,
-	attachment = 11,
+	string          = 3,
+	integer         = 4,
+	boolean         = 5,
+	user            = 6,
+	channel         = 7,
+	role            = 8,
+	mentionable     = 9,
+	number          = 10,
+	attachment      = 11,
 }
 
 enums.componentType = enum {
-	row = 1,
-	button = 2,
-	stringSelect = 3,
-	textInput = 4,
-	userSelect = 5,
-	roleSelect = 6,
+	row               = 1,
+	button            = 2,
+	stringSelect      = 3,
+	textInput         = 4,
+	userSelect        = 5,
+	roleSelect        = 6,
 	mentionableSelect = 7,
-	channelSelect = 8
+	channelSelect     = 8,
 }
 
 enums.buttonStyle = enum {
-	primary = 1,
+	primary   = 1,
 	secondary = 2,
-	success = 3,
-	danger = 4,
-	link = 5,
+	success   = 3,
+	danger    = 4,
+	link      = 5,
 }
 
 enums.inputStyle = enum {
-	short = 1,
+	short     = 1,
 	paragraph = 2,
 }
 
