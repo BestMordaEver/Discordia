@@ -79,7 +79,7 @@ You must first reply or acknowledge the interaction before following up!
 function MessagingInteraction:followup(content)
 	assert(self._is_replied, "interaction must be replied to before following up")
 	local data, err = self.client._api:createFollowupMessage(self._application_id, self._token, MessageContainer.parseContent(content))
-	if data then
+	if data and self._channel then
 		return self._channel._messages:_insert(data)
 	else
 		return nil, err
@@ -94,7 +94,7 @@ end
 ]=]
 function MessagingInteraction:getReply()
 	local data, err = self.client._api:getOriginalInteractionResponse(self._application_id, self._token)
-	if data then
+	if data and self._channel then
 		return self._channel._messages:_insert(data)
 	else
 		return nil, err
@@ -110,7 +110,7 @@ end
 ]=]
 function MessagingInteraction:updateReply(content)
 	local data, err = self.client._api:editOriginalInteractionResponse(self._application_id, self._token, MessageContainer.parseContent(content))
-	if data then
+	if data and self._channel then
 		return self._channel._messages:_insert(data)
 	else
 		return nil, err
@@ -132,7 +132,7 @@ function MessagingInteraction:getFollowupMessage(id)
 		return message
 	else
 		local data, err = self.client._api:getFollowupMessage(self._application_id, self._token, id)
-		if data then
+		if data and self._channel then
 			return self._channel._messages:_insert(data)
 		else
 			return nil, err
