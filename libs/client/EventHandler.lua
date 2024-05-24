@@ -618,6 +618,10 @@ function EventHandler.VOICE_SERVER_UPDATE(d, client)
 	return client._voice:_prepareConnection(state, connection)
 end
 
+function EventHandler.VOICE_CHANNEL_STATUS_UPDATE(d, client)
+
+end
+
 function EventHandler.WEBHOOKS_UPDATE(d, client) -- webhook object is not provided
 	local guild = client._guilds:get(d.guild_id)
 	if not guild then return warning(client, 'Guild', d.guild_id, 'WEBHOOKS_UDPATE') end
