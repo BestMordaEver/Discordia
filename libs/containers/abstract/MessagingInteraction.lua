@@ -118,6 +118,17 @@ function MessagingInteraction:updateReply(content)
 end
 
 --[=[
+@m deleteReply
+@t http
+@r Message
+@d Permanently deletes the initial reply message. This cannot be undone!
+]=]
+function MessagingInteraction:deleteReply()
+	return self.client._api:deleteOriginalInteractionResponse(self._application_id, self._token)
+
+end
+
+--[=[
 @m getFollowupMessage
 @t http
 @p id Message-ID-Resolvable
@@ -151,6 +162,19 @@ function MessagingInteraction:updateFollowup(id, content)
 	id = Resolver.messageId(id)
 	if id then
 		return self.client._api:editFollowupMessage(self._application_id, self._token, id, MessageContainer.parseContent(content))
+	end
+end
+
+--[=[
+@m deleteFollowup
+@t http
+@r Message
+@d Permanently deletes a followup reply message. This cannot be undone!
+]=]
+function MessagingInteraction:deleteFollowup(id)
+	id = Resolver.messageId(id)
+	if id then
+		return self.client._api:deleteFollowupMessage(self._application_id, self._token, id)
 	end
 end
 
