@@ -42,6 +42,7 @@ local ignore = {
 	['GUILD_JOIN_REQUEST_CREATE'] = true,
 	['GUILD_JOIN_REQUEST_UPDATE'] = true,
 	['GUILD_JOIN_REQUEST_DELETE'] = true,
+	['GUILD_AUDIT_LOG_ENTRY_CREATE'] = true,
 	['INTEGRATION_CREATE'] = true,
 	['INTEGRATION_UPDATE'] = true,
 	['INTEGRATION_DELETE'] = true,
@@ -60,6 +61,10 @@ local ignore = {
 	['EMBEDDED_ACTIVITY_UPDATE'] = true,
 	['GIFT_CODE_UPDATE'] = true,
 	['APPLICATION_COMMAND_PERMISSIONS_UPDATE'] = true,
+	['AUTO_MODERATION_RULE_CREATE'] = true,
+	['AUTO_MODERATION_RULE_UPDATE'] = true,
+	['AUTO_MODERATION_RULE_DELETE'] = true,
+	['AUTO_MODERATION_ACTION_EXECUTION'] = true,
 }
 
 local Shard = require('class')('Shard', WebSocket)
