@@ -46,9 +46,9 @@ This may make an HTTP request if the object is not cached.
 ]=]
 function PermissionOverwrite:getObject()
 	local guild = self._parent._parent
-	if self._type == overwriteType.role then
+	if self.type == overwriteType.role then
 		return guild:getRole(self._id)
-	elseif self._type == overwriteType.member then
+	elseif self.type == overwriteType.member then
 		return guild:getMember(self._id)
 	end
 end
