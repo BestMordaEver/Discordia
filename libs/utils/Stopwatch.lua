@@ -24,6 +24,12 @@ initialize in an active state. Although nanosecond precision is available, Lua
 can only reliably provide microsecond accuracy due to the lack of native 64-bit
 integer support. Generally, milliseconds should be sufficient here.]=]
 ---@class Stopwatch
+---@overload fun(stopped? : boolean) : Stopwatch
+---@field milliseconds number
+---@field protected _initial number
+---@field protected _final? number
+---@field protected __init fun(self, stopped? : boolean)
+---@field protected __tostring fun(self) : string
 local Stopwatch, get = require('class')('Stopwatch')
 
 function Stopwatch:__init(stopped)

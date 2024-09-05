@@ -24,6 +24,12 @@ end
 --[=[Wrapper for a bitfield that is more specifically used to represent Discord
 permissions. See the `permission` enumeration for acceptable permission values.]=]
 ---@class Permissions
+---@overload fun(value? : number) : Permissions
+---@field value number
+---@field protected _value number
+---@field protected __init fun(self, value : number)
+---@field protected __eq fun(self, other : Permissions) : boolean
+---@field protected __tostring fun(self) : string
 local Permissions, get = require('class')('Permissions')
 
 function Permissions:__init(value)
@@ -54,6 +60,7 @@ end
 @d Returns a Permissions object with all of the defined permissions.
 ]=]
 --[=[Returns a Permissions object with all of the defined permissions.]=]
+---@param ... number|string|Permissions
 function Permissions.fromMany(...)
 	local ret = Permissions()
 	ret:enable(...)
@@ -101,6 +108,7 @@ for acceptable permission values.
 ]=]
 --[=[Enables a specific permission or permissions. See the `permission` enumeration
 for acceptable permission values.]=]
+---@param ... number|string|Permissions
 function Permissions:enable(...)
 	local value = self._value
 	for i = 1, select('#', ...) do
@@ -119,6 +127,7 @@ for acceptable permission values.
 ]=]
 --[=[Disables a specific permission or permissions. See the `permission` enumeration
 for acceptable permission values.]=]
+---@param ... number|string|Permissions
 function Permissions:disable(...)
 	local value = self._value
 	for i = 1, select('#', ...) do
@@ -137,6 +146,7 @@ end
 ]=]
 --[=[Returns whether this set has a specific permission or permissions. See the
 `permission` enumeration for acceptable permission values.]=]
+---@param ... number|string|Permissions
 function Permissions:has(...)
 	local value = self._value
 	for i = 1, select('#', ...) do
@@ -186,6 +196,7 @@ permission names and the values are `true` or `false`.
 ]=]
 --[=[Returns a table that represents the permissions value, where the keys are the
 permission names and the values are `true` or `false`.]=]
+---@return table<string, boolean>
 function Permissions:toTable()
 	local ret = {}
 	local value = self._value
@@ -201,6 +212,7 @@ end
 @d Returns an array of the names of the permissions that this object represents.
 ]=]
 --[=[Returns an array of the names of the permissions that this object represents.]=]
+---@return string[]
 function Permissions:toArray()
 	local ret = {}
 	local value = self._value
@@ -221,6 +233,7 @@ either `self` or `other` (bitwise OR).
 ]=]
 --[=[Returns a new Permissions object that contains the permissions that are in
 either `self` or `other` (bitwise OR).]=]
+---@param other Permissions
 function Permissions:union(other)
 	return Permissions(bor(self._value, other._value))
 end
@@ -234,6 +247,7 @@ both `self` and `other` (bitwise AND).
 ]=]
 --[=[Returns a new Permissions object that contains the permissions that are in
 both `self` and `other` (bitwise AND).]=]
+---@param other Permissions
 function Permissions:intersection(other) -- in both
 	return Permissions(band(self._value, other._value))
 end
@@ -247,6 +261,7 @@ in `self` or `other` (bitwise XOR).
 ]=]
 --[=[Returns a new Permissions object that contains the permissions that are not
 in `self` or `other` (bitwise XOR).]=]
+---@param other Permissions
 function Permissions:difference(other) -- not in both
 	return Permissions(bxor(self._value, other._value))
 end
@@ -260,6 +275,7 @@ in `self`, but are in `other` (or the set of all permissions if omitted).
 ]=]
 --[=[Returns a new Permissions object that contains the permissions that are not
 in `self`, but are in `other` (or the set of all permissions if omitted).]=]
+---@param other Permissions
 function Permissions:complement(other) -- in other not in self
 	local value = other and other._value or ALL
 	return Permissions(band(bnot(self._value), value))

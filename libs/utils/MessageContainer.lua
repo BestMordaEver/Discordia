@@ -1,5 +1,8 @@
 --[=[
 @c MessageContainer
+@t ui
+@mt mem
+@p data table
 @d Defines the base methods and properties for all Discord messages and message-like objects.
 ]=]
 
@@ -18,8 +21,26 @@ local bor = bit.bor
 
 --[=[Defines the base methods and properties for all Discord messages and message-like objects.]=]
 ---@class MessageContainer
+---@overload fun(data : string|messageParams) : MessageContainer
+---@field content string
+---@field tts boolean
+---@field flags integer
+---@field nonce integer|string
+---@field embeds table
+---@field referenceMessage table <string, string>
+---@field allowedMentions {parse : string[], replied_user? : boolean}
+---@field components table
+---@field hasFile boolean
+---@field files string[]
+---@field protected _message table
+---@field protected _files [string|fileContent]|string|nil
+---@field protected __init fun(self, data : string|messageParams)
 local MessageContainer, get = class('MessageContainer')
 
+---@param obj string | fileContent
+---@param files? [string | fileContent]
+---@return [string | fileContent]?
+---@return string?
 local function parseFile(obj, files)
 	if type(obj) == 'string' then
 		local data, err = readFileSync(obj)
@@ -37,6 +58,10 @@ local function parseFile(obj, files)
 	return files
 end
 
+---@param obj User
+---@param mentions? User[]
+---@return [string]?
+---@return string?
 local function parseMention(obj, mentions)
 	if type(obj) == 'table' and obj.mentionString then
 		mentions = mentions or {}
@@ -47,6 +72,10 @@ local function parseMention(obj, mentions)
 	return mentions
 end
 
+---@param obj table
+---@param embeds? table[]
+---@return table[]?
+---@return string?
 local function parseEmbed(obj, embeds)
 	if type(obj) == 'table' and next(obj) then
 		embeds = embeds or {}
@@ -57,9 +86,35 @@ local function parseEmbed(obj, embeds)
 	return embeds
 end
 
+---@class fileContent
+---@field [1] string file name
+---@field [2] string file content
+
+---@class messageParams
+---@field content? string
+---@field nonce? integer|string
+---@field tts? boolean
+---@field embed? table
+---@field embeds? table[]
+---@field file? string | fileContent
+---@field files? [string | fileContent]
+---@field mention? User
+---@field mentions? User[]
+---@field components table[]
+---@field code? string
+---@field reference? {message : Message, mention : boolean}
+---@field sticker? Sticker
+---@field ephemeral? boolean
+---@field silent? boolean
+
+---comment
+---@param content messageParams
+---@return table?
+---@return [string|fileContent]|string|nil
 function MessageContainer.parseContent(content)
 	if type(content) == 'table' then
 
+		---@class messageParams
 		local tbl, err = content
 		content = tbl.content
 
@@ -180,6 +235,9 @@ end
 @d Sends the message in the provided text channel.
 ]=]
 --[=[Sends the message in the provided text channel.]=]
+---@param textChannel TextChannel
+---@return Message?
+---@return string?
 function MessageContainer:send(textChannel)
     assert(class.isInstance(textChannel, classes.TextChannel), "provided object is not a text channel")
     return textChannel:send(self)

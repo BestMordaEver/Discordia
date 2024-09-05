@@ -1,7 +1,21 @@
+--[=[
+@c CommandOption
+@d Represents a set of options received in an interaction.
+]=]
+
 local optionType = require('enums').applicationCommandOptionType
 
 --[=[Represents a set of options received in an interaction.]=]
 ---@class CommandOption
+---@overload fun(data : table, parent : SlashInteraction) : CommandOption
+---@field name string
+---@field type number
+---@field value? string|number
+---@field options? table <string, CommandOption>
+---@field option? CommandOption
+---@field focused boolean
+---@field protected _value User | GuildChannel | Role
+---@field protected __init fun (self, data : table, parent : SlashInteraction)
 local CommandOption, get = require('class')('CommandOption')
 
 local types = {['string'] = true, ['number'] = true, ['boolean'] = true}

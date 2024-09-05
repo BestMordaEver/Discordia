@@ -7,6 +7,11 @@
 
 --[=[An implementation of a double-ended queue.]=]
 ---@class Deque
+---@overload fun() : Deque
+---@field protected _objects any[]
+---@field protected _first number
+---@field protected _last number
+---@field protected __init fun (self)
 local Deque = require('class')('Deque')
 
 function Deque:__init()
