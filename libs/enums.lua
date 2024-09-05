@@ -30,9 +30,12 @@ local function enum(tbl)
 	})
 end
 
+---@type table<string, table <string, number|string> | function>
 local enums = {enum = enum}
 
-enums.defaultAvatar = enum {
+
+---@enum defaultAvatar
+enums.defaultAvatar = {
 	blurple = 0,
 	gray    = 1,
 	green   = 2,
@@ -41,12 +44,14 @@ enums.defaultAvatar = enum {
 	pink    = 5,
 }
 
-enums.notificationSetting = enum {
+---@enum notificationSetting
+enums.notificationSetting = {
 	allMessages  = 0,
 	onlyMentions = 1,
 }
 
-enums.channelType = enum {
+---@enum channelType
+enums.channelType = {
 	text          = 0,
 	private       = 1,
 	voice         = 2,
@@ -66,13 +71,15 @@ enums.channelType = enum {
 	media         = 16,
 }
 
-enums.webhookType = enum {
+---@enum webhookType
+enums.webhookType = {
 	incoming        = 1,
 	channelFollower = 2,
 	application     = 3,
 }
 
-enums.messageType = enum {
+---@enum messageType
+enums.messageType = {
 	default                        = 0,
 	recipientAdd                   = 1,
 	recipientRemove                = 2,
@@ -108,7 +115,8 @@ enums.messageType = enum {
 	applicationPremiumSubscription = 32,
 }
 
-enums.relationshipType = enum {
+---@enum relationshipType
+enums.relationshipType = {
 	none            = 0,
 	friend          = 1,
 	blocked         = 2,
@@ -117,7 +125,8 @@ enums.relationshipType = enum {
 	implicit        = 5,
 }
 
-enums.activityType = enum {
+---@enum activityType
+enums.activityType = {
 	game      = 0,
 	streaming = 1,
 	listening = 2,
@@ -126,7 +135,8 @@ enums.activityType = enum {
 	competing = 5,
 }
 
-enums.status = enum {
+---@enum status
+enums.status = {
 	online       = 'online',
 	idle         = 'idle',
 	doNotDisturb = 'dnd',
@@ -134,7 +144,8 @@ enums.status = enum {
 	offline      = 'offline', -- only received?
 }
 
-enums.gameType = enum { -- NOTE: deprecated; use activityType
+---@enum gameType
+enums.gameType = { -- NOTE: deprecated; use activityType
 	default   = 0,
 	streaming = 1,
 	listening = 2,
@@ -143,7 +154,8 @@ enums.gameType = enum { -- NOTE: deprecated; use activityType
 	competing = 5,
 }
 
-enums.verificationLevel = enum {
+---@enum verificationLevel
+enums.verificationLevel = {
 	none     = 0,
 	low      = 1,
 	medium   = 2,
@@ -151,13 +163,15 @@ enums.verificationLevel = enum {
 	veryHigh = 4, -- ┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻
 }
 
-enums.explicitContentLevel = enum {
+---@enum explicitContentLevel
+enums.explicitContentLevel = {
 	none   = 0,
 	medium = 1,
 	high   = 2,
 }
 
-enums.premiumTier = enum {
+---@enum premiumTier
+enums.premiumTier = {
 	none  = 0,
 	tier1 = 1,
 	tier2 = 2,
@@ -168,7 +182,8 @@ local function flag(n)
 	return 2^n
 end
 
-enums.permission = enum {
+---@enum permission
+enums.permission = {
 	createInstantInvite   = flag(0),
 	kickMembers           = flag(1),
 	banMembers            = flag(2),
@@ -218,12 +233,14 @@ enums.permission = enum {
 	sendVoiceMessages     = flag(46),
 }
 
-enums.overwriteType = enum {
+---@enum overwriteType
+enums.overwriteType = {
 	role   = 0,
 	member = 1,
 }
 
-enums.messageFlag = enum {
+---@enum messageFlag
+enums.messageFlag = {
 	crossposted                = flag(0),
 	isCrosspost                = flag(1),
 	suppressEmbeds             = flag(2),
@@ -240,7 +257,8 @@ enums.messageFlag = enum {
 	isVoiceMessage             = flag(13),
 }
 
-enums.gatewayIntent = enum {
+---@enum gatewayIntent
+enums.gatewayIntent = {
 	guilds                = flag(0),
 	guildMembers          = flag(1), -- privileged
 	guildModeration       = flag(2),
@@ -265,7 +283,8 @@ enums.gatewayIntent = enum {
 	autoModExecution      = flag(21),
 }
 
-enums.actionType = enum {
+---@enum actionType
+enums.actionType = {
 	guildUpdate            = 1,
 	channelCreate          = 10,
 	channelUpdate          = 11,
@@ -321,7 +340,8 @@ enums.actionType = enum {
 	autoModUserTimeout     = 145,
 }
 
-enums.locale = enum {
+---@enum localeName
+enums.locale = {
 	danish      = "da",
 	german      = "de",
 	englishUK   = "en-GB",
@@ -354,7 +374,8 @@ enums.locale = enum {
 	korean      = "ko",
 }
 
-enums.logLevel = enum {
+---@enum logLevel
+enums.logLevel = {
 	none    = 0,
 	error   = 1,
 	warning = 2,
@@ -362,7 +383,8 @@ enums.logLevel = enum {
 	debug   = 4,
 }
 
-enums.interactionType = enum {
+---@enum interactionType
+enums.interactionType = {
 	ping               = 1,
 	applicationCommand = 2,
 	messageComponent   = 3,
@@ -370,7 +392,8 @@ enums.interactionType = enum {
 	modalSubmit        = 5,
 }
 
-enums.callbackType = enum {
+---@enum callbackType
+enums.callbackType = {
 	pong         = 1,
 	reply        = 4,
 	deferReply   = 5,
@@ -380,19 +403,22 @@ enums.callbackType = enum {
 	modal        = 9,
 }
 
-enums.applicationCommandType = enum {
+---@enum applicationCommandType
+enums.applicationCommandType = {
 	chatInput = 1,
 	user      = 2,
 	message   = 3,
 }
 
-enums.interactionContextType = enum {
+---@enum interactionContextType
+enums.interactionContextType = {
 	guild          = 0,
 	dm             = 1,
 	privateChannel = 2,
 }
 
-enums.applicationCommandOptionType = enum {
+---@enum applicationCommandOptionType
+enums.applicationCommandOptionType = {
 	subcommand      = 1,
 	subcommandGroup = 2,
 	string          = 3,
@@ -406,7 +432,8 @@ enums.applicationCommandOptionType = enum {
 	attachment      = 11,
 }
 
-enums.componentType = enum {
+---@enum componentType
+enums.componentType = {
 	row               = 1,
 	button            = 2,
 	stringSelect      = 3,
@@ -417,7 +444,8 @@ enums.componentType = enum {
 	channelSelect     = 8,
 }
 
-enums.buttonStyle = enum {
+---@enum buttonStyle
+enums.buttonStyle = {
 	primary   = 1,
 	secondary = 2,
 	success   = 3,
@@ -425,9 +453,16 @@ enums.buttonStyle = enum {
 	link      = 5,
 }
 
-enums.inputStyle = enum {
+---@enum inputStyle
+enums.inputStyle = {
 	short     = 1,
 	paragraph = 2,
 }
+
+for name, t in pairs(enums) do
+	if t ~= enum then
+		enums[name] = enum(t)
+	end
+end
 
 return enums
