@@ -13,6 +13,11 @@ local Container = require('containers/abstract/Container')
 
 local activityType = require('enums').activityType
 
+--[=[Defines the base methods and/or properties for classes that represent a
+user's current presence information. Note that any method or property that
+exists for the User class is also available in the UserPresence class and its
+subclasses.]=]
+---@class UserPresence : Container
 local UserPresence, get = require('class')('UserPresence', Container)
 
 function UserPresence:__init(data, parent)
@@ -26,6 +31,7 @@ end
 @r string
 @d Returns `UserPresence.user.id`
 ]=]
+--[=[Returns `UserPresence.user.id`]=]
 function UserPresence:__hash()
 	return self._user._id
 end

@@ -13,6 +13,8 @@ local Resolver = require('client/Resolver')
 
 local format = string.format
 
+--[=[Defines the base methods and properties for all Discord text channels.]=]
+---@class TextChannel : Channel
 local TextChannel, get = require('class')('TextChannel', Channel)
 
 function TextChannel:__init(data, parent)
@@ -28,6 +30,8 @@ end
 @d Gets a message object by ID. If the object is already cached, then the cached
 object will be returned; otherwise, an HTTP request is made.
 ]=]
+--[=[Gets a message object by ID. If the object is already cached, then the cached
+object will be returned; otherwise, an HTTP request is made.]=]
 function TextChannel:getMessage(id)
 	id = Resolver.messageId(id)
 	local message = self._messages:get(id)
@@ -50,6 +54,8 @@ end
 @d Returns the first message found in the channel, if any exist. This is not a
 cache shortcut; an HTTP request is made each time this method is called.
 ]=]
+--[=[Returns the first message found in the channel, if any exist. This is not a
+cache shortcut; an HTTP request is made each time this method is called.]=]
 function TextChannel:getFirstMessage()
 	local data, err = self.client._api:getChannelMessages(self._id, {after = self._id, limit = 1})
 	if data then
@@ -70,6 +76,8 @@ end
 @d Returns the last message found in the channel, if any exist. This is not a
 cache shortcut; an HTTP request is made each time this method is called.
 ]=]
+--[=[Returns the last message found in the channel, if any exist. This is not a
+cache shortcut; an HTTP request is made each time this method is called.]=]
 function TextChannel:getLastMessage()
 	local data, err = self.client._api:getChannelMessages(self._id, {limit = 1})
 	if data then
@@ -101,6 +109,9 @@ end
 objects found in the channel. While the cache will never automatically gain or
 lose objects, the objects that it contains may be updated by gateway events.
 ]=]
+--[=[Returns a newly constructed cache of between 1 and 100 (default = 50) message
+objects found in the channel. While the cache will never automatically gain or
+lose objects, the objects that it contains may be updated by gateway events.]=]
 function TextChannel:getMessages(limit)
 	return getMessages(self, limit and {limit = limit})
 end
@@ -116,6 +127,10 @@ objects found in the channel after a specific id. While the cache will never
 automatically gain or lose objects, the objects that it contains may be updated
 by gateway events.
 ]=]
+--[=[Returns a newly constructed cache of between 1 and 100 (default = 50) message
+objects found in the channel after a specific id. While the cache will never
+automatically gain or lose objects, the objects that it contains may be updated
+by gateway events.]=]
 function TextChannel:getMessagesAfter(id, limit)
 	id = Resolver.messageId(id)
 	return getMessages(self, {after = id, limit = limit})
@@ -132,6 +147,10 @@ objects found in the channel before a specific id. While the cache will never
 automatically gain or lose objects, the objects that it contains may be updated
 by gateway events.
 ]=]
+--[=[Returns a newly constructed cache of between 1 and 100 (default = 50) message
+objects found in the channel before a specific id. While the cache will never
+automatically gain or lose objects, the objects that it contains may be updated
+by gateway events.]=]
 function TextChannel:getMessagesBefore(id, limit)
 	id = Resolver.messageId(id)
 	return getMessages(self, {before = id, limit = limit})
@@ -148,6 +167,10 @@ objects found in the channel around a specific point. While the cache will never
 automatically gain or lose objects, the objects that it contains may be updated
 by gateway events.
 ]=]
+--[=[Returns a newly constructed cache of between 1 and 100 (default = 50) message
+objects found in the channel around a specific point. While the cache will never
+automatically gain or lose objects, the objects that it contains may be updated
+by gateway events.]=]
 function TextChannel:getMessagesAround(id, limit)
 	id = Resolver.messageId(id)
 	return getMessages(self, {around = id, limit = limit})
@@ -161,6 +184,9 @@ end
 channel. While the cache will never automatically gain or lose objects, the
 objects that it contains may be updated by gateway events.
 ]=]
+--[=[Returns a newly constructed cache of up to 50 messages that are pinned in the
+channel. While the cache will never automatically gain or lose objects, the
+objects that it contains may be updated by gateway events.]=]
 function TextChannel:getPinnedMessages()
 	local data, err = self.client._api:getPinnedMessages(self._id)
 	if data then
@@ -176,6 +202,7 @@ end
 @r boolean
 @d Indicates in the channel that the client's user "is typing".
 ]=]
+--[=[Indicates in the channel that the client's user "is typing".]=]
 function TextChannel:broadcastTyping()
 	local data, err = self.client._api:triggerTypingIndicator(self._id)
 	if data then
@@ -194,6 +221,9 @@ end
 sent as the message content. If it is a table, more advanced formatting is
 allowed. See [[managing messages]] for more information.
 ]=]
+--[=[Sends a message to the channel. If `content` is a string, then this is simply
+sent as the message content. If it is a table, more advanced formatting is
+allowed. See [[managing messages]] for more information.]=]
 function TextChannel:send(content)
 
 	local data, files = MessageContainer.parseContent(content)
@@ -219,6 +249,7 @@ end
 @r Message
 @d Sends a message to the channel with content formatted with `...` via `string.format`
 ]=]
+--[=[Sends a message to the channel with content formatted with `...` via `string.format`]=]
 function TextChannel:sendf(content, ...)
 	local data, err = self.client._api:createMessage(self._id, {content = format(content, ...)})
 	if data then
@@ -237,6 +268,9 @@ end
 2 weeks old cannot be deleted and will return an error.
 Will only work in guild channels.
 ]=]
+--[=[Bulk deletes multiple messages, from 2 to 100, from the channel. Messages over
+2 weeks old cannot be deleted and will return an error.
+Will only work in guild channels.]=]
 function TextChannel:bulkDelete(messages)
 	messages = Resolver.messageIds(messages)
 	local data, err

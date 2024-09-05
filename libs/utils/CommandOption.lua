@@ -1,4 +1,7 @@
 local optionType = require('enums').applicationCommandOptionType
+
+--[=[Represents a set of options received in an interaction.]=]
+---@class CommandOption
 local CommandOption, get = require('class')('CommandOption')
 
 local types = {['string'] = true, ['number'] = true, ['boolean'] = true}

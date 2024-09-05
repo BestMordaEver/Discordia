@@ -22,6 +22,11 @@ local insert, remove, sort = table.insert, table.remove, table.sort
 local isInstance = class.isInstance
 local permission = assert(enums.permission)
 
+--[=[Represents a Discord guild member. Though one user may be a member in more than
+one guild, each presence is represented by a different member object associated
+with that guild. Note that any method or property that exists for the User class is
+also available in the Member class.]=]
+---@class Member : UserPresence
 local Member, get = class('Member', UserPresence)
 
 function Member:__init(data, parent)
@@ -65,6 +70,9 @@ end
 its highest colored role. If the member has no colored roles, then the default
 color with a value of 0 is returned.
 ]=]
+--[=[Returns a color object that represents the member's color as determined by
+its highest colored role. If the member has no colored roles, then the default
+color with a value of 0 is returned.]=]
 function Member:getColor()
 	local roles = {}
 	for role in self.roles:findAll(predicate) do
@@ -85,6 +93,10 @@ then only guild-level permissions are checked. This is a relatively expensive
 operation. If you need to check multiple permissions at once, use the
 `getPermissions` method and check the resulting object.
 ]=]
+--[=[Checks whether the member has a specific permission. If `channel` is omitted,
+then only guild-level permissions are checked. This is a relatively expensive
+operation. If you need to check multiple permissions at once, use the
+`getPermissions` method and check the resulting object.]=]
 function Member:hasPermission(channel, perm)
 
 	if not perm then
@@ -177,6 +189,9 @@ end
 the guild, or for a specific channel if one is provided. If you just need to
 check one permission, use the `hasPermission` method.
 ]=]
+--[=[Returns a permissions object that represents the member's total permissions for
+the guild, or for a specific channel if one is provided. If you just need to
+check one permission, use the `hasPermission` method.]=]
 function Member:getPermissions(channel)
 
 	local guild = self.guild
@@ -245,6 +260,8 @@ end
 @d Adds a role to the member. If the member already has the role, then no action is
 taken. Note that the everyone role cannot be explicitly added.
 ]=]
+--[=[Adds a role to the member. If the member already has the role, then no action is
+taken. Note that the everyone role cannot be explicitly added.]=]
 function Member:addRole(id)
 	if self:hasRole(id) then return true end
 	id = Resolver.roleId(id)
@@ -270,6 +287,8 @@ end
 @d Removes a role from the member. If the member does not have the role, then no
 action is taken. Note that the everyone role cannot be removed.
 ]=]
+--[=[Removes a role from the member. If the member does not have the role, then no
+action is taken. Note that the everyone role cannot be removed.]=]
 function Member:removeRole(id)
 	if not self:hasRole(id) then return true end
 	id = Resolver.roleId(id)
@@ -305,6 +324,8 @@ end
 @d Checks whether the member has a specific role. This will return true for the
 guild's default role in addition to any explicitly assigned roles.
 ]=]
+--[=[Checks whether the member has a specific role. This will return true for the
+guild's default role in addition to any explicitly assigned roles.]=]
 function Member:hasRole(id)
 	id = Resolver.roleId(id)
 	if id == self._parent._id then return true end -- @everyone
@@ -327,6 +348,8 @@ end
 @d Sets the member's nickname. This must be between 1 and 32 characters in length.
 Pass `nil` to remove the nickname.
 ]=]
+--[=[Sets the member's nickname. This must be between 1 and 32 characters in length.
+Pass `nil` to remove the nickname.]=]
 function Member:setNickname(nick)
 	nick = nick or ''
 	local data, err
@@ -354,6 +377,11 @@ handling, the member's `voiceChannel` property will update asynchronously via
 WebSocket; not as a result of the HTTP request.
 Not supplying an ID will result in the member being disconnected from the channel.
 ]=]
+--[=[Moves the member to a new voice channel, but only if the member has an active
+voice connection in the current guild. Due to complexities in voice state
+handling, the member's `voiceChannel` property will update asynchronously via
+WebSocket; not as a result of the HTTP request.
+Not supplying an ID will result in the member being disconnected from the channel.]=]
 function Member:setVoiceChannel(id)
 	id = id and Resolver.channelId(id)
 	local data, err = self.client._api:modifyGuildMember(self._parent._id, self.id, {channel_id = id or json.null})
@@ -370,6 +398,7 @@ end
 @r boolean
 @d Mutes the member in its guild.
 ]=]
+--[=[Mutes the member in its guild.]=]
 function Member:mute()
 	local data, err = self.client._api:modifyGuildMember(self._parent._id, self.id, {mute = true})
 	if data then
@@ -386,6 +415,7 @@ end
 @r boolean
 @d Unmutes the member in its guild.
 ]=]
+--[=[Unmutes the member in its guild.]=]
 function Member:unmute()
 	local data, err = self.client._api:modifyGuildMember(self._parent._id, self.id, {mute = false})
 	if data then
@@ -402,6 +432,7 @@ end
 @r boolean
 @d Deafens the member in its guild.
 ]=]
+--[=[Deafens the member in its guild.]=]
 function Member:deafen()
 	local data, err = self.client._api:modifyGuildMember(self._parent._id, self.id, {deaf = true})
 	if data then
@@ -418,6 +449,7 @@ end
 @r boolean
 @d Undeafens the member in its guild.
 ]=]
+--[=[Undeafens the member in its guild.]=]
 function Member:undeafen()
 	local data, err = self.client._api:modifyGuildMember(self._parent._id, self.id, {deaf = false})
 	if data then
@@ -435,6 +467,7 @@ end
 @r boolean
 @d Equivalent to `Member.guild:kickUser(Member.user, reason)`
 ]=]
+--[=[Equivalent to `Member.guild:kickUser(Member.user, reason)`]=]
 function Member:kick(reason)
 	return self._parent:kickUser(self._user, reason)
 end
@@ -447,6 +480,7 @@ end
 @r boolean
 @d Equivalent to `Member.guild:banUser(Member.user, reason, days)`
 ]=]
+--[=[Equivalent to `Member.guild:banUser(Member.user, reason, days)`]=]
 function Member:ban(reason, days)
 	return self._parent:banUser(self._user, reason, days)
 end
@@ -458,6 +492,7 @@ end
 @r boolean
 @d Equivalent to `Member.guild:unbanUser(Member.user, reason)`
 ]=]
+--[=[Equivalent to `Member.guild:unbanUser(Member.user, reason)`]=]
 function Member:unban(reason)
 	return self._parent:unbanUser(self._user, reason)
 end
@@ -481,6 +516,9 @@ end
 `duration` is either `Time` object or a `number` of seconds representing how long the timeout lasts.
 To set an expiration date, use `timeoutUntil` instead.
 ]=]
+--[=[Sets a timeout for a guild member.
+`duration` is either `Time` object or a `number` of seconds representing how long the timeout lasts.
+To set an expiration date, use `timeoutUntil` instead.]=]
 function Member:timeoutFor(duration)
 	if type(duration) == 'number' then
 		duration = (Date() + Time.fromSeconds(duration)):toISO()
@@ -499,6 +537,9 @@ end
 `date` is either `Date` object or a UNIX epoch in seconds at which the member's timeout ends.
 To set a duration, use `timeoutFor` instead.
 ]=]
+--[=[Sets a timeout for a guild member.
+`date` is either `Date` object or a UNIX epoch in seconds at which the member's timeout ends.
+To set a duration, use `timeoutFor` instead.]=]
 function Member:timeoutUntil(date)
 	if type(date) == 'number' then
 		date = Date(date):toISO()
@@ -514,6 +555,7 @@ end
 @r boolean
 @d Removes the timeout of the member.
 ]=]
+--[=[Removes the timeout of the member.]=]
 function Member:removeTimeout()
 	return self:_timeout()
 end

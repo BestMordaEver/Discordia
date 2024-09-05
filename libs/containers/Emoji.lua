@@ -11,6 +11,9 @@ local json = require('json')
 
 local format = string.format
 
+--[=[Represents a custom emoji object usable in message content and reactions.
+Standard unicode emojis do not have a class; they are just strings.]=]
+---@class Emoji : Snowflake
 local Emoji, get = require('class')('Emoji', Snowflake)
 
 function Emoji:__init(data, parent)
@@ -52,6 +55,7 @@ end
 @r boolean
 @d Sets the emoji's name. The name must be between 2 and 32 characters in length.
 ]=]
+--[=[Sets the emoji's name. The name must be between 2 and 32 characters in length.]=]
 function Emoji:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -63,6 +67,7 @@ end
 @r boolean
 @d Sets the roles that can use the emoji.
 ]=]
+--[=[Sets the roles that can use the emoji.]=]
 function Emoji:setRoles(roles)
 	roles = Resolver.roleIds(roles)
 	return self:_modify({roles = roles or json.null})
@@ -74,6 +79,7 @@ end
 @r boolean
 @d Permanently deletes the emoji. This cannot be undone!
 ]=]
+--[=[Permanently deletes the emoji. This cannot be undone!]=]
 function Emoji:delete()
 	local data, err = self.client._api:deleteGuildEmoji(self._parent._id, self._id)
 	if data then
@@ -94,6 +100,7 @@ end
 @r boolean
 @d Returns whether or not the provided role is allowed to use the emoji.
 ]=]
+--[=[Returns whether or not the provided role is allowed to use the emoji.]=]
 function Emoji:hasRole(id)
 	id = Resolver.roleId(id)
 	local roles = self._roles and self._roles._array or self._roles_raw

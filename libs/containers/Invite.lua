@@ -14,6 +14,9 @@ local function load(v)
 	return v ~= null and v or nil
 end
 
+--[=[Represents an invitation to a Discord guild channel. Invites can be used to join
+a guild, though they are not always permanent.]=]
+---@class Invite : Container
 local Invite, get = require('class')('Invite', Container)
 
 function Invite:__init(data, parent)
@@ -38,6 +41,7 @@ end
 @r string
 @d Returns `Invite.code`
 ]=]
+--[=[Returns `Invite.code`]=]
 function Invite:__hash()
 	return self._code
 end
@@ -48,6 +52,7 @@ end
 @r boolean
 @d Permanently deletes the invite. This cannot be undone!
 ]=]
+--[=[Permanently deletes the invite. This cannot be undone!]=]
 function Invite:delete()
 	local data, err = self.client._api:deleteInvite(self._code)
 	if data then

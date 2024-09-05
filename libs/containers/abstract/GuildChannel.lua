@@ -22,6 +22,8 @@ local insert, sort = table.insert, table.sort
 local min, max, floor = math.min, math.max, math.floor
 local huge = math.huge
 
+--[=[Defines the base methods and properties for all Discord guild channels.]=]
+---@class GuildChannel : Channel
 local GuildChannel, get = class('GuildChannel', Channel)
 
 function GuildChannel:__init(data, parent)
@@ -48,6 +50,7 @@ end
 @r boolean
 @d Sets the channel's name. This must be between 2 and 100 characters in length.
 ]=]
+--[=[Sets the channel's name. This must be between 2 and 100 characters in length.]=]
 function GuildChannel:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -59,6 +62,7 @@ end
 @r boolean
 @d Sets the channel's parent category.
 ]=]
+--[=[Sets the channel's parent category.]=]
 function GuildChannel:setCategory(id)
 	id = Resolver.channelId(id)
 	return self:_modify({parent_id = id or json.null})
@@ -112,6 +116,9 @@ end
 channel should be moved, clamped to the highest position, with a default of 1 if
 it is omitted. This will also normalize the positions of all channels.
 ]=]
+--[=[Moves a channel up its list. The parameter `n` indicates how many spaces the
+channel should be moved, clamped to the highest position, with a default of 1 if
+it is omitted. This will also normalize the positions of all channels.]=]
 function GuildChannel:moveUp(n)
 
 	n = tonumber(n) or 1
@@ -147,6 +154,9 @@ end
 channel should be moved, clamped to the lowest position, with a default of 1 if
 it is omitted. This will also normalize the positions of all channels.
 ]=]
+--[=[Moves a channel down its list. The parameter `n` indicates how many spaces the
+channel should be moved, clamped to the lowest position, with a default of 1 if
+it is omitted. This will also normalize the positions of all channels.]=]
 function GuildChannel:moveDown(n)
 
 	n = tonumber(n) or 1
@@ -184,6 +194,11 @@ total number of uses allowed, default = 0 (unlimited), temporary: boolean whethe
 the invite grants temporary membership, default = false, unique: boolean whether
 a unique code should be guaranteed, default = false
 ]=]
+--[=[Creates an invite to the channel. Optional payload fields are: max_age: number
+time in seconds until expiration, default = 86400 (24 hours), max_uses: number
+total number of uses allowed, default = 0 (unlimited), temporary: boolean whether
+the invite grants temporary membership, default = false, unique: boolean whether
+a unique code should be guaranteed, default = false]=]
 function GuildChannel:createInvite(payload)
 	local data, err = self.client._api:createChannelInvite(self._id, payload)
 	if data then
@@ -201,6 +216,9 @@ end
 cache and its objects are not automatically updated via gateway events. You must
 call this method again to get the updated objects.
 ]=]
+--[=[Returns a newly constructed cache of all invite objects for the channel. The
+cache and its objects are not automatically updated via gateway events. You must
+call this method again to get the updated objects.]=]
 function GuildChannel:getInvites()
 	local data, err = self.client._api:getChannelInvites(self._id)
 	if data then
@@ -221,6 +239,11 @@ zero-permissions is returned instead. Therefore, this can be used to create a
 new overwrite when one does not exist. Note that the member or role must exist
 in the same guild as the channel does.
 ]=]
+--[=[Returns a permission overwrite object corresponding to the provided member or
+role object. If a cached overwrite is not found, an empty overwrite with
+zero-permissions is returned instead. Therefore, this can be used to create a
+new overwrite when one does not exist. Note that the member or role must exist
+in the same guild as the channel does.]=]
 function GuildChannel:getPermissionOverwriteFor(obj)
 	local id, type
 	if isInstance(obj, classes.Role) and self._parent == obj._parent then
@@ -242,6 +265,7 @@ end
 @r boolean
 @d Permanently deletes the channel. This cannot be undone!
 ]=]
+--[=[Permanently deletes the channel. This cannot be undone!]=]
 function GuildChannel:delete()
 	return self:_delete()
 end

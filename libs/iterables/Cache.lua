@@ -9,6 +9,8 @@ local Iterable = require('iterables/Iterable')
 
 local null = json.null
 
+--[=[Iterable class that holds references to Discordia Class objects in no particular order.]=]
+---@class Cache : Iterable
 local Cache = require('class')('Cache', Iterable)
 
 local meta = {__mode = 'v'}
@@ -131,6 +133,9 @@ end
 calling `__hash` on the contained objects. Unlike Iterable:get, this
 method operates with O(1) complexity.
 ]=]
+--[=[Returns an individual object by key, where the key should match the result of
+calling `__hash` on the contained objects. Unlike Iterable:get, this
+method operates with O(1) complexity.]=]
 function Cache:get(k)
 	return self._objects[k]
 end
@@ -141,6 +146,8 @@ end
 @d Returns an iterator that returns all contained objects. The order of the objects
 is not guaranteed.
 ]=]
+--[=[Returns an iterator that returns all contained objects. The order of the objects
+is not guaranteed.]=]
 function Cache:iter()
 	local objects, k, obj = self._objects, nil, nil
 	return function()

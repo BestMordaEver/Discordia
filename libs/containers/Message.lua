@@ -20,6 +20,9 @@ local format = string.format
 local messageFlag = assert(enums.messageFlag)
 local band, bor, bnot = bit.band, bit.bor, bit.bnot
 
+--[=[Represents a text message sent in a Discord text channel. Messages can contain
+simple content strings, rich embeds, attachments, or reactions.]=]
+---@class Message : Snowflake
 local Message, get = require('class')('Message', Snowflake)
 
 function Message:__init(data, parent)
@@ -198,6 +201,9 @@ end
 (ie: you cannot change the content of messages sent by other users). The content
 must be from 1 to 2000 characters in length.
 ]=]
+--[=[Sets the message's content. The message must be authored by the current user
+(ie: you cannot change the content of messages sent by other users). The content
+must be from 1 to 2000 characters in length.]=]
 function Message:setContent(content)
 	return self:_modify({
 		content = content or null,
@@ -216,6 +222,8 @@ end
 @d Sets the message's embed. The message must be authored by the current user.
 (ie: you cannot change the embed of messages sent by other users).
 ]=]
+--[=[Sets the message's embed. The message must be authored by the current user.
+(ie: you cannot change the embed of messages sent by other users).]=]
 function Message:setEmbed(embed)
 	return self:_modify({embed = embed or null})
 end
@@ -226,6 +234,7 @@ end
 @r boolean
 @d Hides all embeds for this message.
 ]=]
+--[=[Hides all embeds for this message.]=]
 function Message:hideEmbeds()
 	local flags = bor(self._flags or 0, messageFlag.suppressEmbeds)
 	return self:_modify({flags = flags})
@@ -237,6 +246,7 @@ end
 @r boolean
 @d Shows all embeds for this message.
 ]=]
+--[=[Shows all embeds for this message.]=]
 function Message:showEmbeds()
 	local flags = band(self._flags or 0, bnot(messageFlag.suppressEmbeds))
 	return self:_modify({flags = flags})
@@ -249,6 +259,7 @@ end
 @r boolean
 @d Indicates whether the message has a particular flag set.
 ]=]
+--[=[Indicates whether the message has a particular flag set.]=]
 function Message:hasFlag(flag)
 	flag = Resolver.messageFlag(flag)
 	return band(self._flags or 0, flag) > 0
@@ -265,6 +276,11 @@ are valid fields; `mention(s)`, `file(s)`, etc are not supported. The message
 must be authored by the current user. (ie: you cannot change the embed of messages
 sent by other users).
 ]=]
+--[=[Sets multiple properties of the message at the same time using a table similar
+to the one supported by `TextChannel.send`, except only `content` and `embeds`
+are valid fields; `mention(s)`, `file(s)`, etc are not supported. The message
+must be authored by the current user. (ie: you cannot change the embed of messages
+sent by other users).]=]
 function Message:update(content)
 	local data, files = MessageContainer.parseContent(content)
 	if not data then
@@ -280,6 +296,7 @@ end
 @r boolean
 @d Pins the message in the channel.
 ]=]
+--[=[Pins the message in the channel.]=]
 function Message:pin()
 	local data, err = self.client._api:addPinnedChannelMessage(self._parent._id, self._id)
 	if data then
@@ -296,6 +313,7 @@ end
 @r boolean
 @d Unpins the message in the channel.
 ]=]
+--[=[Unpins the message in the channel.]=]
 function Message:unpin()
 	local data, err = self.client._api:deletePinnedChannelMessage(self._parent._id, self._id)
 	if data then
@@ -314,6 +332,8 @@ end
 @d Adds a reaction to the message. Note that this does not return the new reaction
 object; wait for the `reactionAdd` event instead.
 ]=]
+--[=[Adds a reaction to the message. Note that this does not return the new reaction
+object; wait for the `reactionAdd` event instead.]=]
 function Message:addReaction(emoji)
 	emoji = Resolver.emoji(emoji)
 	local data, err = self.client._api:createReaction(self._parent._id, self._id, emoji)
@@ -334,6 +354,9 @@ end
 reaction object; wait for the `reactionRemove` event instead. If no user is
 indicated, then this will remove the current user's reaction.
 ]=]
+--[=[Removes a reaction from the message. Note that this does not return the old
+reaction object; wait for the `reactionRemove` event instead. If no user is
+indicated, then this will remove the current user's reaction.]=]
 function Message:removeReaction(emoji, id)
 	emoji = Resolver.emoji(emoji)
 	local data, err
@@ -357,6 +380,7 @@ end
 @r boolean
 @d Removes all reactions for a given emoji from the message.
 ]=]
+--[=[Removes all reactions for a given emoji from the message.]=]
 function Message:clearEmoji(emoji)
 	emoji = Resolver.emoji(emoji)
 	local data, err = self.client._api:deleteAllReactionsForEmoji(self._parent._id, self._id, emoji)
@@ -373,6 +397,7 @@ end
 @r boolean
 @d Removes all reactions from the message.
 ]=]
+--[=[Removes all reactions from the message.]=]
 function Message:clearReactions()
 	local data, err = self.client._api:deleteAllReactions(self._parent._id, self._id)
 	if data then
@@ -388,6 +413,7 @@ end
 @r boolean
 @d Permanently deletes the message. This cannot be undone!
 ]=]
+--[=[Permanently deletes the message. This cannot be undone!]=]
 function Message:delete()
 	local data, err = self.client._api:deleteMessage(self._parent._id, self._id)
 	if data then
@@ -408,6 +434,7 @@ end
 @r Message
 @d Equivalent to `Message.channel:send(content)`.
 ]=]
+--[=[Equivalent to `Message.channel:send(content)`.]=]
 function Message:reply(content)
 	return self._parent:send(content)
 end
@@ -419,6 +446,8 @@ end
 @d Crosspost a message in the channel to following channels. Works only
 for Announcement Channels (`channelType.news`). Returns the crossposted message
 ]=]
+--[=[Crosspost a message in the channel to following channels. Works only
+for Announcement Channels (`channelType.news`). Returns the crossposted message]=]
 function Message:crosspost()
 	local data, err = self.client._api:crosspostMessage(self._parent._id, self._id)
 	if data then

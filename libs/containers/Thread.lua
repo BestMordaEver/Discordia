@@ -7,6 +7,9 @@ sub-channel inside an existing channel.
 local TextChannel = require('containers/abstract/TextChannel')
 local FilteredIterable = require('iterables/FilteredIterable')
 
+--[=[Represents a thread in a Discord guild, a kind of text
+sub-channel inside an existing channel.]=]
+---@class Thread : TextChannel
 local Thread, get = require('class')('Thread', TextChannel)
 
 function Thread:__init(data, parent)
@@ -20,6 +23,7 @@ end
 @r boolean
 @d Permanently deletes the thread. This cannot be undone!
 ]=]
+--[=[Permanently deletes the thread. This cannot be undone!]=]
 function Thread:delete()
 	return self:_delete()
 end
@@ -30,6 +34,7 @@ end
 @r boolean
 @d Permanently deletes the thread. This cannot be undone!
 ]=]
+--[=[Permanently deletes the thread. This cannot be undone!]=]
 function Thread:join()
 	return self:_delete()
 end

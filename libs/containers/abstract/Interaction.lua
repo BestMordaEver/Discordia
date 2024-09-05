@@ -9,6 +9,8 @@ local enums = require('enums')
 local channelType = assert(enums.channelType)
 local Permissions = require('utils/Permissions')
 
+--[=[Defines the base methods and properties for all Discord interactions.]=]
+---@class Interaction : Snowflake
 local Interaction, get = require('class')('Interaction', Snowflake)
 
 function Interaction:__init(data, client)

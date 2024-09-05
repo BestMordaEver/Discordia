@@ -11,6 +11,8 @@ local channelType = require('enums').channelType
 local Thread = require('containers/Thread')
 local MessageContainer = require('utils/MessageContainer')
 
+--[=[Represents a guild channel that can only contain threads.]=]
+---@class ForumChannel : GuildChannel
 local ForumChannel, get = require('class')('ForumChannel', GuildChannel)
 
 function ForumChannel:__init(data, parent)
@@ -29,6 +31,7 @@ end
 @r Thread
 @d Creates a new thread using the raw table of parameters for initialization.
 ]=]
+--[=[Creates a new thread using the raw table of parameters for initialization.]=]
 function ForumChannel:startThread(params, content)
 	local data, files = MessageContainer.parseContent(content)
 	if not data then
@@ -52,6 +55,8 @@ end
 @d Creates a new public thread
 in length.
 ]=]
+--[=[Creates a new public thread
+in length.]=]
 function ForumChannel:startPublicThread(name)
 	return self:startThread({name = name, type = channelType.publicThread})
 end
@@ -64,6 +69,8 @@ end
 @d Creates a new private thread
 in length.
 ]=]
+--[=[Creates a new private thread
+in length.]=]
 function ForumChannel:startPrivateThread(name)
 	return self:startThread({name = name, type = channelType.privateThread})
 end

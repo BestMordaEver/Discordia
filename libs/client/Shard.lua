@@ -67,6 +67,7 @@ local ignore = {
 	['AUTO_MODERATION_ACTION_EXECUTION'] = true,
 }
 
+---@class Shard : WebSocket
 local Shard = require('class')('Shard', WebSocket)
 
 function Shard:__init(id, client)

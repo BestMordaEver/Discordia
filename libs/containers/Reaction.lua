@@ -12,6 +12,9 @@ local Resolver = require('client/Resolver')
 local null = json.null
 local format = string.format
 
+--[=[Represents an emoji that has been used to react to a Discord text message. Both
+standard and custom emojis can be used.]=]
+---@class Reaction : Container
 local Reaction, get = require('class')('Reaction', Container)
 
 function Reaction:__init(data, parent)
@@ -29,6 +32,7 @@ end
 @r string
 @d Returns `Reaction.emojiId or Reaction.emojiName`
 ]=]
+--[=[Returns `Reaction.emojiId or Reaction.emojiName`]=]
 function Reaction:__hash()
 	return self._emoji_id or self._emoji_name
 end
@@ -55,6 +59,10 @@ its parent message. The cache is not automatically updated via gateway events,
 but the internally referenced user objects may be updated. You must call this
 method again to guarantee that the objects are update to date.
 ]=]
+--[=[Returns a newly constructed cache of all users that have used this reaction in
+its parent message. The cache is not automatically updated via gateway events,
+but the internally referenced user objects may be updated. You must call this
+method again to guarantee that the objects are update to date.]=]
 function Reaction:getUsers(limit)
 	return getUsers(self, limit and {limit = limit})
 end
@@ -70,6 +78,10 @@ its parent message. The cache is not automatically updated via gateway events,
 but the internally referenced user objects may be updated. You must call this
 method again to guarantee that the objects are update to date.
 ]=]
+--[=[Returns a newly constructed cache of all users that have used this reaction before the specified id in
+its parent message. The cache is not automatically updated via gateway events,
+but the internally referenced user objects may be updated. You must call this
+method again to guarantee that the objects are update to date.]=]
 function Reaction:getUsersBefore(id, limit)
 	id = Resolver.userId(id)
 	return getUsers(self, {before = id, limit = limit})
@@ -86,6 +98,10 @@ after the specified id in its parent message. The cache is not automatically
 updated via gateway events, but the internally referenced user objects may be
 updated. You must call this method again to guarantee that the objects are update to date.
 ]=]
+--[=[Returns a newly constructed cache of all users that have used this reaction
+after the specified id in its parent message. The cache is not automatically
+updated via gateway events, but the internally referenced user objects may be
+updated. You must call this method again to guarantee that the objects are update to date.]=]
 function Reaction:getUsersAfter(id, limit)
 	id = Resolver.userId(id)
 	return getUsers(self, {after = id, limit = limit})
@@ -98,6 +114,7 @@ end
 @r boolean
 @d Equivalent to `Reaction.message:removeReaction(Reaction)`
 ]=]
+--[=[Equivalent to `Reaction.message:removeReaction(Reaction)`]=]
 function Reaction:delete(id)
 	return self._parent:removeReaction(self, id)
 end

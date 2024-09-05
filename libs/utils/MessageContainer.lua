@@ -16,6 +16,8 @@ local readFileSync = fs.readFileSync
 local messageFlag = require('enums').messageFlag
 local bor = bit.bor
 
+--[=[Defines the base methods and properties for all Discord messages and message-like objects.]=]
+---@class MessageContainer
 local MessageContainer, get = class('MessageContainer')
 
 local function parseFile(obj, files)
@@ -171,6 +173,13 @@ function MessageContainer:__init(data)
     end
 end
 
+--[=[
+@m send
+@p textChannel TextChannel
+@r Message
+@d Sends the message in the provided text channel.
+]=]
+--[=[Sends the message in the provided text channel.]=]
 function MessageContainer:send(textChannel)
     assert(class.isInstance(textChannel, classes.TextChannel), "provided object is not a text channel")
     return textChannel:send(self)

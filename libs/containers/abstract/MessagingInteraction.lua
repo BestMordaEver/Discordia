@@ -11,6 +11,9 @@ local MessageContainer = require('utils/MessageContainer')
 local Resolver = require('client/Resolver')
 local callbackType = assert(enums.callbackType)
 
+--[=[Defines the base methods and properties for Discord interactions
+that can be replied to with messages.]=]
+---@class MessagingInteraction : Interaction
 local MessagingInteraction = require('class')('MessagingInteraction', Interaction)
 
 function MessagingInteraction:__init(data, client)
@@ -36,6 +39,10 @@ then this is simply sent as the message content. If it is a table,
 more advanced formatting is allowed. See [[managing messages]] for more information.
 This method doesn't return sent message.
 ]=]
+--[=[Reply to interaction with a message. If `content` is a string,
+then this is simply sent as the message content. If it is a table,
+more advanced formatting is allowed. See [[managing messages]] for more information.
+This method doesn't return sent message.]=]
 function MessagingInteraction:reply(payload)
 	return self:_callbackWithContent(callbackType.reply, payload)
 end
@@ -49,6 +56,9 @@ end
 see the loading state. In order to resolve the loading state, use
 MessagingInteraction:updateReply(content) method.
 ]=]
+--[=[Acknowledge the interaction and edit the response later. The user will
+see the loading state. In order to resolve the loading state, use
+MessagingInteraction:updateReply(content) method.]=]
 function MessagingInteraction:deferReply(ephemeral)
 	return self:_callback(callbackType.deferReply, {flags = ephemeral and 64 or 0})
 end
@@ -63,6 +73,8 @@ end
 @d Acknowledge the interaction and respond with a popup modal. Components
 must be an array of 1-5 message components
 ]=]
+--[=[Acknowledge the interaction and respond with a popup modal. Components
+must be an array of 1-5 message components]=]
 function MessagingInteraction:createModal(id, title, components)
 	return self:_callback(callbackType.modal, {custom_id = id, title = title, components = components})
 end
@@ -76,6 +88,9 @@ end
 If it is a table, more advanced formatting is allowed. See [[managing messages]] for more information.
 You must first reply or acknowledge the interaction before following up!
 ]=]
+--[=[Send a followup message. If `content` is a string, then this is simply sent as the message content.
+If it is a table, more advanced formatting is allowed. See [[managing messages]] for more information.
+You must first reply or acknowledge the interaction before following up!]=]
 function MessagingInteraction:followup(content)
 	assert(self._is_replied, "interaction must be replied to before following up")
 	local data, err = self.client._api:createFollowupMessage(self._application_id, self._token, MessageContainer.parseContent(content))
@@ -92,6 +107,7 @@ end
 @r Message
 @d Get the message object that was sent as the initial reply.
 ]=]
+--[=[Get the message object that was sent as the initial reply.]=]
 function MessagingInteraction:getReply()
 	local data, err = self.client._api:getOriginalInteractionResponse(self._application_id, self._token)
 	if data and self._channel then
@@ -108,6 +124,7 @@ end
 @r Message
 @d Set content of the message object that was sent as the initial reply simmilarly to Message:update(data).
 ]=]
+--[=[Set content of the message object that was sent as the initial reply simmilarly to Message:update(data).]=]
 function MessagingInteraction:updateReply(content)
 	local data, err = self.client._api:editOriginalInteractionResponse(self._application_id, self._token, MessageContainer.parseContent(content))
 	if data and self._channel then
@@ -123,6 +140,7 @@ end
 @r Message
 @d Permanently deletes the initial reply message. This cannot be undone!
 ]=]
+--[=[Permanently deletes the initial reply message. This cannot be undone!]=]
 function MessagingInteraction:deleteReply()
 	return self.client._api:deleteOriginalInteractionResponse(self._application_id, self._token)
 
@@ -136,6 +154,8 @@ end
 @d Gets a folloup message object by ID. If the object is already cached, then the cached
 object will be returned; otherwise, an HTTP request is made. Does not support ephemeral followups.
 ]=]
+--[=[Gets a folloup message object by ID. If the object is already cached, then the cached
+object will be returned; otherwise, an HTTP request is made. Does not support ephemeral followups.]=]
 function MessagingInteraction:getFollowupMessage(id)
 	id = Resolver.messageId(id)
 	local message = self._channel._messages:get(id)
@@ -158,6 +178,7 @@ end
 @r Message
 @d Set content of the followup message simmilarly to Message:update(data). Does not support ephemeral followups.
 ]=]
+--[=[Set content of the followup message simmilarly to Message:update(data). Does not support ephemeral followups.]=]
 function MessagingInteraction:updateFollowup(id, content)
 	id = Resolver.messageId(id)
 	if id then
@@ -171,6 +192,7 @@ end
 @r Message
 @d Permanently deletes a followup reply message. This cannot be undone!
 ]=]
+--[=[Permanently deletes a followup reply message. This cannot be undone!]=]
 function MessagingInteraction:deleteFollowup(id)
 	id = Resolver.messageId(id)
 	if id then

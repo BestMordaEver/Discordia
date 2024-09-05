@@ -13,6 +13,10 @@ local Resolver = require('client/Resolver')
 
 local defaultAvatar = assert(enums.defaultAvatar)
 
+--[=[Represents a handle used to send webhook messages to a guild text channel in a
+one-way fashion. This class defines methods and properties for managing the
+webhook, not for sending messages.]=]
+---@class Webhook : Snowflake
 local Webhook, get = require('class')('Webhook', Snowflake)
 
 function Webhook:__init(data, parent)
@@ -40,6 +44,9 @@ end
 the size must be a power of 2 while the extension must be a valid image format.
 If the webhook does not have a custom avatar, the default URL is returned.
 ]=]
+--[=[Returns a URL that can be used to view the webhooks's full avatar. If provided,
+the size must be a power of 2 while the extension must be a valid image format.
+If the webhook does not have a custom avatar, the default URL is returned.]=]
 function Webhook:getAvatarURL(size, ext)
 	return User.getAvatarURL(self, size, ext)
 end
@@ -51,6 +58,7 @@ end
 @r string
 @d Returns a URL that can be used to view the webhooks's default avatar.
 ]=]
+--[=[Returns a URL that can be used to view the webhooks's default avatar.]=]
 function Webhook:getDefaultAvatarURL(size)
 	return User.getDefaultAvatarURL(self, size)
 end
@@ -62,6 +70,7 @@ end
 @r boolean
 @d Sets the webhook's name. This must be between 2 and 32 characters in length.
 ]=]
+--[=[Sets the webhook's name. This must be between 2 and 32 characters in length.]=]
 function Webhook:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -73,6 +82,7 @@ end
 @r boolean
 @d Sets the webhook's avatar. If `nil` is passed, the avatar is removed.
 ]=]
+--[=[Sets the webhook's avatar. If `nil` is passed, the avatar is removed.]=]
 function Webhook:setAvatar(avatar)
 	avatar = avatar and Resolver.base64(avatar)
 	return self:_modify({avatar = avatar or json.null})
@@ -84,6 +94,7 @@ end
 @r boolean
 @d Permanently deletes the webhook. This cannot be undone!
 ]=]
+--[=[Permanently deletes the webhook. This cannot be undone!]=]
 function Webhook:delete()
 	local data, err = self.client._api:deleteWebhook(self._id)
 	if data then

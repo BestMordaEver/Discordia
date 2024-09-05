@@ -10,6 +10,7 @@ local format = string.format
 
 local GATEWAY_VERSION_VOICE = constants.GATEWAY_VERSION_VOICE
 
+---@class VoiceManager : Emitter
 local VoiceManager = require('class')('VoiceManager', Emitter)
 
 function VoiceManager:__init(client)

@@ -16,6 +16,7 @@ local isObject = class.isObject
 local insert = table.insert
 local format = string.format
 
+---@class Resolver
 local Resolver = {}
 
 local istype = ffi.istype
