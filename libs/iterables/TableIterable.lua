@@ -10,6 +10,10 @@ local Iterable = require('iterables/Iterable')
 --[=[Iterable class that wraps a basic Lua table, where order is not guaranteed.
 Some versions may use a map function to shape the objects before they are accessed.]=]
 ---@class TableIterable : Iterable
+---@overload fun(tbl : table, map : function)
+---@field private _tbl table
+---@field private _map function
+---@field protected __init fun(self, tbl : table, map : function)
 local TableIterable = require('class')('TableIterable', Iterable)
 
 function TableIterable:__init(tbl, map)

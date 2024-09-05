@@ -10,6 +10,10 @@ local Iterable = require('iterables/Iterable')
 --[=[Iterable class that wraps another iterable and serves a subset of the objects
 that the original iterable contains.]=]
 ---@class FilteredIterable : Iterable
+---@overload fun(base : Iterable, predicate : function)
+---@field private _base Iterable
+---@field private _predicate function
+---@field protected __init fun(self, base : Iterable, predicate : function)
 local FilteredIterable = require('class')('FilteredIterable', Iterable)
 
 function FilteredIterable:__init(base, predicate)
