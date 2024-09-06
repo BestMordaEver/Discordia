@@ -15,9 +15,9 @@ cache that it wraps.]=]
 ---@overload fun(array : any[], primary : Cache)
 ---@field protected _count number
 ---@field protected _objects table
----@field protected _insert fun(self, data : any) : any
 ---@field protected _primary Cache
----@field protected _remove fun(self, data : any) : any
+---@field _insert fun(self, data : any) : any
+---@field _remove fun(self, data : any) : any
 ---@field protected __init fun(self, array : any[], primary : Cache)
 ---@field protected __pairs function
 ---@field protected __len fun(self) : number

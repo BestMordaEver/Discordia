@@ -17,10 +17,10 @@ local null = json.null
 ---@field protected _constructor function
 ---@field protected _parent Container | Client
 ---@field protected _deleted table
----@field protected _delete fun(self, obj : any) : any?
----@field protected _insert fun(self, obj : any) : any
----@field protected _load fun(self, array : any[], update? : boolean)
----@field protected _remove fun(self, obj : any) : any?
+---@field _delete fun(self, obj : any) : any?
+---@field _insert fun(self, obj : any) : any
+---@field _load fun(self, array : any[], update? : boolean)
+---@field _remove fun(self, obj : any) : any?
 ---@field protected __init fun(self, array : any[], constructor : function, parent : Container | Client)
 ---@field protected __pairs function
 ---@field protected __len fun(self) : number
