@@ -15,7 +15,7 @@ local band, bor = bit.band, bit.bor
 local bnot = bit.bnot
 local isInstance = class.isInstance
 
---[=[Wrapper for 24-bit colors packed as a decimal value. See the static constructors for more information.]=]
+--[=[Wrapper for 24-bit colors packed as a decimal value.]=]
 ---@class Color
 ---@overload fun(value? : number) : Color
 ---@field value number
@@ -111,9 +111,8 @@ end
 @d Constructs a new Color object from a hexadecimal string. The string may or may
 not be prefixed by `#`; all other characters are interpreted as a hex string.
 ]=]
---[=[Constructs a new Color object from a hexadecimal string. The string may or may
-not be prefixed by `#`; all other characters are interpreted as a hex string.]=]
----@param hex string
+--[=[Constructs a new Color object from a hexadecimal string.]=]
+---@param hex string may or may not be prefixed by `#`; all other characters are interpreted as a hex string
 function Color.fromHex(hex)
 	return Color(tonumber(hex:match('#?(.*)'), 16))
 end
@@ -128,11 +127,10 @@ end
 @d Constructs a new Color object from RGB values. Values are allowed to overflow
 though one component will not overflow to the next component.
 ]=]
---[=[Constructs a new Color object from RGB values. Values are allowed to overflow
-though one component will not overflow to the next component.]=]
----@param r number
----@param g number
----@param b number
+--[=[Constructs a new Color object from RGB values.]=]
+---@param r number between 0x000000 and 0xFF0000
+---@param g number between 0x000000 and 0x00FF00
+---@param b number between 0x000000 and 0x0000FF
 function Color.fromRGB(r, g, b)
 	r = band(lshift(r, 16), 0xFF0000)
 	g = band(lshift(g, 8), 0x00FF00)
@@ -206,11 +204,10 @@ end
 @d Constructs a new Color object from HSV values. Hue is allowed to overflow
 while saturation and value are clamped to [0, 1].
 ]=]
---[=[Constructs a new Color object from HSV values. Hue is allowed to overflow
-while saturation and value are clamped to [0, 1].]=]
----@param h number
----@param s number
----@param v number
+--[=[Constructs a new Color object from HSV values.]=]
+---@param h number can overflow 360
+---@param s number clamped to [0, 1]
+---@param v number clamped to [0, 1]
 function Color.fromHSV(h, s, v)
 	h = h % 360
 	s = clamp(s, 0, 1)
@@ -231,11 +228,10 @@ end
 @d Constructs a new Color object from HSL values. Hue is allowed to overflow
 while saturation and lightness are clamped to [0, 1].
 ]=]
---[=[Constructs a new Color object from HSL values. Hue is allowed to overflow
-while saturation and lightness are clamped to [0, 1].]=]
----@param h number
----@param s number
----@param l number
+--[=[Constructs a new Color object from HSL values.]=]
+---@param h number can overflow 360
+---@param s number clamped to [0, 1]
+---@param l number clamped to [0, 1]
 function Color.fromHSL(h, s, l)
 	h = h % 360
 	s = clamp(s, 0, 1)

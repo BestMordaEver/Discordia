@@ -34,8 +34,7 @@ the mutex; otherwise, this will yield and queue the current coroutine.
 ]=]
 --[=[If the mutex is not active (if a coroutine is not queued), this will activate
 the mutex; otherwise, this will yield and queue the current coroutine.]=]
----comment
----@param prepend? boolean
+---@param prepend? boolean whether to put this in the end of the queue
 ---@return nil
 function Mutex:lock(prepend)
 	if self._active then
@@ -74,10 +73,10 @@ local unlock = Mutex.unlock
 @d Asynchronously unlocks the mutex after a specified time in milliseconds.
 The relevant `uv_timer` object is returned.
 ]=]
---[=[Asynchronously unlocks the mutex after a specified time in milliseconds.
-The relevant `uv_timer` object is returned.]=]
+--[=[Unlocks the mutex after a specified time.]=]
+---@async
 ---@param delay number time in milliseconds
----@return userdata
+---@return userdata timer the relevant `uv_timer` object
 function Mutex:unlockAfter(delay)
 	return setTimeout(delay, unlock, self)
 end

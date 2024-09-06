@@ -95,10 +95,8 @@ end
 @d Returns a string from this Date object via Lua's `os.date`.
 If no format string is provided, the default is '%a %b %d %Y %T GMT%z (%Z)'.
 ]=]
---[=[Returns a string from this Date object via Lua's `os.date`.
-If no format string is provided, the default is '%a %b %d %Y %T GMT%z (%Z)'.]=]
----Returns a string from this Date object via Lua's `os.date`. If no format string is provided, the default is `'%a %b %d %Y %T GMT%z (%Z)'`
----@param fmt? string
+--[=[Returns a string from this Date object via Lua's `os.date`.]=]
+---@param fmt? string default is '%a %b %d %Y %T GMT%z (%Z)'
 ---@return string
 function Date:toString(fmt)
 	if not fmt or fmt == '*t' or fmt == '!*t' then
@@ -159,10 +157,7 @@ end
 with Discord's timestamp format, microseconds are also provided as a second
 return value.
 ]=]
---[=[Converts an ISO 8601 string into a Unix time in seconds. For compatibility
-with Discord's timestamp format, microseconds are also provided as a second
-return value.]=]
----Converts an ISO 8601 string into a Unix time in seconds. For compatibility with Discord's timestamp format, microseconds are also provided as a second return value.
+--[=[Converts an ISO 8601 string into a Unix time in seconds.]=]
 ---@param str string
 ---@return number seconds
 ---@return number microseconds
@@ -185,7 +180,6 @@ end
 @d Converts an RFC 2822 string (an HTTP Date header) into a Unix time in seconds.
 ]=]
 --[=[Converts an RFC 2822 string (an HTTP Date header) into a Unix time in seconds.]=]
----Converts an RFC 2822 string (an HTTP Date header) into a Unix time in seconds.
 ---@param str string
 ---@return number seconds
 function Date.parseHeader(str)
@@ -207,12 +201,9 @@ end
 decimal points may be present, though only the first 3 (milliseconds) should be
 considered accurate.
 ]=]
---[=[Converts a Discord Snowflake ID into a Unix time in seconds. Additional
-decimal points may be present, though only the first 3 (milliseconds) should be
-considered accurate.]=]
----Converts a Discord Snowflake ID into a Unix time in seconds. Additional decimal points may be present, though only the first 3 (milliseconds) should be considered accurate.
+--[=[Converts a Discord Snowflake ID into a Unix time in seconds.]=]
 ---@param id string
----@return number seconds
+---@return number seconds accurate to the first 3 decimal points
 function Date.parseSnowflake(id)
 	return (id / 2^22 + DISCORD_EPOCH) / MS_PER_S
 end
@@ -227,7 +218,6 @@ seconds. Equivalent to `os.time(tbl)`.
 ]=]
 --[=[Interprets a Lua date table as a local time and converts it to a Unix time in
 seconds. Equivalent to `os.time(tbl)`.]=]
----Interprets a Lua date table as a local time and converts it to a Unix time in seconds. Equivalent to `os.time(tbl)`.
 ---@param tbl osdateparam
 ---@return number seconds
 function Date.parseTable(tbl)
@@ -244,7 +234,6 @@ seconds. Equivalent to `os.time(tbl)` with a correction for UTC.
 ]=]
 --[=[Interprets a Lua date table as a UTC time and converts it to a Unix time in
 seconds. Equivalent to `os.time(tbl)` with a correction for UTC.]=]
----Interprets a Lua date table as a UTC time and converts it to a Unix time in seconds. Equivalent to `os.time(tbl)` with a correction for UTC.
 ---@param tbl osdateparam
 ---@return number seconds
 function Date.parseTableUTC(tbl)
@@ -261,7 +250,6 @@ end
 ]=]
 --[=[Constructs a new Date object from an ISO 8601 string. Equivalent to
 `Date(Date.parseISO(str))`.]=]
----Constructs a new Date object from an ISO 8601 string. Equivalent to `Date(Date.parseISO(str))`.
 ---@param str string
 function Date.fromISO(str)
 	return Date(Date.parseISO(str))
@@ -277,7 +265,6 @@ end
 ]=]
 --[=[Constructs a new Date object from an RFC 2822 string. Equivalent to
 `Date(Date.parseHeader(str))`.]=]
----Constructs a new Date object from an RFC 2822 string. Equivalent to `Date(Date.parseHeader(str))`.
 ---@param str string
 function Date.fromHeader(str)
 	return Date(Date.parseHeader(str))
@@ -293,7 +280,6 @@ end
 ]=]
 --[=[Constructs a new Date object from a Discord/Twitter Snowflake ID. Equivalent to
 `Date(Date.parseSnowflake(id))`.]=]
----Constructs a new Date object from a Discord/Twitter Snowflake ID. Equivalent to `Date(Date.parseSnowflake(id))`.
 ---@param id string
 function Date.fromSnowflake(id)
 	return Date(Date.parseSnowflake(id))
@@ -309,7 +295,6 @@ Equivalent to `Date(Date.parseTable(tbl))`.
 ]=]
 --[=[Constructs a new Date object from a Lua date table interpreted as a local time.
 Equivalent to `Date(Date.parseTable(tbl))`.]=]
----Constructs a new Date object from a Lua date table interpreted as a local time. Equivalent to `Date(Date.parseTable(tbl))`.
 ---@param tbl osdateparam
 function Date.fromTable(tbl)
 	return Date(Date.parseTable(tbl))
@@ -325,7 +310,6 @@ Equivalent to `Date(Date.parseTableUTC(tbl))`.
 ]=]
 --[=[Constructs a new Date object from a Lua date table interpreted as a UTC time.
 Equivalent to `Date(Date.parseTableUTC(tbl))`.]=]
----Constructs a new Date object from a Lua date table interpreted as a UTC time. Equivalent to `Date(Date.parseTableUTC(tbl))`.
 ---@param tbl osdateparam
 function Date.fromTableUTC(tbl)
 	return Date(Date.parseTableUTC(tbl))
@@ -339,7 +323,6 @@ end
 @d Constructs a new Date object from a Unix time in seconds.
 ]=]
 --[=[Constructs a new Date object from a Unix time in seconds.]=]
----Constructs a new Date object from a Unix time in seconds.
 ---@param s number
 function Date.fromSeconds(s)
 	return Date(s)
@@ -381,12 +364,9 @@ If `sep` and `tz` are both provided, then they are used as a custom separator
 and timezone; otherwise, `T` is used for the separator and `+00:00` is used for
 the timezone, plus microseconds if available.
 ]=]
---[=[Returns an ISO 8601 string that represents the stored date and time.
-If `sep` and `tz` are both provided, then they are used as a custom separator
-and timezone; otherwise, `T` is used for the separator and `+00:00` is used for
-the timezone, plus microseconds if available.]=]
----@param sep? string
----@param tz? string
+--[=[Returns an ISO 8601 string that represents the stored date and time, plus microseconds if available.]=]
+---@param sep? string custom separator, default is `T`
+---@param tz? string timezone, default is `+00:00`
 function Date:toISO(sep, tz)
 	if sep and tz then
 		local ret = date('!%F%%s%T%%s', self._s)

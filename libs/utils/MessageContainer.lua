@@ -100,14 +100,13 @@ end
 ---@field files? [string | fileContent]
 ---@field mention? User
 ---@field mentions? User[]
----@field components table[]
+---@field components? table[]
 ---@field code? string
 ---@field reference? {message : Message, mention : boolean}
 ---@field sticker? Sticker
 ---@field ephemeral? boolean
 ---@field silent? boolean
 
----comment
 ---@param content messageParams
 ---@return table?
 ---@return [string|fileContent]|string|nil

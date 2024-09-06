@@ -65,20 +65,17 @@ end
 @m log
 @p level number
 @p msg string
-@p ... *
+@op ... *
 @r string
 @d If the provided level is less than or equal to the log level set on
 initialization, this logs a message to stdout as defined by Luvit's `process`
 module and to a file if one was provided on initialization. The `msg, ...` pair
 is formatted according to `string.format` and returned if the message is logged.
 ]=]
---[=[If the provided level is less than or equal to the log level set on
-initialization, this logs a message to stdout as defined by Luvit's `process`
-module and to a file if one was provided on initialization. The `msg, ...` pair
-is formatted according to `string.format` and returned if the message is logged.]=]
----@param level number
----@param msg string
----@param ... string`
+---@param level number ignores calls if this is higher than log level set on initialization
+---@param msg string the log message
+---@param ... string? arguments that are used to format the `msg`
+---@return string? msg the formatted message is returned if the message is logged
 function Logger:log(level, msg, ...)
 
 	if self._level < level then return end

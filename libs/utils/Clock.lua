@@ -42,7 +42,7 @@ function Clock:start(utc)
 	local prev = date(fmt)
 	self._interval = setInterval(1000, function()
 		local now = date(fmt)
-		for k, v in pairs(now) do ---@diagnostic disable-line: param-type-mismatch
+		for k, v in pairs(now) do
 			if v ~= prev[k] then
 				self:emit(k, now)
 			end

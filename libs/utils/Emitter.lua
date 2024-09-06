@@ -18,7 +18,7 @@ local setTimeout, clearTimeout = timer.setTimeout, timer.clearTimeout
 specific named events. When events are emitted, the callbacks are called in the
 order that they were originally registered.]=]
 ---@class Emitter
----@overload fun (self : self) : Emitter
+---@overload fun () : Emitter
 ---@field package _listeners {[string] : {fn : function, once? : boolean, sync? : boolean, _removed? : boolean}}
 ---@field protected __init fun (self : self)
 local Emitter = require('class')('Emitter')
@@ -50,11 +50,11 @@ end
 Callbacks registered with this method will automatically be wrapped as a new
 coroutine when they are called. Returns the original callback for convenience.
 ]=]
---[=[Subscribes a callback to be called every time the named event is emitted.
-Callbacks registered with this method will automatically be wrapped as a new
-coroutine when they are called. Returns the original callback for convenience.]=]
+--[=[Subscribes a callback to be asynchronously called every time the named event is emitted.]=]
+---@async
 ---@param name string
 ---@param fn function
+---@return function fn the original callback
 function Emitter:on(name, fn)
 	return new(self, name, {fn = fn})
 end
@@ -68,11 +68,11 @@ end
 Callbacks registered with this method will automatically be wrapped as a new
 coroutine when they are called. Returns the original callback for convenience.
 ]=]
---[=[Subscribes a callback to be called only the first time this event is emitted.
-Callbacks registered with this method will automatically be wrapped as a new
-coroutine when they are called. Returns the original callback for convenience.]=]
+--[=[Subscribes a callback to be asynchronously called only the first time this event is emitted.]=]
+---@async
 ---@param name string
 ---@param fn function
+---@return function fn the original callback
 function Emitter:once(name, fn)
 	return new(self, name, {fn = fn, once = true})
 end
@@ -86,11 +86,10 @@ end
 Callbacks registered with this method are not automatically wrapped as a
 coroutine. Returns the original callback for convenience.
 ]=]
---[=[Subscribes a callback to be called every time the named event is emitted.
-Callbacks registered with this method are not automatically wrapped as a
-coroutine. Returns the original callback for convenience.]=]
+--[=[Subscribes a callback to be syncronously called every time the named event is emitted.]=]
 ---@param name string
 ---@param fn function
+---@return function fn the original callback
 function Emitter:onSync(name, fn)
 	return new(self, name, {fn = fn, sync = true})
 end
@@ -104,9 +103,8 @@ end
 Callbacks registered with this method are not automatically wrapped as a coroutine.
 Returns the original callback for convenience.
 ]=]
---[=[Subscribes a callback to be called only the first time this event is emitted.
-Callbacks registered with this method are not automatically wrapped as a coroutine.
-Returns the original callback for convenience.]=]
+--[=[Subscribes a callback to be synchronously called only the first time this event is emitted.]=]
+---@return function fn the original callback
 ---@param name string
 ---@param fn function
 function Emitter:onceSync(name, fn)
@@ -120,7 +118,7 @@ end
 @r nil
 @d Emits the named event and a variable number of arguments to pass to the event callbacks.
 ]=]
---[=[Emits the named event and a variable number of arguments to pass to the event callbacks.]=]
+--[=[Emits the named event and arguments to pass to the event callbacks.]=]
 ---@param name string
 ---@param ... any
 function Emitter:emit(name, ...)
@@ -224,9 +222,8 @@ end
 @d Unregisters all callbacks for the emitter. If a name is passed, then only
 callbacks for that specific event are unregistered.
 ]=]
---[=[Unregisters all callbacks for the emitter. If a name is passed, then only
-callbacks for that specific event are unregistered.]=]
----@param name string
+--[=[Unregisters all callbacks for the emitter.]=]
+---@param name? string unregister only specific event callbacks
 function Emitter:removeAllListeners(name)
 	if name then
 		self._listeners[name] = nil
@@ -250,15 +247,11 @@ will return after the time expires, regardless of whether the event is emitted,
 and `false` will be returned; otherwise, `true` is returned. If a predicate is
 provided, events that do not pass the predicate will be ignored.
 ]=]
---[=[When called inside of a coroutine, this will yield the coroutine until the
-named event is emitted. If a timeout (in milliseconds) is provided, the function
-will return after the time expires, regardless of whether the event is emitted,
-and `false` will be returned; otherwise, `true` is returned. If a predicate is
-provided, events that do not pass the predicate will be ignored.]=]
+--[=[Yields the coroutine until the named event is emitted, returns `true` afterwards.]=]
 ---@param name string
----@param timeout? number time in milliseconds
----@param predicate? function
----@return any
+---@param timeout? number time in milliseconds; if provided, the function will return after the time expires, regardless of whether the event is emitted, and `false` will be returned
+---@param predicate? function if provided, events that do not pass the predicate will be ignored
+---@return boolean
 function Emitter:waitFor(name, timeout, predicate)
 	local thread = running()
 	local fn
