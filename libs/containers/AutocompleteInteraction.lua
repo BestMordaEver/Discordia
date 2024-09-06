@@ -23,7 +23,7 @@ end
 consists of "name" and "value" fields
 ]=]
 function AutocompleteInteraction:provideChoices(choices)
-	return self._callback(callbackType.autocomplete, {choices = choices})
+	return self:_callback(callbackType.autocomplete, {choices = choices})
 end
 
 return AutocompleteInteraction
