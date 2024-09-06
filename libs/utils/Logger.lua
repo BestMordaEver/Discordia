@@ -52,7 +52,7 @@ file is desired. See the `logLevel` enumeration for acceptable log level values.
 ---@field protected _level number
 ---@field protected _dateTime string
 ---@field protected _file? any
----@field protected __init fun(self, level : number, dateTime : string, file? : string)
+---@field protected __init fun(self : self, level : number, dateTime : string, file? : string)
 local Logger = require('class')('Logger')
 
 function Logger:__init(level, dateTime, file)

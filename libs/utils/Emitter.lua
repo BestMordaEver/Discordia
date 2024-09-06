@@ -18,9 +18,9 @@ local setTimeout, clearTimeout = timer.setTimeout, timer.clearTimeout
 specific named events. When events are emitted, the callbacks are called in the
 order that they were originally registered.]=]
 ---@class Emitter
----@overload fun (self) : Emitter
+---@overload fun (self : self) : Emitter
 ---@field package _listeners {[string] : {fn : function, once? : boolean, sync? : boolean, _removed? : boolean}}
----@field protected __init fun (self)
+---@field protected __init fun (self : self)
 local Emitter = require('class')('Emitter')
 
 function Emitter:__init()

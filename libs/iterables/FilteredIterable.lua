@@ -13,7 +13,7 @@ that the original iterable contains.]=]
 ---@overload fun(base : Iterable, predicate : function)
 ---@field private _base Iterable
 ---@field private _predicate function
----@field protected __init fun(self, base : Iterable, predicate : function)
+---@field protected __init fun(self : self, base : Iterable, predicate : function)
 local FilteredIterable = require('class')('FilteredIterable', Iterable)
 
 function FilteredIterable:__init(base, predicate)

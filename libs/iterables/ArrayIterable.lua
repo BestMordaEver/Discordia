@@ -15,8 +15,8 @@ map function to shape the objects before they are accessed.]=]
 ---@overload fun(array : any[], map : function)
 ---@field first any
 ---@field last any
----@field protected __init fun(self, array : any[], map : function)
----@field protected __len fun(self) : number
+---@field protected __init fun(self : self, array : any[], map : function)
+---@field protected __len fun(self : self) : number
 ---@field protected _array any[]
 ---@field protected _map function
 local ArrayIterable, get = require('class')('ArrayIterable', Iterable)

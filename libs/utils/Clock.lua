@@ -15,7 +15,7 @@ local setInterval, clearInterval = timer.setInterval, timer.clearInterval
 ---@class Clock : Emitter
 ---@overload fun() : Clock
 ---@field protected _interval userdata
----@field protected __init fun(self)
+---@field protected __init fun(self:self)
 local Clock = require('class')('Clock', Emitter)
 
 function Clock:__init()

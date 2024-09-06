@@ -17,13 +17,13 @@ local null = json.null
 ---@field protected _constructor function
 ---@field protected _parent Container | Client
 ---@field protected _deleted table
----@field _delete fun(self, obj : any) : any?
----@field _insert fun(self, obj : any) : any
----@field _load fun(self, array : any[], update? : boolean)
----@field _remove fun(self, obj : any) : any?
----@field protected __init fun(self, array : any[], constructor : function, parent : Container | Client)
+---@field _delete fun(self : self, obj : any) : any?
+---@field _insert fun(self : self, obj : any) : any
+---@field _load fun(self : self, array : any[], update? : boolean)
+---@field _remove fun(self : self, obj : any) : any?
+---@field protected __init fun(self : self, array : any[], constructor : function, parent : Container | Client)
 ---@field protected __pairs function
----@field protected __len fun(self) : number
+---@field protected __len fun(self : self) : number
 local Cache = require('class')('Cache', Iterable)
 
 local meta = {__mode = 'v'}

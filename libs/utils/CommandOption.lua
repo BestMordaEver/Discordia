@@ -15,7 +15,7 @@ local optionType = require('enums').applicationCommandOptionType
 ---@field option? CommandOption
 ---@field focused boolean
 ---@field protected _value User | GuildChannel | Role
----@field protected __init fun (self, data : table, parent : SlashInteraction)
+---@field protected __init fun (self : self, data : table, parent : SlashInteraction)
 local CommandOption, get = require('class')('CommandOption')
 
 local types = {['string'] = true, ['number'] = true, ['boolean'] = true}

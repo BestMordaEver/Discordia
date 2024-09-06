@@ -28,8 +28,8 @@ integer support. Generally, milliseconds should be sufficient here.]=]
 ---@field milliseconds number
 ---@field protected _initial number
 ---@field protected _final? number
----@field protected __init fun(self, stopped? : boolean)
----@field protected __tostring fun(self) : string
+---@field protected __init fun(self : self, stopped? : boolean)
+---@field protected __tostring fun(self : self) : string
 local Stopwatch, get = require('class')('Stopwatch')
 
 function Stopwatch:__init(stopped)

@@ -42,13 +42,13 @@ most formats are implemented with only second precision.]=]
 ---@operator sub(Date | Time) : Time | Date
 ---@field protected _s number
 ---@field protected _us number
----@field protected __init fun(self, seconds? : number, microseconds? : number)
----@field protected __eq fun(self, other : Date) : boolean
----@field protected __lt fun(self, other : Date) : boolean
----@field protected __le fun(self, other : Date) : boolean
----@field protected __tostring fun(self) : string
----@field protected __add fun(self, other : Date) : Date
----@field protected __sub fun(self, other : Date | Time) : Time | Date
+---@field protected __init fun(self : self, seconds? : number, microseconds? : number)
+---@field protected __eq fun(self : self, other : Date) : boolean
+---@field protected __lt fun(self : self, other : Date) : boolean
+---@field protected __le fun(self : self, other : Date) : boolean
+---@field protected __tostring fun(self : self) : string
+---@field protected __add fun(self : self, other : Date) : Date
+---@field protected __sub fun(self : self, other : Date | Time) : Time | Date
 local Date = class('Date')
 
 local function check(self, other)
