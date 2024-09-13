@@ -9,7 +9,7 @@ local optionType = require('enums').applicationCommandOptionType
 ---@class CommandOption
 ---@overload fun(data : table, parent : SlashInteraction) : CommandOption
 ---@field name string
----@field type number
+---@field type applicationCommandOptionType
 ---@field value? string|number
 ---@field options? table <string, CommandOption>
 ---@field option? CommandOption
