@@ -11,6 +11,26 @@ local Permissions = require('utils/Permissions')
 
 --[=[Defines the base methods and properties for all Discord interactions.]=]
 ---@class Interaction : Snowflake
+---@field isReplied boolean
+---@field type interactionType
+---@field guild? Guild
+---@field channel TextChannel
+---@field member? Member
+---@field user User
+---@field token string
+---@field locale localeName
+---@field guild_locale? localeName
+---@field appPermissions Permissions
+---@field context interactionContextType
+---@field protected _channel TextChannel
+---@field private _channel_id nil
+---@field protected _guild Guild
+---@field private _guild_id nil
+---@field protected _data table
+---@field protected _user User
+---@field protected _is_replied boolean
+---@field protected _callback fun(self : self, type : callbackType, content? : table, files? : string) : boolean?, string?
+---@field protected __init fun(self : self, data : table, client : Client)
 local Interaction, get = require('class')('Interaction', Snowflake)
 
 function Interaction:__init(data, client)
@@ -103,12 +123,13 @@ function get.guild_locale(self)
 	return self._guild_locale
 end
 
---[=[@p appPermissions Permissions Set of permissions the app has in the source location of the interaction]=]
+--[=[@p appPermissions Permissions Set of permissions the app has in the source location of the interaction.]=]
 function get.appPermissions(self)
 	return Permissions.fromMany(self._app_permissions)
 end
 
---[=[@p context number Context where the interaction was triggered from]=]
+--[=[@p context number Context where the interaction was triggered from.
+See the `interactionContextType` enumeration for a human-readable representation.]=]
 function get.context(self)
 	return self._context
 end

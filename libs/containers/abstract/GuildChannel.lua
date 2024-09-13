@@ -24,6 +24,18 @@ local huge = math.huge
 
 --[=[Defines the base methods and properties for all Discord guild channels.]=]
 ---@class GuildChannel : Channel
+---@field permissionOverwrites Cache
+---@field permissions Permissions
+---@field name string
+---@field position number
+---@field guild Guild
+---@field category GuildCategoryChannel
+---@field private boolean
+---@field protected _permission_overwrites Cache
+---@field protected _permissions? Permissions
+---@field protected _load fun(self : self, data : table)
+---@field protected _loadMore fun(self : self, data : table)
+---@field protected __init fun(self : self, data : table, parent : Snowflake | Client)
 local GuildChannel, get = class('GuildChannel', Channel)
 
 function GuildChannel:__init(data, parent)
@@ -50,7 +62,10 @@ end
 @r boolean
 @d Sets the channel's name. This must be between 2 and 100 characters in length.
 ]=]
---[=[Sets the channel's name. This must be between 2 and 100 characters in length.]=]
+--[=[Sets the channel's name.]=]
+---@param name string must be between 2 and 100 characters in length
+---@return boolean success
+---@return string? error
 function GuildChannel:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -63,6 +78,9 @@ end
 @d Sets the channel's parent category.
 ]=]
 --[=[Sets the channel's parent category.]=]
+---@param id GuildCategoryChannel | string
+---@return boolean success
+---@return string? error
 function GuildChannel:setCategory(id)
 	id = Resolver.channelId(id)
 	return self:_modify({parent_id = id or json.null})
@@ -116,9 +134,10 @@ end
 channel should be moved, clamped to the highest position, with a default of 1 if
 it is omitted. This will also normalize the positions of all channels.
 ]=]
---[=[Moves a channel up its list. The parameter `n` indicates how many spaces the
-channel should be moved, clamped to the highest position, with a default of 1 if
-it is omitted. This will also normalize the positions of all channels.]=]
+--[=[Moves a channel up its list. This will also normalize the positions of all channels.]=]
+---@param n? number how many spaces the channel should be moved, default is 1
+---@return boolean success
+---@return string? error
 function GuildChannel:moveUp(n)
 
 	n = tonumber(n) or 1
@@ -154,9 +173,10 @@ end
 channel should be moved, clamped to the lowest position, with a default of 1 if
 it is omitted. This will also normalize the positions of all channels.
 ]=]
---[=[Moves a channel down its list. The parameter `n` indicates how many spaces the
-channel should be moved, clamped to the lowest position, with a default of 1 if
-it is omitted. This will also normalize the positions of all channels.]=]
+--[=[Moves a channel down its list. This will also normalize the positions of all channels.]=]
+---@param n? number how many spaces the channel should be moved, default is 1
+---@return boolean success
+---@return string? error
 function GuildChannel:moveDown(n)
 
 	n = tonumber(n) or 1
@@ -183,6 +203,12 @@ function GuildChannel:moveDown(n)
 
 end
 
+---@class invitePayload
+---@field max_age number? time in seconds until expiration, default is 86400 (24 hours)
+---@field max_uses number? default is 0 (unlimited)
+---@field temporary boolean? default is false
+---@field unique boolean? default is false
+
 --[=[
 @m createInvite
 @t http
@@ -199,6 +225,9 @@ time in seconds until expiration, default = 86400 (24 hours), max_uses: number
 total number of uses allowed, default = 0 (unlimited), temporary: boolean whether
 the invite grants temporary membership, default = false, unique: boolean whether
 a unique code should be guaranteed, default = false]=]
+---@param payload invitePayload
+---@return Invite?
+---@return string? error
 function GuildChannel:createInvite(payload)
 	local data, err = self.client._api:createChannelInvite(self._id, payload)
 	if data then
@@ -219,6 +248,8 @@ call this method again to get the updated objects.
 --[=[Returns a newly constructed cache of all invite objects for the channel. The
 cache and its objects are not automatically updated via gateway events. You must
 call this method again to get the updated objects.]=]
+---@return Cache? invites
+---@return string? error
 function GuildChannel:getInvites()
 	local data, err = self.client._api:getChannelInvites(self._id)
 	if data then
@@ -244,6 +275,9 @@ role object. If a cached overwrite is not found, an empty overwrite with
 zero-permissions is returned instead. Therefore, this can be used to create a
 new overwrite when one does not exist. Note that the member or role must exist
 in the same guild as the channel does.]=]
+---@param obj Role | Member
+---@return PermissionOverwrite?
+---@return string? error
 function GuildChannel:getPermissionOverwriteFor(obj)
 	local id, type
 	if isInstance(obj, classes.Role) and self._parent == obj._parent then
@@ -266,6 +300,8 @@ end
 @d Permanently deletes the channel. This cannot be undone!
 ]=]
 --[=[Permanently deletes the channel. This cannot be undone!]=]
+---@return boolean success
+---@return string? error
 function GuildChannel:delete()
 	return self:_delete()
 end

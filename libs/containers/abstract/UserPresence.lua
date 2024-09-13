@@ -18,6 +18,26 @@ user's current presence information. Note that any method or property that
 exists for the User class is also available in the UserPresence class and its
 subclasses.]=]
 ---@class UserPresence : Container
+---@field gameName string
+---@field gameType activityType
+---@field gameURL string
+---@field status "online" | "dnd" | "idle" | "offline"
+---@field webStatus "online" | "dnd" | "idle" | "offline"
+---@field mobileStatus "online" | "dnd" | "idle" | "offline"
+---@field desktopStatus "online" | "dnd" | "idle" | "offline"
+---@field user User
+---@field playing? Activity
+---@field streaming? Activity
+---@field listening? Activity
+---@field watching? Activity
+---@field custom? Activity
+---@field competing? Activity
+---@field protected _activity table<activityType, Activity>
+---@field protected _status "online" | "dnd" | "idle" | "offline"
+---@field _user User
+---@field protected _loadPresence fun(self : self, presence : table)
+---@field protected __hash fun(self : self) : string
+---@field protected __init fun(self : self, data : table, parent : Container | Client)
 local UserPresence, get = require('class')('UserPresence', Container)
 
 function UserPresence:__init(data, parent)
