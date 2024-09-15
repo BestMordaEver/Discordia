@@ -17,7 +17,7 @@ local activityType = require('enums').activityType
 user's current presence information. Note that any method or property that
 exists for the User class is also available in the UserPresence class and its
 subclasses.]=]
----@class UserPresence : Container
+---@class UserPresence : Container, User
 ---@field gameName string
 ---@field gameType activityType
 ---@field gameURL string
