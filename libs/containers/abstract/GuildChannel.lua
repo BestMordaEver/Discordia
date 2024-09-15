@@ -25,7 +25,7 @@ local huge = math.huge
 --[=[Defines the base methods and properties for all Discord guild channels.]=]
 ---@class GuildChannel : Channel
 ---@field permissionOverwrites Cache
----@field permissions Permissions
+---@field permissions? Permissions
 ---@field name string
 ---@field position number
 ---@field guild Guild
@@ -220,12 +220,8 @@ total number of uses allowed, default = 0 (unlimited), temporary: boolean whethe
 the invite grants temporary membership, default = false, unique: boolean whether
 a unique code should be guaranteed, default = false
 ]=]
---[=[Creates an invite to the channel. Optional payload fields are: max_age: number
-time in seconds until expiration, default = 86400 (24 hours), max_uses: number
-total number of uses allowed, default = 0 (unlimited), temporary: boolean whether
-the invite grants temporary membership, default = false, unique: boolean whether
-a unique code should be guaranteed, default = false]=]
----@param payload invitePayload
+--[=[Creates an invite to the channel.]=]
+---@param payload? invitePayload
 ---@return Invite?
 ---@return string? error
 function GuildChannel:createInvite(payload)

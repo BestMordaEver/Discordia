@@ -13,7 +13,7 @@ local optionType = require('enums').applicationCommandOptionType
 ---@field value? string|number
 ---@field options? table <string, CommandOption>
 ---@field option? CommandOption
----@field focused boolean
+---@field focused? boolean
 ---@field protected _value User | GuildChannel | Role
 ---@field protected __init fun (self : CommandOption, data : table, parent : SlashInteraction)
 local CommandOption, get = require('class')('CommandOption')
