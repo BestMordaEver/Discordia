@@ -8,7 +8,7 @@ local Container = require('containers/abstract/Container')
 
 --[=[Represents a Discord guild ban. Essentially a combination of the banned user and
 a reason explaining the ban, if one was provided.]=]
----@class Bat : Container
+---@class Ban : Container
 local Ban, get = require('class')('Ban', Container)
 
 function Ban:__init(data, parent)
