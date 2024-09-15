@@ -31,11 +31,10 @@ time is used; otherwise, local time is used. As the clock ticks, an event is
 emitted for every `os.date` value change. The event name is the key of the value
 that changed and the event argument is the corresponding date table.
 ]=]
---[=[Starts the main loop for the clock. If a truthy argument is passed, then UTC
-time is used; otherwise, local time is used. As the clock ticks, an event is
+--[=[Starts the main loop for the clock. As the clock ticks, an event is
 emitted for every `os.date` value change. The event name is the key of the value
 that changed and the event argument is the corresponding date table.]=]
----@param utc? boolean
+---@param utc? boolean If true, then UTC time is used; otherwise, local time is used
 function Clock:start(utc)
 	if self._interval then return end
 	local fmt = utc and '!*t' or '*t'
