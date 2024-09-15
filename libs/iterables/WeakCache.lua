@@ -14,8 +14,8 @@ to the objects that are cached. If all references to an object are weak, as they
 are here, then the object will be deleted on the next garbage collection cycle.]=]
 ---@class WeakCache : Cache
 ---@overload fun(array : any[], constructor : function, parent : Container | Client) : WeakCache
----@field protected __init fun(self : self, array : any[], constructor : function, parent : Container | Client)
----@field protected __len fun(self : self) : number
+---@field protected __init fun(self : WeakCache, array : any[], constructor : function, parent : Container | Client)
+---@field protected __len fun(self : WeakCache) : number
 local WeakCache = require('class')('WeakCache', Cache)
 
 local meta = {__mode = 'v'}

@@ -45,15 +45,15 @@ and milliseconds.]=]
 ---@operator mul(number) : Time
 ---@operator div(number) : Time
 ---@field protected _value number
----@field protected __init fun(self : self, value? : number)
----@field protected __eq fun(self : self, other : Time) : boolean
----@field protected __lt fun(self : self, other : Time) : boolean
----@field protected __le fun(self : self, other : Time) : boolean
----@field protected __tostring fun(self : self) : string
----@field protected __add fun(self : self, other : Time) : Time
----@field protected __sub fun(self : self, other : Time) : Time
----@field protected __mul fun(self : self, other : number) : Time?
----@field protected __div fun(self : self, other : number) : Time?
+---@field protected __init fun(self : Time, value? : number)
+---@field protected __eq fun(self : Time, other : Time) : boolean
+---@field protected __lt fun(self : Time, other : Time) : boolean
+---@field protected __le fun(self : Time, other : Time) : boolean
+---@field protected __tostring fun(self : Time) : string
+---@field protected __add fun(self : Time, other : Time) : Time
+---@field protected __sub fun(self : Time, other : Time) : Time
+---@field protected __mul fun(self : Time, other : number) : Time?
+---@field protected __div fun(self : Time, other : number) : Time?
 local Time = class('Time')
 
 local function check(self, other)

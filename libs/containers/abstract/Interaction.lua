@@ -29,8 +29,8 @@ local Permissions = require('utils/Permissions')
 ---@field protected _data table
 ---@field protected _user User
 ---@field protected _is_replied boolean
----@field protected _callback fun(self : self, type : callbackType, content? : table, files? : string) : boolean?, string?
----@field protected __init fun(self : self, data : table, client : Client)
+---@field protected _callback fun(self : Interaction, type : callbackType, content? : table, files? : string) : boolean?, string?
+---@field protected __init fun(self : Interaction, data : table, client : Client)
 local Interaction, get = require('class')('Interaction', Snowflake)
 
 function Interaction:__init(data, client)

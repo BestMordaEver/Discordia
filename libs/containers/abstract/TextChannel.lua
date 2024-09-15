@@ -16,7 +16,7 @@ local format = string.format
 --[=[Defines the base methods and properties for all Discord text channels.]=]
 ---@class TextChannel : Channel
 ---@field _messages WeakCache
----@field protected __init fun(self : self, data : table, parent : Snowflake | Client)
+---@field protected __init fun(self : TextChannel, data : table, parent : Snowflake | Client)
 local TextChannel, get = require('class')('TextChannel', Channel)
 
 function TextChannel:__init(data, parent)

@@ -27,13 +27,13 @@ local isInstance = class.isInstance
 ---@operator mul(number) : Color
 ---@operator div(number) : Color
 ---@field protected _value number
----@field protected __init fun(self : self, value? : number)
----@field protected __tostring fun(self : self) : string
----@field protected __eq fun(self : self, other : Color) : boolean
----@field protected __add fun(self : self, other : Color) : Color
----@field protected __sub fun(self : self, other : Color) : Color
----@field protected __mul fun(self : self, other : number) : Color?
----@field protected __div fun(self : self, other : number) : Color?
+---@field protected __init fun(self : Color, value? : number)
+---@field protected __tostring fun(self : Color) : string
+---@field protected __eq fun(self : Color, other : Color) : boolean
+---@field protected __add fun(self : Color, other : Color) : Color
+---@field protected __sub fun(self : Color, other : Color) : Color
+---@field protected __mul fun(self : Color, other : number) : Color?
+---@field protected __div fun(self : Color, other : number) : Color?
 local Color, get = class('Color')
 
 local function check(self, other)

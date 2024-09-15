@@ -34,7 +34,7 @@ local bor = bit.bor
 ---@field files string[]
 ---@field protected _message table
 ---@field protected _files [string|fileContent]|string|nil
----@field protected __init fun(self : self, data : string|messageParams)
+---@field protected __init fun(self : MessageContainer, data : string|messageParams)
 local MessageContainer, get = class('MessageContainer')
 
 ---@param obj string | fileContent

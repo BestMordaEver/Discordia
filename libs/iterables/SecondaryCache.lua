@@ -16,11 +16,11 @@ cache that it wraps.]=]
 ---@field protected _count number
 ---@field protected _objects table
 ---@field protected _primary Cache
----@field _insert fun(self : self, data : any) : any
----@field _remove fun(self : self, data : any) : any
----@field protected __init fun(self : self, array : any[], primary : Cache)
+---@field _insert fun(self : SecondaryCache, data : any) : any
+---@field _remove fun(self : SecondaryCache, data : any) : any
+---@field protected __init fun(self : SecondaryCache, array : any[], primary : Cache)
 ---@field protected __pairs function
----@field protected __len fun(self : self) : number
+---@field protected __len fun(self : SecondaryCache) : number
 local SecondaryCache = require('class')('SecondaryCache', Iterable)
 
 function SecondaryCache:__init(array, primary)

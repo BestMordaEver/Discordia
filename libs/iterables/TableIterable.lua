@@ -13,7 +13,7 @@ Some versions may use a map function to shape the objects before they are access
 ---@overload fun(tbl : table, map : function)
 ---@field private _tbl table
 ---@field private _map function
----@field protected __init fun(self : self, tbl : table, map : function)
+---@field protected __init fun(self : TableIterable, tbl : table, map : function)
 local TableIterable = require('class')('TableIterable', Iterable)
 
 function TableIterable:__init(tbl, map)

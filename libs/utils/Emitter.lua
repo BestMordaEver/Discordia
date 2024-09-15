@@ -20,7 +20,7 @@ order that they were originally registered.]=]
 ---@class Emitter
 ---@overload fun () : Emitter
 ---@field package _listeners {[string] : {fn : function, once? : boolean, sync? : boolean, _removed? : boolean}}
----@field protected __init fun (self : self)
+---@field protected __init fun (self : Emitter)
 local Emitter = require('class')('Emitter')
 
 function Emitter:__init()

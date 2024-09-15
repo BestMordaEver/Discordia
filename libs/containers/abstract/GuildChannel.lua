@@ -33,9 +33,9 @@ local huge = math.huge
 ---@field private boolean
 ---@field protected _permission_overwrites Cache
 ---@field protected _permissions? Permissions
----@field protected _load fun(self : self, data : table)
----@field protected _loadMore fun(self : self, data : table)
----@field protected __init fun(self : self, data : table, parent : Snowflake | Client)
+---@field protected _load fun(self : GuildChannel, data : table)
+---@field protected _loadMore fun(self : GuildChannel, data : table)
+---@field protected __init fun(self : GuildChannel, data : table, parent : Snowflake | Client)
 local GuildChannel, get = class('GuildChannel', Channel)
 
 function GuildChannel:__init(data, parent)

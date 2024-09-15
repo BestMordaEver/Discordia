@@ -27,9 +27,9 @@ permissions. See the `permission` enumeration for acceptable permission values.]
 ---@overload fun(value? : number) : Permissions
 ---@field value number
 ---@field protected _value number
----@field protected __init fun(self : self, value : number)
----@field protected __eq fun(self : self, other : Permissions) : boolean
----@field protected __tostring fun(self : self) : string
+---@field protected __init fun(self : Permissions, value : number)
+---@field protected __eq fun(self : Permissions, other : Permissions) : boolean
+---@field protected __tostring fun(self : Permissions) : string
 local Permissions, get = require('class')('Permissions')
 
 function Permissions:__init(value)

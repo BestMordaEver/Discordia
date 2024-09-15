@@ -18,7 +18,7 @@ that are received when a user uses a slash command.]=]
 ---@field target? Member | Message
 ---@field options? table<string, CommandOption>
 ---@field option? CommandOption
----@field _loadOptions fun(self : self, options : table, parent : Client)
+---@field _loadOptions fun(self : SlashInteraction, options : table, parent : Client)
 ---@field _users table<string, User>
 ---@field protected _members table<string, Member>
 ---@field _roles table<string, Role>
@@ -27,7 +27,7 @@ that are received when a user uses a slash command.]=]
 ---@field protected _target Member | Message
 ---@field protected _options table<string, CommandOption>
 ---@field protected _option CommandOption
----@field protected __init fun(self : self, data : table, client : Client)
+---@field protected __init fun(self : SlashInteraction, data : table, client : Client)
 local SlashInteraction, get = require('class')('SlashInteraction', Interaction)
 
 function SlashInteraction:__init(data, client)

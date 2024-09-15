@@ -14,8 +14,8 @@ local callbackType = assert(enums.callbackType)
 --[=[Defines the base methods and properties for Discord interactions
 that can be replied to with messages.]=]
 ---@class MessagingInteraction : Interaction
----@field protected _callbackWithContent fun(self : self, type : callbackType, payload? : string | messageParams) : success : boolean?, error : string?
----@field protected __init fun(self : self, data : table, client : Client)
+---@field protected _callbackWithContent fun(self : MessagingInteraction, type : callbackType, payload? : string | messageParams) : success : boolean?, error : string?
+---@field protected __init fun(self : MessagingInteraction, data : table, client : Client)
 local MessagingInteraction = require('class')('MessagingInteraction', Interaction)
 
 function MessagingInteraction:__init(data, client)

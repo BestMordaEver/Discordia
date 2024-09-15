@@ -17,7 +17,7 @@ local setTimeout = timer.setTimeout
 ---@class Mutex : Deque
 ---@overload fun() : Mutex
 ---@field protected _active boolean
----@field protected __init fun(self : self)
+---@field protected __init fun(self : Mutex)
 local Mutex = require('class')('Mutex', Deque)
 
 function Mutex:__init()

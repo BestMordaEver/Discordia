@@ -11,7 +11,7 @@
 ---@field protected _objects any[]
 ---@field protected _first number
 ---@field protected _last number
----@field protected __init fun (self : self)
+---@field protected __init fun (self : Deque)
 local Deque = require('class')('Deque')
 
 function Deque:__init()

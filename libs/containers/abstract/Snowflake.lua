@@ -14,8 +14,8 @@ a Snowflake ID.]=]
 ---@field id string
 ---@field createdAt Date
 ---@field timestamp string
----@field protected __init fun(self : self, data : table, parent : Container | Client)
----@field protected __hash fun(self : self) : hash : string
+---@field protected __init fun(self : Snowflake, data : table, parent : Container | Client)
+---@field protected __hash fun(self : Snowflake) : hash : string
 local Snowflake, get = require('class')('Snowflake', Container)
 
 function Snowflake:__init(data, parent)

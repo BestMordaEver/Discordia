@@ -18,10 +18,10 @@ received from Discord and should never be manually constructed.]=]
 ---@field parent Container | Client
 ---@field client Client
 ---@field protected _parent Container | Client
----@field protected _load fun(self : self, data : table)
----@field protected __init fun(self : self, data : table, parent : Container | Client)
----@field protected __eq fun(self : self, other : Container) : boolean
----@field protected __tostring fun(self : self) : string
+---@field protected _load fun(self : Container, data : table)
+---@field protected __init fun(self : Container, data : table, parent : Container | Client)
+---@field protected __eq fun(self : Container, other : Container) : boolean
+---@field protected __tostring fun(self : Container) : string
 local Container, get = require('class')('Container')
 
 local types = {['string'] = true, ['number'] = true, ['boolean'] = true}
