@@ -23,6 +23,9 @@ local istype = ffi.istype
 local int64_t = ffi.typeof('int64_t')
 local uint64_t = ffi.typeof('uint64_t')
 
+---@alias Snowflake-ID-Resolvable string | number | Date
+---@param obj Snowflake-ID-Resolvable if this is Date, equivalent to obj:toSnowflake()
+---@return string?
 local function int(obj)
 	local t = type(obj)
 	if t == 'string' then
@@ -40,6 +43,9 @@ local function int(obj)
 	end
 end
 
+---@alias User-ID-Resolvable User | Member | Message | Guild | Snowflake-ID-Resolvable
+---@param obj User-ID-Resolvable if this is Message, equivalent to obj.author.id; if this is Guild, equivalent to obj.ownerId
+---@return string?
 function Resolver.userId(obj)
 	if isObject(obj) then
 		if isInstance(obj, classes.User) then
@@ -55,6 +61,9 @@ function Resolver.userId(obj)
 	return int(obj)
 end
 
+---@alias Message-ID-Resolvable Message | Snowflake-ID-Resolvable
+---@param obj Message-ID-Resolvable
+---@return string?
 function Resolver.messageId(obj)
 	if isInstance(obj, classes.Message) then
 		return obj.id
@@ -62,6 +71,9 @@ function Resolver.messageId(obj)
 	return int(obj)
 end
 
+---@alias Channel-ID-Resolvable Channel | Snowflake-ID-Resolvable
+---@param obj Channel-ID-Resolvable
+---@return string?
 function Resolver.channelId(obj)
 	if isInstance(obj, classes.Channel) then
 		return obj.id
@@ -69,6 +81,9 @@ function Resolver.channelId(obj)
 	return int(obj)
 end
 
+---@alias Role-ID-Resolvable Role | Snowflake-ID-Resolvable
+---@param obj Role-ID-Resolvable
+---@return string?
 function Resolver.roleId(obj)
 	if isInstance(obj, classes.Role) then
 		return obj.id
@@ -76,6 +91,9 @@ function Resolver.roleId(obj)
 	return int(obj)
 end
 
+---@alias Emoji-ID-Resolvable Emoji | Reaction | Activity | Snowflake-ID-Resolvable
+---@param obj Emoji-ID-Resolvable if this is Reaction or Activity, equivalent to obj.emojiId
+---@return string?
 function Resolver.emojiId(obj)
 	if isInstance(obj, classes.Emoji) then
 		return obj.id
@@ -87,6 +105,9 @@ function Resolver.emojiId(obj)
 	return int(obj)
 end
 
+---@alias Sticker-ID-Resolvable Sticker | Snowflake-ID-Resolvable
+---@param obj Sticker-ID-Resolvable
+---@return string?
 function Resolver.stickerId(obj)
 	if isInstance(obj, classes.Sticker) then
 		return obj.id
@@ -94,6 +115,9 @@ function Resolver.stickerId(obj)
 	return int(obj)
 end
 
+---@alias Guild-ID-Resolvable Guild | Snowflake-ID-Resolvable
+---@param obj Guild-ID-Resolvable
+---@return string?
 function Resolver.guildId(obj)
 	if isInstance(obj, classes.Guild) then
 		return obj.id
@@ -101,6 +125,9 @@ function Resolver.guildId(obj)
 	return int(obj)
 end
 
+---@alias AuditLogEntry-ID-Resolvable AuditLogEntry | Snowflake-ID-Resolvable
+---@param obj AuditLogEntry-ID-Resolvable
+---@return string?
 function Resolver.entryId(obj)
 	if isInstance(obj, classes.AuditLogEntry) then
 		return obj.id
@@ -108,6 +135,8 @@ function Resolver.entryId(obj)
 	return int(obj)
 end
 
+---@param objs table<any, Message-ID-Resolvable> | Iterable<Message-ID-Resolvable>
+---@return string[]
 function Resolver.messageIds(objs)
 	local ret = {}
 	if isInstance(objs, classes.Iterable) then
@@ -122,6 +151,8 @@ function Resolver.messageIds(objs)
 	return ret
 end
 
+---@param objs table<any, Role-ID-Resolvable> | Iterable<Message-ID-Resolvable>
+---@return string[]
 function Resolver.roleIds(objs)
 	local ret = {}
 	if isInstance(objs, classes.Iterable) then
@@ -136,6 +167,9 @@ function Resolver.roleIds(objs)
 	return ret
 end
 
+---@alias Emoji-Resolvable Emoji | Reaction | Activity | number | string
+---@param obj Emoji-Resolvable
+---@return string
 function Resolver.emoji(obj)
 	if isInstance(obj, classes.Emoji) then
 		return obj.hash
@@ -147,6 +181,9 @@ function Resolver.emoji(obj)
 	return tostring(obj)
 end
 
+---@alias Sticker-Resolvable Sticker | number | string
+---@param obj Sticker-Resolvable
+---@return string
 function Resolver.sticker(obj)
 	if isInstance(obj, classes.Sticker) then
 		return obj.hash
@@ -154,6 +191,9 @@ function Resolver.sticker(obj)
 	return tostring(obj)
 end
 
+---@alias Color-Resolvable Color | number | string
+---@param obj Color-Resolvable
+---@return number?
 function Resolver.color(obj)
 	if isInstance(obj, classes.Color) then
 		return obj.value
@@ -161,6 +201,9 @@ function Resolver.color(obj)
 	return tonumber(obj)
 end
 
+---@alias Permissions-Resolvable Permissions | permission | number
+---@param obj Permissions-Resolvable
+---@return number?
 function Resolver.permissions(obj)
 	if isInstance(obj, classes.Permissions) then
 		return obj.value
@@ -168,6 +211,9 @@ function Resolver.permissions(obj)
 	return tonumber(obj)
 end
 
+---@alias Permission-Resolvable permission | number
+---@param obj string | number
+---@return number?
 function Resolver.permission(obj)
 	local t = type(obj)
 	local n = nil
@@ -176,9 +222,12 @@ function Resolver.permission(obj)
 	elseif t == 'number' then
 		n = permission(obj) and obj
 	end
-	return n
+	return n --[=[@as number]=]
 end
 
+---@alias Intent-Resolvable gatewayIntent | number
+---@param obj Intent-Resolvable
+---@return number?
 function Resolver.gatewayIntent(obj)
 	local t = type(obj)
 	local n = nil
@@ -187,9 +236,12 @@ function Resolver.gatewayIntent(obj)
 	elseif t == 'number' then
 		n = gatewayIntent(obj) and obj
 	end
-	return n
+	return n --[=[@as number]=]
 end
 
+---@alias ActionType-Resolvable actionType | number
+---@param obj ActionType-Resolvable
+---@return number?
 function Resolver.actionType(obj)
 	local t = type(obj)
 	local n = nil
@@ -198,9 +250,12 @@ function Resolver.actionType(obj)
 	elseif t == 'number' then
 		n = actionType(obj) and obj
 	end
-	return n
+	return n --[=[@as number]=]
 end
 
+---@alias MessageFlag-Resolvable messageFlag | number
+---@param obj MessageFlag-Resolvable
+---@return number?
 function Resolver.messageFlag(obj)
 	local t = type(obj)
 	local n = nil
@@ -209,9 +264,13 @@ function Resolver.messageFlag(obj)
 	elseif t == 'number' then
 		n = messageFlag(obj) and obj
 	end
-	return n
+	return n --[=[@as number]=]
 end
 
+---@alias Base64-Resolvable string
+---@param obj Base64-Resolvable
+---@return string? 
+---@return string? error
 function Resolver.base64(obj)
 	if type(obj) == 'string' then
 		if obj:find('data:.*;base64,') == 1 then
