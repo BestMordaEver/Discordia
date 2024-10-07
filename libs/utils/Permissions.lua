@@ -60,7 +60,7 @@ end
 @d Returns a Permissions object with all of the defined permissions.
 ]=]
 --[=[Returns a Permissions object with all of the defined permissions.]=]
----@param ... number|string|Permissions
+---@param ... Permission-Resolvable
 function Permissions.fromMany(...)
 	local ret = Permissions()
 	ret:enable(...)
@@ -108,7 +108,7 @@ for acceptable permission values.
 ]=]
 --[=[Enables a specific permission or permissions. See the `permission` enumeration
 for acceptable permission values.]=]
----@param ... number|string|Permissions
+---@param ... Permission-Resolvable
 function Permissions:enable(...)
 	local value = self._value
 	for i = 1, select('#', ...) do
@@ -127,7 +127,7 @@ for acceptable permission values.
 ]=]
 --[=[Disables a specific permission or permissions. See the `permission` enumeration
 for acceptable permission values.]=]
----@param ... number|string|Permissions
+---@param ... Permission-Resolvable
 function Permissions:disable(...)
 	local value = self._value
 	for i = 1, select('#', ...) do
@@ -146,7 +146,7 @@ end
 ]=]
 --[=[Returns whether this set has a specific permission or permissions. See the
 `permission` enumeration for acceptable permission values.]=]
----@param ... number|string|Permissions
+---@param ... Permission-Resolvable
 function Permissions:has(...)
 	local value = self._value
 	for i = 1, select('#', ...) do

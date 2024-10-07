@@ -34,7 +34,7 @@ object will be returned; otherwise, an HTTP request is made.
 ]=]
 --[=[Gets a message object by ID. If the object is already cached, then the cached
 object will be returned; otherwise, an HTTP request is made.]=]
----@param id string
+---@param id Message-ID-Resolvable
 ---@return Message?
 ---@return string? error
 function TextChannel:getMessage(id)
@@ -142,7 +142,7 @@ by gateway events.
 --[=[Returns a newly constructed cache of message objects found in the channel
 after a specific id. While the cache will never automatically gain or lose objects,
 the objects that it contains may be updated by gateway events.]=]
----@param id string
+---@param id Message-ID-Resolvable
 ---@param limit? number can be between 1 and 100, default is 50
 ---@return SecondaryCache?
 ---@return string? error
@@ -165,7 +165,7 @@ by gateway events.
 --[=[Returns a newly constructed cache of message objects found in the channel
 before a specific id. While the cache will never automatically gain or lose objects,
 the objects that it contains may be updated by gateway events.]=]
----@param id string
+---@param id Message-ID-Resolvable
 ---@param limit? number can be between 1 and 100, default is 50
 ---@return SecondaryCache?
 ---@return string? error
@@ -188,7 +188,7 @@ by gateway events.
 --[=[Returns a newly constructed cache of message objects found in the channel
 around a specific id. While the cache will never automatically gain or lose objects,
 the objects that it contains may be updated by gateway events.]=]
----@param id string
+---@param id Message-ID-Resolvable
 ---@param limit? number can be between 1 and 100, default is 50
 ---@return SecondaryCache?
 ---@return string? error
@@ -301,7 +301,7 @@ Will only work in guild channels.
 --[=[Bulk deletes multiple messages, from 2 to 100, from the channel. Messages over
 2 weeks old cannot be deleted and will return an error.
 Will only work in guild channels.]=]
----@param messages Message[]
+---@param messages Message-ID-Resolvable[]
 ---@return boolean success
 ---@return string? error
 function TextChannel:bulkDelete(messages)

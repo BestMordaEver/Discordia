@@ -212,7 +212,7 @@ function Resolver.permissions(obj)
 end
 
 ---@alias Permission-Resolvable permission | number
----@param obj string | number
+---@param obj Permission-Resolvable
 ---@return number?
 function Resolver.permission(obj)
 	local t = type(obj)

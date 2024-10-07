@@ -176,7 +176,7 @@ object will be returned; otherwise, an HTTP request is made. Does not support ep
 ]=]
 --[=[Gets a folloup message object by ID. If the object is already cached, then the cached
 object will be returned; otherwise, an HTTP request is made. Does not support ephemeral followups.]=]
----@param id string
+---@param id Message-ID-Resolvable
 ---@return Message?
 ---@return string? error
 function MessagingInteraction:getFollowupMessage(id)

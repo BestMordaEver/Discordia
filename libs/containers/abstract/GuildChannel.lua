@@ -78,7 +78,7 @@ end
 @d Sets the channel's parent category.
 ]=]
 --[=[Sets the channel's parent category.]=]
----@param id GuildCategoryChannel | string
+---@param id GuildCategoryChannel | Channel-ID-Resolvable
 ---@return boolean success
 ---@return string? error
 function GuildChannel:setCategory(id)
