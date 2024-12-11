@@ -2,7 +2,8 @@ local enums = require('enums')
 local json = require('json')
 local timer = require ('timer')
 
-local channelType, interactionType = assert(enums.channelType), assert(enums.interactionType)
+local channelType = assert(enums.channelType)
+local interactionType = assert(enums.interactionType)
 local insert = table.insert
 local null = json.null
 
@@ -647,6 +648,49 @@ function EventHandler.INTERACTION_CREATE(d, client)
 	else
 		return client:warning('Unhandled Interaction type: %s', d.type)
 	end
+end
+
+function EventHandler.AUTO_MODERATION_RULE_CREATE(d, client)
+end
+
+function EventHandler.AUTO_MODERATION_RULE_UPDATE(d, client)
+end
+
+function EventHandler.AUTO_MODERATION_RULE_DELETE(d, client)
+end
+
+function EventHandler.AUTO_MODERATION_ACTION_EXECUTION(d, client)
+end
+
+
+function EventHandler.GUILD_STICKERS_UPDATE(d, client)
+end
+
+function EventHandler.GUILD_SCHEDULED_EVENT_CREATE(d, client)
+end
+
+function EventHandler.GUILD_SCHEDULED_EVENT_UPDATE(d, client)
+end
+
+function EventHandler.GUILD_SCHEDULED_EVENT_DELETE(d, client)
+end
+
+function EventHandler.GUILD_SCHEDULED_EVENT_USER_ADD(d, client)
+end
+
+function EventHandler.GUILD_SCHEDULED_EVENT_USER_REMOVE(d, client)
+end
+
+function EventHandler.STAGE_INSTANCE_CREATE(d, client)
+end
+
+function EventHandler.STAGE_INSTANCE_UPDATE(d, client)
+end
+
+function EventHandler.STAGE_INSTANCE_DELETE(d, client)
+end
+
+function EventHandler.GUILD_AUDIT_LOG_ENTRY_CREATE(d, client)
 end
 
 return EventHandler

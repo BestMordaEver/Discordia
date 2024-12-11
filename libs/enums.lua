@@ -227,6 +227,8 @@ enums.permission = {
 	createEvents          = 0x0000100000000000, -- 44
 	useExternalSounds     = 0x0000200000000000, -- 45
 	sendVoiceMessages     = 0x0000400000000000, -- 46
+	sendPolls             = 0x0000800000000000, -- 47
+	useExternalApps       = 0x0001000000000000, -- 48
 }
 
 ---@enum overwriteType
@@ -390,6 +392,17 @@ enums.logLevel = {
 	warning = 2,
 	info    = 3,
 	debug   = 4,
+}
+
+---@enum timestampStyle
+enums.timestampStyle = {
+	shortTime      = 't',
+	longTime       = 'T',
+	shortDate      = 'd',
+	longDate       = 'D',
+	shortDateTime  = 'f',
+	longDateTime   = 'F',
+	relativeTime   = 'R',
 }
 
 ---@enum interactionType
