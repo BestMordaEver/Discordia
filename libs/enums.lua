@@ -38,6 +38,7 @@ enums.defaultAvatar = enum {
 	green   = 2,
 	orange  = 3,
 	red     = 4,
+	pink    = 5,
 }
 
 enums.notificationSetting = enum {
@@ -53,10 +54,16 @@ enums.channelType = enum {
 	category      = 4,
 	news          = 5,
 	store         = 6,
+	-- unused     = 7,
+	-- unused     = 8,
+	-- unused     = 9,
 	newsThread    = 10,
 	publicThread  = 11,
 	privateThread = 12,
-	stage         = 13,
+	stageVoice    = 13,
+	directory     = 14,
+	forum         = 15,
+	media         = 16,
 }
 
 enums.webhookType = enum {
@@ -66,30 +73,39 @@ enums.webhookType = enum {
 }
 
 enums.messageType = enum {
-	default                                 = 0,
-	recipientAdd                            = 1,
-	recipientRemove                         = 2,
-	call                                    = 3,
-	channelNameChange                       = 4,
-	channelIconChange                       = 5,
-	pinnedMessage                           = 6,
-	memberJoin                              = 7,
-	premiumGuildSubscription                = 8,
-	premiumGuildSubscriptionTier1           = 9,
-	premiumGuildSubscriptionTier2           = 10,
-	premiumGuildSubscriptionTier3           = 11,
-	channelFollowAdd                        = 12,
-
-	guildDiscoveryDisqualified              = 14,
-	guildDiscoveryRequalified               = 15,
-	guildDiscoveryGracePeriodInitialWarning = 16,
-	guildDiscoveryGracePeriodFinalWarning   = 17,
-	threadCreated                           = 18,
-	reply                                   = 19,
-	chatInputCommand                        = 20,
-	threadStarterMessage                    = 21,
-	guildInviteReminder                     = 22,
-	contextMenuCommand                      = 23,
+	default                        = 0,
+	recipientAdd                   = 1,
+	recipientRemove                = 2,
+	call                           = 3,
+	channelNameChange              = 4,
+	channelIconchange              = 5,
+	pinnedMessage                  = 6,
+	memberJoin                     = 7,
+	premiumGuildSubscription       = 8,
+	premiumGuildSubscriptionTier1  = 9,
+	premiumGuildSubscriptionTier2  = 10,
+	premiumGuildSubscriptionTier3  = 11,
+	channelFollowAdd               = 12,
+	-- unused (guildStream)        = 13,
+	guildDiscoveryDisqualified     = 14,
+	guildDiscoveryRequalified      = 15,
+	guildDiscoveryInitialWarning   = 16,
+	guildDiscoveryFinalWarning     = 17,
+	threadCreated                  = 18,
+	reply                          = 19,
+	chatInputCommand               = 20,
+	threadStarterMessage           = 21,
+	guildInviteReminder            = 22,
+	contextMenuCommand             = 23,
+	autoModerationAction           = 24,
+	roleSubscriptionPurchase       = 25,
+	interactionPremiumUpsell       = 26,
+	stageStart                     = 27,
+	stageEnd                       = 28,
+	stageSpeaker                   = 29,
+	-- unused                      = 30,
+	stageTopic                     = 31,
+	applicationPremiumSubscription = 32,
 }
 
 enums.relationshipType = enum {
@@ -98,6 +114,7 @@ enums.relationshipType = enum {
 	blocked         = 2,
 	pendingIncoming = 3,
 	pendingOutgoing = 4,
+	implicit        = 5,
 }
 
 enums.activityType = enum {
@@ -110,17 +127,20 @@ enums.activityType = enum {
 }
 
 enums.status = enum {
-	online = 'online',
-	idle = 'idle',
+	online       = 'online',
+	idle         = 'idle',
 	doNotDisturb = 'dnd',
-	invisible = 'invisible',
+	invisible    = 'invisible', -- only sent?
+	offline      = 'offline', -- only received?
 }
 
 enums.gameType = enum { -- NOTE: deprecated; use activityType
 	default   = 0,
 	streaming = 1,
 	listening = 2,
+	watching  = 3,
 	custom    = 4,
+	competing = 5,
 }
 
 enums.verificationLevel = enum {
@@ -143,6 +163,10 @@ enums.premiumTier = enum {
 	tier2 = 2,
 	tier3 = 3,
 }
+
+local function flag(n)
+	return 2^n
+end
 
 enums.permission = enum {
 	createInstantInvite    = 0x0000000000000001,
@@ -186,6 +210,14 @@ enums.permission = enum {
 	sendMessagesInThreads  = 0x0000004000000000,
 	useEmbeddedActivities  = 0x0000008000000000,
 	moderateMembers        = 0x0000010000000000,
+	monetizationAnalytics  = 0x0000020000000000,
+	useSoundboard          = 0x0000040000000000,
+	createGuildExpressions = 0x0000080000000000,
+	createEvent            = 0x0000100000000000,
+	useExternalSounds      = 0x0000200000000000,
+	sendVoiceMessages      = 0x0000400000000000,
+	sendPolls              = 0x0000800000000000,
+	useExternalApps        = 0x0001000000000000,
 }
 
 enums.overwriteType = enum {
@@ -203,76 +235,92 @@ enums.messageFlag = enum {
 	ephemeral                        = 0x00000040,
 	loading                          = 0x00000080,
 	failedToMentionSomeRolesInThread = 0x00000100,
-}
-
-enums.actionType = enum {
-	guildUpdate               = 1,
-	channelCreate             = 10,
-	channelUpdate             = 11,
-	channelDelete             = 12,
-	channelOverwriteCreate    = 13,
-	channelOverwriteUpdate    = 14,
-	channelOverwriteDelete    = 15,
-	memberKick                = 20,
-	memberPrune               = 21,
-	memberBanAdd              = 22,
-	memberBanRemove           = 23,
-	memberUpdate              = 24,
-	memberRoleUpdate          = 25,
-	memberMove                = 26,
-	memberDisconnect          = 27,
-	botAdd                    = 28,
-	roleCreate                = 30,
-	roleUpdate                = 31,
-	roleDelete                = 32,
-	inviteCreate              = 40,
-	inviteUpdate              = 41,
-	inviteDelete              = 42,
-	webhookCreate             = 50,
-	webhookUpdate             = 51,
-	webhookDelete             = 52,
-	emojiCreate               = 60,
-	emojiUpdate               = 61,
-	emojiDelete               = 62,
-	messageDelete             = 72,
-	messageBulkDelete         = 73,
-	messagePin                = 74,
-	messageUnpin              = 75,
-	integrationCreate         = 80,
-	integrationUpdate         = 81,
-	integrationDelete         = 82,
-	stageInstanceCreate       = 83,
-	stageInstanceUpdate       = 84,
-	stageInstanceDelete       = 85,
-	stickerCreate             = 90,
-	stickerUpdate             = 91,
-	stickerDelete             = 92,
-	guildScheduledEventCreate = 100,
-	guildScheduledEventUpdate = 101,
-	guildScheduledEventDelete = 102,
-	threadCreate              = 110,
-	threadUpdate              = 111,
-	threadDelete              = 112,
+	-- unused                        = 0x00000200,
+	-- unused                        = 0x00000400,
+	-- unused                        = 0x00000800,
+	suppressNotification             = 0x00001000,
+	isVoiceMessage                   = 0x00002000,
 }
 
 enums.gatewayIntent = enum {
 	guilds                = 0x00000001,
-	guildMembers          = 0x00000002,
-	guildBans             = 0x00000004,
+	guildMembers          = 0x00000002, -- privileged
+	guildModeration       = 0x00000004,
 	guildEmojis           = 0x00000008,
 	guildIntegrations     = 0x00000010,
 	guildWebhooks         = 0x00000020,
 	guildInvites          = 0x00000040,
 	guildVoiceStates      = 0x00000080,
-	guildPresences        = 0x00000100,
+	guildPresences        = 0x00000100, -- privileged
 	guildMessages         = 0x00000200,
 	guildMessageReactions = 0x00000400,
 	guildMessageTyping    = 0x00000800,
 	directMessage         = 0x00001000,
 	directMessageRections = 0x00002000,
 	directMessageTyping   = 0x00004000,
-	messageContent        = 0x00008000,
+	messageContent        = 0x00008000, -- privileged
 	guildScheduledEvents  = 0x00010000,
+	-- unused             = 0x00020000,
+	-- unused             = 0x00040000,
+	-- unused             = 0x00080000,
+	autoModConfiguration  = 0x00100000,
+	autoModExecution      = 0x00200000,
+}
+
+enums.actionType = enum {
+	guildUpdate            = 1,
+	channelCreate          = 10,
+	channelUpdate          = 11,
+	channelDelete          = 12,
+	channelOverwriteCreate = 13,
+	channelOverwriteUpdate = 14,
+	channelOverwriteDelete = 15,
+	memberKick             = 20,
+	memberPrune            = 21,
+	memberBanAdd           = 22,
+	memberBanRemove        = 23,
+	memberUpdate           = 24,
+	memberRoleUpdate       = 25,
+	memberMove             = 26,
+	memberDisconnect       = 27,
+	botAdd                 = 28,
+	roleCreate             = 30,
+	roleUpdate             = 31,
+	roleDelete             = 32,
+	inviteCreate           = 40,
+	inviteUpdate           = 41,
+	inviteDelete           = 42,
+	webhookCreate          = 50,
+	webhookUpdate          = 51,
+	webhookDelete          = 52,
+	emojiCreate            = 60,
+	emojiUpdate            = 61,
+	emojiDelete            = 62,
+	messageDelete          = 72,
+	messageBulkDelete      = 73,
+	messagePin             = 74,
+	messageUnpin           = 75,
+	integrationCreate      = 80,
+	integrationUpdate      = 81,
+	integrationDelete      = 82,
+	stageInstanceCreate    = 83,
+	stageInstanceUpdate    = 84,
+	stageInstanceDelete    = 85,
+	stickerCreate          = 90,
+	stickerUpdate          = 91,
+	stickerDelete          = 92,
+	eventCreate            = 100,
+	eventUpdate            = 101,
+	eventDelete            = 102,
+	threadCreate           = 110,
+	threadUpdate           = 111,
+	threadDelete           = 112,
+	autoModRuleCreate      = 140,
+	autoModRuleUpdate      = 141,
+	autoModRuleDelete      = 142,
+	autoModMessageBlock    = 143,
+	autoModMessageFlag     = 144,
+	autoModUserTimeout     = 145,
 }
 
 enums.locale = enum {
@@ -314,6 +362,16 @@ enums.logLevel = enum {
 	warning = 2,
 	info    = 3,
 	debug   = 4,
+}
+
+enums.timestampStyle = enum {
+	shortTime      = 't',
+	longTime       = 'T',
+	shortDate      = 'd',
+	longDate       = 'D',
+	shortDateTime  = 'f',
+	longDateTime   = 'F',
+	relativeTime   = 'R',
 }
 
 enums.interactionType = enum {

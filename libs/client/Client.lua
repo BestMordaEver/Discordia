@@ -43,16 +43,18 @@ local VoiceManager = require('voice/VoiceManager')
 
 local encode, decode, null = json.encode, json.decode, json.null
 local readFileSync, writeFileSync = fs.readFileSync, fs.writeFileSync
+local band, bor, bnot = bit.band, bit.bor, bit.bnot
 
-local logLevel = enums.logLevel
-local gameType = enums.gameType
+local logLevel = assert(enums.logLevel)
+local activityType = assert(enums.activityType)
+local gatewayIntent = assert(enums.gatewayIntent)
 
 local wrap = coroutine.wrap
 local time, difftime = os.time, os.difftime
 local format = string.format
 
 local CACHE_AGE = constants.CACHE_AGE
-local GATEWAY_VERSION = constants.GATEWAY_VERSION
+local API_VERSION = constants.API_VERSION
 
 -- do not change these options here
 -- pass a custom table on client initialization instead
@@ -72,7 +74,7 @@ local defaultOptions = {
 	gatewayFile = 'gateway.json',
 	dateTime = '%F %T',
 	syncGuilds = false,
-	intents = 1,
+	gatewayIntents = 3243773, -- all non-privileged intents
 }
 
 local function parseOptions(customOptions)
@@ -106,7 +108,7 @@ local Client, get = require('class')('Client', Emitter)
 
 function Client:__init(options)
 	Emitter.__init(self)
-	options = parseOptions(options)
+	options = assert(parseOptions(options))
 	self._options = options
 	self._shards = {}
 	self._api = API(self)
@@ -125,8 +127,10 @@ function Client:__init(options)
 	self._voice = VoiceManager(self)
 	self._role_map = {}
 	self._emoji_map = {}
+	self._sticker_map = {}
 	self._channel_map = {}
 	self._events = require('client/EventHandler')
+	self._intents = options.gatewayIntents
 end
 
 for name, level in pairs(logLevel) do
@@ -157,6 +161,11 @@ local function run(self, token)
 	local api = self._api
 	local users = self._users
 	local options = self._options
+
+	if options.cacheAllMembers and bit.band(self._intents, gatewayIntent.guildMembers) == 0 then
+		self:warning('Cannot cache all members while guildMembers intent is disabled')
+		options.cacheAllMembers = false
+	end
 
 	local user, err1 = api:authenticate(token)
 	if not user then
@@ -267,7 +276,7 @@ local function run(self, token)
 		self._shards[id] = Shard(id, self)
 	end
 
-	local path = format('/?v=%i&encoding=json', GATEWAY_VERSION)
+	local path = format('/?v=%i&encoding=json', API_VERSION)
 	for _, shard in pairs(self._shards) do
 		wrap(shard.connect)(shard, url, path)
 		shard:identifyWait()
@@ -277,6 +286,7 @@ end
 
 --[=[
 @m run
+@t ws
 @p token string
 @op presence table
 @r nil
@@ -286,7 +296,7 @@ managed by Luvit libraries and a libuv event loop, multiple clients per process
 and multiple shards per client can operate concurrently. This should be the last
 method called after all other code and event handlers have been initialized. If
 a presence table is provided, it will act as if the user called `setStatus`
-and `setGame` after `run`.
+and `setActivity` after `run`.
 ]=]
 function Client:run(token, presence)
 	self._presence = presence or {}
@@ -304,6 +314,92 @@ function Client:stop()
 	for _, shard in pairs(self._shards) do
 		shard:disconnect()
 	end
+end
+
+local function getIntent(i, ...)
+	local v = select(i, ...)
+	local n = Resolver.gatewayIntent(v)
+	if not n then
+		return error('Invalid gateway intent: ' .. tostring(v), 2)
+	end
+	return n
+end
+
+--[=[
+@m getIntents
+@t mem
+@r number
+@d Returns a number that represents the gateway intents enabled for this client.
+]=]
+function Client:getIntents()
+	return self._intents
+end
+
+--[=[
+@m setIntents
+@t mem
+@p intents Intents-Resolvable
+@r nothing
+@d Sets the gateway intents that this client will use. The new value will not be
+used internally until the client (re-)identifies.
+]=]
+function Client:setIntents(intents)
+	self._intents = tonumber(intents) or 0
+end
+
+--[=[
+@m enableIntents
+@t mem
+@p ... Intents-Resolvables
+@r nothing
+@d Enables individual gateway intents for this client. The new value will not be
+used internally until the client (re-)identifies.
+]=]
+function Client:enableIntents(...)
+	for i = 1, select('#', ...) do
+		local intent = getIntent(i, ...)
+		self._intents = bor(self._intents, intent)
+	end
+end
+
+--[=[
+@m disableIntents
+@t mem
+@p ... Intents-Resolvables
+@r nothing
+@d Disables individual gateway intents for this client. The new value will not be
+used internally until the client (re-)identifies.
+]=]
+function Client:disableIntents(...)
+	for i = 1, select('#', ...) do
+		local intent = getIntent(i, ...)
+		self._intents = band(self._intents, bnot(intent))
+	end
+end
+
+--[=[
+@m enableAllIntents
+@t mem
+@r nothing
+@d Enables all known gateway intents for this client. The new value will not be
+used internally until the client (re-)identifies.
+]=]
+function Client:enableAllIntents()
+	for _, value in pairs(gatewayIntent) do
+		self._intents = bor(self._intents, value)
+	end
+	return self
+end
+
+--[=[
+@m disableAllIntents
+@t mem
+@r nothing
+@d Disables all gateway intents for this client. The new value will not be
+used internally until the client (re-)identifies.
+]=]
+function Client:disableAllIntents()
+	self._intents = 0
 end
 
 function Client:_modify(payload)
@@ -501,6 +597,20 @@ function Client:getEmoji(id)
 end
 
 --[=[
+@m getSticker
+@t mem
+@p id Sticker-ID-Resolvable
+@r Sticker
+@d Gets a sticker object by ID. The current user must be in the sticker's guild
+and the client must be running the appropriate shard that serves the sticker's guild.
+]=]
+function Client:getSticker(id)
+	id = Resolver.stickerId(id)
+	local guild = self._sticker_map[id]
+	return guild and guild._stickers:get(id)
+end
+
+--[=[
 @m listVoiceRegions
 @t http
 @r table
@@ -537,7 +647,7 @@ end
 local function updateStatus(self)
 	local presence = self._presence
 	presence.afk = presence.afk or null
-	presence.game = presence.game or null
+	presence.activities = presence.activity and {presence.activity} or null
 	presence.since = presence.since or null
 	presence.status = presence.status or null
 	for _, shard in pairs(self._shards) do
@@ -548,10 +658,11 @@ end
 --[=[
 @m setStatus
 @t ws
-@p status string
+@p status string/nil
 @r nil
 @d Sets the current user's status on all shards that are managed by this client.
 See the `status` enumeration for acceptable status values.
+Passing `nil` removes previously set status.
 ]=]
 function Client:setStatus(status)
 	if type(status) == 'string' then
@@ -568,45 +679,52 @@ function Client:setStatus(status)
 	return updateStatus(self)
 end
 
---[=[
-@m setGame
-@t ws
-@p game string/table
-@r nil
-@d Sets the current user's game on all shards that are managed by this client.
-If a string is passed, it is treated as the game name. If a table is passed, it
-must have a `name` field and may optionally have a `url` or `type` field. Pass `nil` to
-remove the game status.
-]=]
 function Client:setGame(game)
-	if type(game) == 'string' then
-		game = {name = game, type = gameType.default}
-	elseif type(game) == 'table' then
-		if type(game.name) == 'string' then
-			if type(game.type) ~= 'number' then
-				if type(game.url) == 'string' then
-					game.type = gameType.streaming
+	self:_deprecated(self.__name, 'setGame', 'setActivity')
+	return self:setActivity(game)
+end
+
+--[=[
+@m setActivity
+@t ws
+@p activity string/table/nil
+@r nil
+@d Sets the current user's activity on all shards that are managed by this client.
+If a string is passed, it is treated as the activity name. If a table is passed, it
+must have a `name` field and may optionally have a `url` or `type` field. Pass `nil` to
+remove the activity status.
+Passing `nil` removes previously set activities.
+]=]
+function Client:setActivity(activity)
+	if type(activity) == 'string' then
+		activity = {name = activity, type = activityType.default}
+	elseif type(activity) == 'table' then
+		if type(activity.name) == 'string' then
+			if type(activity.type) ~= 'number' then
+				if type(activity.url) == 'string' then
+					activity.type = activityType.streaming
 				else
-					game.type = gameType.default
+					activity.type = activityType.default
 				end
 			end
 		else
-			game = null
+			activity = null
 		end
 	else
-		game = null
+		activity = null
 	end
-	self._presence.game = game
+	self._presence.activity = activity
 	return updateStatus(self)
 end
 
 --[=[
 @m setAFK
 @t ws
-@p afk boolean
+@p afk boolean/nil
 @r nil
 @d Set the current user's AFK status on all shards that are managed by this client.
 This generally applies to user accounts and their push notifications.
+Passing `nil` removes AFK status.
 ]=]
 function Client:setAFK(afk)
 	if type(afk) == 'boolean' then

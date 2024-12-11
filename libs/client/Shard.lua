@@ -7,7 +7,7 @@ local WebSocket = require('client/WebSocket')
 local constants = require('constants')
 local enums = require('enums')
 
-local logLevel = enums.logLevel
+local logLevel = assert(enums.logLevel)
 local min, max, random = math.min, math.max, math.random
 local null = json.null
 local format = string.format
@@ -63,8 +63,9 @@ local ignore = {
 	['SESSIONS_REPLACE'] = true,
 	['INVITE_CREATE'] = true,
 	['INVITE_DELETE'] = true,
-	['APPLICATION_COMMAND_PERMISSIONS_UPDATE'] = true,
 	['EMBEDDED_ACTIVITY_UPDATE'] = true,
+	['GIFT_CODE_UPDATE'] = true,
+	['APPLICATION_COMMAND_PERMISSIONS_UPDATE'] = true,
 }
 
 local Shard = require('class')('Shard', WebSocket)
@@ -233,11 +234,11 @@ function Shard:identify()
 			['referrer'] = '',
 			['referring_domain'] = '',
 		},
-		intents = options.intents,
 		compress = options.compress,
 		large_threshold = options.largeThreshold,
 		shard = {self._id, client._total_shard_count},
 		presence = next(client._presence) and client._presence,
+		intents = client._intents,
 	}, true)
 
 end

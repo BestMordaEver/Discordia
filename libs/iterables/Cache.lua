@@ -70,7 +70,9 @@ function Cache:_insert(data)
 		old:_load(data)
 		return old
 	elseif self._deleted[k] then
-		return insert(self, k, self._deleted[k])
+		local deleted = insert(self, k, self._deleted[k])
+		deleted:_load(data)
+		return deleted
 	else
 		local obj = self._constructor(data, self._parent)
 		return insert(self, k, obj)
@@ -140,7 +142,7 @@ end
 is not guaranteed.
 ]=]
 function Cache:iter()
-	local objects, k, obj = self._objects
+	local objects, k, obj = self._objects, nil, nil
 	return function()
 		k, obj = next(objects, k)
 		return obj

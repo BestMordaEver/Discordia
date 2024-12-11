@@ -46,6 +46,8 @@ return {
 	GUILD_CHANNELS                            = "/guilds/%s/channels",
 	GUILD_EMOJI                               = "/guilds/%s/emojis/%s",
 	GUILD_EMOJIS                              = "/guilds/%s/emojis",
+	GUILD_STICKER                             = "/guilds/%s/stickers/%s",
+	GUILD_STICKERS                            = "/guilds/%s/stickers",
 	GUILD_INTEGRATION                         = "/guilds/%s/integrations/%s",
 	GUILD_INTEGRATIONS                        = "/guilds/%s/integrations",
 	GUILD_INVITES                             = "/guilds/%s/invites",
