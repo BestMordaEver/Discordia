@@ -13,6 +13,9 @@ local Webhook = require('containers/Webhook')
 local Cache = require('iterables/Cache')
 local Resolver = require('client/Resolver')
 
+--[=[Represents a text channel in a Discord guild, where guild members and webhooks
+can send and receive messages.]=]
+---@class GuildTextChannel : TextChannel, ForumChannel
 local GuildTextChannel, get = require('class')('GuildTextChannel', TextChannel, ForumChannel)
 
 function GuildTextChannel:__init(data, parent)
@@ -33,6 +36,8 @@ end
 @d Creates a webhook for this channel. The name must be between 2 and 32 characters
 in length.
 ]=]
+--[=[Creates a webhook for this channel. The name must be between 2 and 32 characters
+in length.]=]
 function GuildTextChannel:createWebhook(name)
 	local data, err = self.client._api:createWebhook(self._id, {name = name})
 	if data then
@@ -50,6 +55,9 @@ end
 cache and its objects are not automatically updated via gateway events. You must
 call this method again to get the updated objects.
 ]=]
+--[=[Returns a newly constructed cache of all webhook objects for the channel. The
+cache and its objects are not automatically updated via gateway events. You must
+call this method again to get the updated objects.]=]
 function GuildTextChannel:getWebhooks()
 	local data, err = self.client._api:getChannelWebhooks(self._id)
 	if data then
@@ -67,6 +75,8 @@ end
 @d Sets the channel's topic. This must be between 1 and 1024 characters. Pass `nil`
 to remove the topic.
 ]=]
+--[=[Sets the channel's topic. This must be between 1 and 1024 characters. Pass `nil`
+to remove the topic.]=]
 function GuildTextChannel:setTopic(topic)
 	return self:_modify({topic = topic or json.null})
 end
@@ -79,6 +89,8 @@ end
 @d Sets the channel's slowmode rate limit in seconds. This must be between 0 and 120.
 Passing 0 or `nil` will clear the limit.
 ]=]
+--[=[Sets the channel's slowmode rate limit in seconds. This must be between 0 and 120.
+Passing 0 or `nil` will clear the limit.]=]
 function GuildTextChannel:setRateLimit(limit)
 	return self:_modify({rate_limit_per_user = limit or json.null})
 end
@@ -90,6 +102,7 @@ end
 @r boolean
 @d Follow the given Announcement Channel
 ]=]
+--[=[Follow the given Announcement Channel]=]
 function GuildTextChannel:follow(channel)
 	channel = Resolver.channelId(channel)
 	local data, err =  self.client._api:followNewsChannel(self._id, {webhook_channel_id = channel})
@@ -107,6 +120,8 @@ end
 @d Enables the NSFW setting for the channel. NSFW channels are hidden from users
 until the user explicitly requests to view them.
 ]=]
+--[=[Enables the NSFW setting for the channel. NSFW channels are hidden from users
+until the user explicitly requests to view them.]=]
 function GuildTextChannel:enableNSFW()
 	return self:_modify({nsfw = true})
 end
@@ -118,6 +133,8 @@ end
 @d Disables the NSFW setting for the channel. NSFW channels are hidden from users
 until the user explicitly requests to view them.
 ]=]
+--[=[Disables the NSFW setting for the channel. NSFW channels are hidden from users
+until the user explicitly requests to view them.]=]
 function GuildTextChannel:disableNSFW()
 	return self:_modify({nsfw = false})
 end

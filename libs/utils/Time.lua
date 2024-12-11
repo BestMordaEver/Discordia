@@ -34,6 +34,26 @@ local units = {
 	{'milliseconds', 1},
 }
 
+
+--[=[Represents a length of time and provides utilities for converting to and from
+different formats. Supported units are: weeks, days, hours, minutes, seconds,
+and milliseconds.]=]
+---@class Time
+---@overload fun(value? : number) : Time
+---@operator add(Time) : Time
+---@operator sub(Time) : Time
+---@operator mul(number) : Time
+---@operator div(number) : Time
+---@field protected _value number
+---@field protected __init fun(self : Time, value? : number)
+---@field protected __eq fun(self : Time, other : Time) : boolean
+---@field protected __lt fun(self : Time, other : Time) : boolean
+---@field protected __le fun(self : Time, other : Time) : boolean
+---@field protected __tostring fun(self : Time) : string
+---@field protected __add fun(self : Time, other : Time) : Time
+---@field protected __sub fun(self : Time, other : Time) : Time
+---@field protected __mul fun(self : Time, other : number) : Time?
+---@field protected __div fun(self : Time, other : number) : Time?
 local Time = class('Time')
 
 local function check(self, other)
@@ -56,6 +76,8 @@ end
 @d Returns a human-readable string built from the set of normalized time values
 that the object represents.
 ]=]
+--[=[Returns a human-readable string built from the set of normalized time values
+that the object represents.]=]
 function Time:toString()
 	local ret = {}
 	local ms = self:toMilliseconds()
@@ -123,6 +145,9 @@ end
 @d Constructs a new Time object from a value interpreted as weeks, where a week
 is equal to 7 days.
 ]=]
+--[=[Constructs a new Time object from a value interpreted as weeks, where a week
+is equal to 7 days.]=]
+---@param t number
 function Time.fromWeeks(t)
 	return Time(t * MS_PER_WEEK)
 end
@@ -135,6 +160,9 @@ end
 @d Constructs a new Time object from a value interpreted as days, where a day is
 equal to 24 hours.
 ]=]
+--[=[Constructs a new Time object from a value interpreted as days, where a day is
+equal to 24 hours.]=]
+---@param t number
 function Time.fromDays(t)
 	return Time(t * MS_PER_DAY)
 end
@@ -147,6 +175,9 @@ end
 @d Constructs a new Time object from a value interpreted as hours, where an hour is
 equal to 60 minutes.
 ]=]
+--[=[Constructs a new Time object from a value interpreted as hours, where an hour is
+equal to 60 minutes.]=]
+---@param t number
 function Time.fromHours(t)
 	return Time(t * MS_PER_HOUR)
 end
@@ -159,6 +190,9 @@ end
 @d Constructs a new Time object from a value interpreted as minutes, where a minute
 is equal to 60 seconds.
 ]=]
+--[=[Constructs a new Time object from a value interpreted as minutes, where a minute
+is equal to 60 seconds.]=]
+---@param t number
 function Time.fromMinutes(t)
 	return Time(t * MS_PER_MIN)
 end
@@ -171,6 +205,9 @@ end
 @d Constructs a new Time object from a value interpreted as seconds, where a second
 is equal to 1000 milliseconds.
 ]=]
+--[=[Constructs a new Time object from a value interpreted as seconds, where a second
+is equal to 1000 milliseconds.]=]
+---@param t number
 function Time.fromSeconds(t)
 	return Time(t * MS_PER_S)
 end
@@ -183,6 +220,9 @@ end
 @d Constructs a new Time object from a value interpreted as milliseconds, the base
 unit represented.
 ]=]
+--[=[Constructs a new Time object from a value interpreted as milliseconds, the base
+unit represented.]=]
+---@param t number
 function Time.fromMilliseconds(t)
 	return Time(t)
 end
@@ -195,6 +235,8 @@ end
 @d Constructs a new Time object from a table of time values where the keys are
 defined in the constructors above (eg: `weeks`, `days`, `hours`).
 ]=]
+--[=[Constructs a new Time object from a table of time values.]=]
+---@param t {weeks? : number, days? : number, hours? : number, minutes? : number, seconds? : number, milliseconds? : number}
 function Time.fromTable(t)
 	local n = 0
 	for _, v in ipairs(units) do
@@ -211,6 +253,7 @@ end
 @r number
 @d Returns the total number of weeks that the time object represents.
 ]=]
+--[=[Returns the total number of weeks that the time object represents.]=]
 function Time:toWeeks()
 	return self:toMilliseconds() / MS_PER_WEEK
 end
@@ -220,6 +263,7 @@ end
 @r number
 @d Returns the total number of days that the time object represents.
 ]=]
+--[=[Returns the total number of days that the time object represents.]=]
 function Time:toDays()
 	return self:toMilliseconds() / MS_PER_DAY
 end
@@ -229,6 +273,7 @@ end
 @r number
 @d Returns the total number of hours that the time object represents.
 ]=]
+--[=[Returns the total number of hours that the time object represents.]=]
 function Time:toHours()
 	return self:toMilliseconds() / MS_PER_HOUR
 end
@@ -238,6 +283,7 @@ end
 @r number
 @d Returns the total number of minutes that the time object represents.
 ]=]
+--[=[Returns the total number of minutes that the time object represents.]=]
 function Time:toMinutes()
 	return self:toMilliseconds() / MS_PER_MIN
 end
@@ -247,6 +293,7 @@ end
 @r number
 @d Returns the total number of seconds that the time object represents.
 ]=]
+--[=[Returns the total number of seconds that the time object represents.]=]
 function Time:toSeconds()
 	return self:toMilliseconds() / MS_PER_S
 end
@@ -256,6 +303,7 @@ end
 @r number
 @d Returns the total number of milliseconds that the time object represents.
 ]=]
+--[=[Returns the total number of milliseconds that the time object represents.]=]
 function Time:toMilliseconds()
 	return self._value
 end
@@ -266,6 +314,9 @@ end
 @d Returns a table of normalized time values that represent the time object in
 a more accessible form.
 ]=]
+--[=[Returns a table of normalized time values that represent the time object in
+a more accessible form.]=]
+---@return {weeks : number, days : number, hours : number, minutes : number, seconds : number, milliseconds : number}
 function Time:toTable()
 	local ret = {}
 	local ms = self:toMilliseconds()

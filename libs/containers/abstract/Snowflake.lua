@@ -8,6 +8,14 @@ a Snowflake ID.
 local Date = require('utils/Date')
 local Container = require('containers/abstract/Container')
 
+--[=[Defines the base methods and/or properties for all Discord objects that have
+a Snowflake ID.]=]
+---@class Snowflake : Container
+---@field id string
+---@field createdAt Date
+---@field timestamp string
+---@field protected __init fun(self : Snowflake, data : table, parent : Container | Client)
+---@field protected __hash fun(self : Snowflake) : hash : string
 local Snowflake, get = require('class')('Snowflake', Container)
 
 function Snowflake:__init(data, parent)
@@ -19,6 +27,7 @@ end
 @r string
 @d Returns `Snowflake.id`
 ]=]
+--[=[Returns `Snowflake.id`]=]
 function Snowflake:__hash()
 	return self._id
 end
@@ -31,6 +40,9 @@ end
 
 Equivalent to `Date.fromSnowflake(Snowflake.id)`
 ]=]
+--[=[Returns a unique Date object that represents when the object was created by Discord.
+
+Equivalent to `Date.fromSnowflake(Snowflake.id)`]=]
 function Snowflake:getDate()
 	return Date.fromSnowflake(self._id)
 end

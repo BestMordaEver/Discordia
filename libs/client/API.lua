@@ -111,6 +111,7 @@ local function urlencode(obj)
 	return (gsub(tostring(obj), '%W', tohex))
 end
 
+---@class API
 local API = require('class')('API')
 
 function API:__init(client)

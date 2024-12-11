@@ -9,6 +9,13 @@ are here, then the object will be deleted on the next garbage collection cycle.
 local Cache = require('iterables/Cache')
 local Iterable = require('iterables/Iterable')
 
+--[=[Extends the functionality of a regular cache by making use of weak references
+to the objects that are cached. If all references to an object are weak, as they
+are here, then the object will be deleted on the next garbage collection cycle.]=]
+---@class WeakCache : Cache
+---@overload fun(array : any[], constructor : function, parent : Container | Client) : WeakCache
+---@field protected __init fun(self : WeakCache, array : any[], constructor : function, parent : Container | Client)
+---@field protected __len fun(self : WeakCache) : number
 local WeakCache = require('class')('WeakCache', Cache)
 
 local meta = {__mode = 'v'}

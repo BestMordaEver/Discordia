@@ -8,6 +8,17 @@ map function to shape the objects before they are accessed.
 
 local Iterable = require('iterables/Iterable')
 
+--[=[Iterable class that contains objects in a constant, ordered fashion, although
+the order may change if the internal array is modified. Some versions may use a
+map function to shape the objects before they are accessed.]=]
+---@class ArrayIterable<T> : Iterable
+---@overload fun(array : any[], map : function)
+---@field first any
+---@field last any
+---@field protected __init fun(self : ArrayIterable, array : any[], map : function)
+---@field protected __len fun(self : ArrayIterable) : number
+---@field protected _array any[]
+---@field protected _map function
 local ArrayIterable, get = require('class')('ArrayIterable', Iterable)
 
 function ArrayIterable:__init(array, map)
@@ -73,6 +84,8 @@ end
 @r function
 @d Returns an iterator for all contained objects in a consistent order.
 ]=]
+--[=[Returns an iterator for all contained objects in a consistent order.]=]
+---@return fun() : any
 function ArrayIterable:iter()
 	local array = self._array
 	if not array or #array == 0 then

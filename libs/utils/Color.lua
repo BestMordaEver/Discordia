@@ -15,6 +15,25 @@ local band, bor = bit.band, bit.bor
 local bnot = bit.bnot
 local isInstance = class.isInstance
 
+--[=[Wrapper for 24-bit colors packed as a decimal value.]=]
+---@class Color
+---@overload fun(value? : number) : Color
+---@field value number
+---@field r number
+---@field g number
+---@field b number
+---@operator add(Color) : Color
+---@operator sub(Color) : Color
+---@operator mul(number) : Color
+---@operator div(number) : Color
+---@field protected _value number
+---@field protected __init fun(self : Color, value? : number)
+---@field protected __tostring fun(self : Color) : string
+---@field protected __eq fun(self : Color, other : Color) : boolean
+---@field protected __add fun(self : Color, other : Color) : Color
+---@field protected __sub fun(self : Color, other : Color) : Color
+---@field protected __mul fun(self : Color, other : number) : Color?
+---@field protected __div fun(self : Color, other : number) : Color?
 local Color, get = class('Color')
 
 local function check(self, other)
@@ -92,6 +111,8 @@ end
 @d Constructs a new Color object from a hexadecimal string. The string may or may
 not be prefixed by `#`; all other characters are interpreted as a hex string.
 ]=]
+--[=[Constructs a new Color object from a hexadecimal string.]=]
+---@param hex string may or may not be prefixed by `#`; all other characters are interpreted as a hex string
 function Color.fromHex(hex)
 	return Color(tonumber(hex:match('#?(.*)'), 16))
 end
@@ -106,6 +127,10 @@ end
 @d Constructs a new Color object from RGB values. Values are allowed to overflow
 though one component will not overflow to the next component.
 ]=]
+--[=[Constructs a new Color object from RGB values.]=]
+---@param r number between 0x000000 and 0xFF0000
+---@param g number between 0x000000 and 0x00FF00
+---@param b number between 0x000000 and 0x0000FF
 function Color.fromRGB(r, g, b)
 	r = band(lshift(r, 16), 0xFF0000)
 	g = band(lshift(g, 8), 0x00FF00)
@@ -113,6 +138,12 @@ function Color.fromRGB(r, g, b)
 	return Color(bor(bor(r, g), b))
 end
 
+---@param h number
+---@param c number
+---@param m number
+---@return number r
+---@return number g
+---@return number b
 local function fromHue(h, c, m)
 	local x = c * (1 - abs(h / 60 % 2 - 1))
 	local r, g, b
@@ -135,6 +166,13 @@ local function fromHue(h, c, m)
 	return r, g, b
 end
 
+---@param r number
+---@param g number
+---@param b number
+---@return number h
+---@return number d
+---@return number mx
+---@return number mn
 local function toHue(r, g, b)
 	r = r / 0xFF
 	g = g / 0xFF
@@ -166,6 +204,10 @@ end
 @d Constructs a new Color object from HSV values. Hue is allowed to overflow
 while saturation and value are clamped to [0, 1].
 ]=]
+--[=[Constructs a new Color object from HSV values.]=]
+---@param h number can overflow 360
+---@param s number clamped to [0, 1]
+---@param v number clamped to [0, 1]
 function Color.fromHSV(h, s, v)
 	h = h % 360
 	s = clamp(s, 0, 1)
@@ -186,6 +228,10 @@ end
 @d Constructs a new Color object from HSL values. Hue is allowed to overflow
 while saturation and lightness are clamped to [0, 1].
 ]=]
+--[=[Constructs a new Color object from HSL values.]=]
+---@param h number can overflow 360
+---@param s number clamped to [0, 1]
+---@param l number clamped to [0, 1]
 function Color.fromHSL(h, s, l)
 	h = h % 360
 	s = clamp(s, 0, 1)
@@ -201,6 +247,7 @@ end
 @r string
 @d Returns a 6-digit hexadecimal string that represents the color value.
 ]=]
+--[=[Returns a 6-digit hexadecimal string that represents the color value.]=]
 function Color:toHex()
 	return format('#%06X', self._value)
 end
@@ -212,6 +259,7 @@ end
 @r number
 @d Returns the red, green, and blue values that are packed into the color value.
 ]=]
+--[=[Returns the red, green, and blue values that are packed into the color value.]=]
 function Color:toRGB()
 	return self.r, self.g, self.b
 end
@@ -223,6 +271,7 @@ end
 @r number
 @d Returns the hue, saturation, and value that represents the color value.
 ]=]
+--[=[Returns the hue, saturation, and value that represents the color value.]=]
 function Color:toHSV()
 	local h, d, mx = toHue(self.r, self.g, self.b)
 	local v = mx
@@ -237,6 +286,7 @@ end
 @r number
 @d Returns the hue, saturation, and lightness that represents the color value.
 ]=]
+--[=[Returns the hue, saturation, and lightness that represents the color value.]=]
 function Color:toHSL()
 	local h, d, mx, mn = toHue(self.r, self.g, self.b)
 	local l = (mx + mn) * 0.5
@@ -276,27 +326,36 @@ end
 
 --[=[
 @m setRed
+@p r number
 @r nil
 @d Sets the color's red-level.
 ]=]
+--[=[Sets the color's red-level.]=]
+---@param r number
 function Color:setRed(r)
 	self._value = setByte(self._value, 16, r)
 end
 
 --[=[
 @m setGreen
+@p g number
 @r nil
 @d Sets the color's green-level.
 ]=]
+--[=[Sets the color's green-level.]=]
+---@param g number
 function Color:setGreen(g)
 	self._value = setByte(self._value, 8, g)
 end
 
 --[=[
 @m setBlue
+@p b number
 @r nil
 @d Sets the color's blue-level.
 ]=]
+--[=[Sets the color's blue-level.]=]
+---@param b number
 function Color:setBlue(b)
 	self._value = setByte(self._value, 0, b)
 end
@@ -306,6 +365,7 @@ end
 @r Color
 @d Returns a new copy of the original color object.
 ]=]
+--[=[Returns a new copy of the original color object.]=]
 function Color:copy()
 	return Color(self._value)
 end

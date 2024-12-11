@@ -54,6 +54,7 @@ local function getChannel(client, d)
 	return channel and channel._messages and channel
 end
 
+---@class EventHandler
 local EventHandler = setmetatable({}, {__index = function(self, k)
 	self[k] = function(_, _, shard)
 		return shard:warning('Unhandled gateway event: %s', k)

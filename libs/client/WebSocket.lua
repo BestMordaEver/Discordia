@@ -23,6 +23,7 @@ local function connect(url, path)
 	return assert(ws_connect(options))
 end
 
+---@class WebSocket : Emitter
 local WebSocket = require('class')('WebSocket', Emitter)
 
 function WebSocket:__init(parent)

@@ -7,6 +7,13 @@ Some versions may use a map function to shape the objects before they are access
 
 local Iterable = require('iterables/Iterable')
 
+--[=[Iterable class that wraps a basic Lua table, where order is not guaranteed.
+Some versions may use a map function to shape the objects before they are accessed.]=]
+---@class TableIterable : Iterable
+---@overload fun(tbl : table, map : function)
+---@field private _tbl table
+---@field private _map function
+---@field protected __init fun(self : TableIterable, tbl : table, map : function)
 local TableIterable = require('class')('TableIterable', Iterable)
 
 function TableIterable:__init(tbl, map)
@@ -19,6 +26,7 @@ end
 @r function
 @d Returns an iterator that returns all contained objects. The order of the objects is not guaranteed.
 ]=]
+--[=[Returns an iterator that returns all contained objects. The order of the objects is not guaranteed.]=]
 function TableIterable:iter()
 	local tbl = self._tbl
 	if not tbl then

@@ -11,6 +11,17 @@ local json = require('json')
 local null = json.null
 local format = string.format
 
+--[=[Defines the base methods and properties for all Discord objects and
+structures. Container classes are constructed internally with information
+received from Discord and should never be manually constructed.]=]
+---@class Container
+---@field parent Container | Client
+---@field client Client
+---@field protected _parent Container | Client
+---@field protected _load fun(self : Container, data : table)
+---@field protected __init fun(self : Container, data : table, parent : Container | Client)
+---@field protected __eq fun(self : Container, other : Container) : boolean
+---@field protected __tostring fun(self : Container) : string
 local Container, get = require('class')('Container')
 
 local types = {['string'] = true, ['number'] = true, ['boolean'] = true}
@@ -38,6 +49,8 @@ end
 @d Defines the behavior of the `==` operator. Allows containers to be directly
 compared according to their type and `__hash` return values.
 ]=]
+--[=[Defines the behavior of the `==` operator. Allows containers to be directly
+compared according to their type and `__hash` return values.]=]
 function Container:__eq(other)
 	return self.__class == other.__class and self:__hash() == other:__hash()
 end
@@ -48,6 +61,8 @@ end
 @d Defines the behavior of the `tostring` function. All containers follow the format
 `ClassName: hash`.
 ]=]
+--[=[Defines the behavior of the `tostring` function. All containers follow the format
+`ClassName: hash`.]=]
 function Container:__tostring()
 	return format('%s: %s', self.__name, self:__hash())
 end

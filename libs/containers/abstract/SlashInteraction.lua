@@ -9,6 +9,25 @@ local channelType, applicationCommandType = assert(enums.channelType), assert(en
 local Interaction = require('containers/abstract/Interaction')
 local CommandOption = require('utils/CommandOption')
 
+--[=[Defines the base methods and properties for Discord interactions
+that are received when a user uses a slash command.]=]
+---@class SlashInteraction : Interaction
+---@field commandId string
+---@field commandName string
+---@field commandType applicationCommandType
+---@field target? Member | Message
+---@field options? table<string, CommandOption>
+---@field option? CommandOption
+---@field _loadOptions fun(self : SlashInteraction, options : table, parent : Client)
+---@field _users table<string, User>
+---@field protected _members table<string, Member>
+---@field _roles table<string, Role>
+---@field _channels table<string, GuildChannel>
+---@field protected _messages table<string, Message>
+---@field protected _target Member | Message
+---@field protected _options table<string, CommandOption>
+---@field protected _option CommandOption
+---@field protected __init fun(self : SlashInteraction, data : table, client : Client)
 local SlashInteraction, get = require('class')('SlashInteraction', Interaction)
 
 function SlashInteraction:__init(data, client)

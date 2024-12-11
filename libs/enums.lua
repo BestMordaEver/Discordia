@@ -30,9 +30,12 @@ local function enum(tbl)
 	})
 end
 
+---@type table<string, table <string, number|string> | function>
 local enums = {enum = enum}
 
-enums.defaultAvatar = enum {
+
+---@enum defaultAvatar
+enums.defaultAvatar = {
 	blurple = 0,
 	gray    = 1,
 	green   = 2,
@@ -41,12 +44,14 @@ enums.defaultAvatar = enum {
 	pink    = 5,
 }
 
-enums.notificationSetting = enum {
+---@enum notificationSetting
+enums.notificationSetting = {
 	allMessages  = 0,
 	onlyMentions = 1,
 }
 
-enums.channelType = enum {
+---@enum channelType
+enums.channelType = {
 	text          = 0,
 	private       = 1,
 	voice         = 2,
@@ -66,13 +71,15 @@ enums.channelType = enum {
 	media         = 16,
 }
 
-enums.webhookType = enum {
+---@enum webhookType
+enums.webhookType = {
 	incoming        = 1,
 	channelFollower = 2,
 	application     = 3,
 }
 
-enums.messageType = enum {
+---@enum messageType
+enums.messageType = {
 	default                        = 0,
 	recipientAdd                   = 1,
 	recipientRemove                = 2,
@@ -108,7 +115,8 @@ enums.messageType = enum {
 	applicationPremiumSubscription = 32,
 }
 
-enums.relationshipType = enum {
+---@enum relationshipType
+enums.relationshipType = {
 	none            = 0,
 	friend          = 1,
 	blocked         = 2,
@@ -117,7 +125,8 @@ enums.relationshipType = enum {
 	implicit        = 5,
 }
 
-enums.activityType = enum {
+---@enum activityType
+enums.activityType = {
 	game      = 0,
 	streaming = 1,
 	listening = 2,
@@ -126,7 +135,8 @@ enums.activityType = enum {
 	competing = 5,
 }
 
-enums.status = enum {
+---@enum status
+enums.status = {
 	online       = 'online',
 	idle         = 'idle',
 	doNotDisturb = 'dnd',
@@ -134,7 +144,8 @@ enums.status = enum {
 	offline      = 'offline', -- only received?
 }
 
-enums.gameType = enum { -- NOTE: deprecated; use activityType
+---@enum gameType
+enums.gameType = { -- NOTE: deprecated; use activityType
 	default   = 0,
 	streaming = 1,
 	listening = 2,
@@ -143,7 +154,8 @@ enums.gameType = enum { -- NOTE: deprecated; use activityType
 	competing = 5,
 }
 
-enums.verificationLevel = enum {
+---@enum verificationLevel
+enums.verificationLevel = {
 	none     = 0,
 	low      = 1,
 	medium   = 2,
@@ -151,121 +163,137 @@ enums.verificationLevel = enum {
 	veryHigh = 4, -- ┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻
 }
 
-enums.explicitContentLevel = enum {
+---@enum explicitContentLevel
+enums.explicitContentLevel = {
 	none   = 0,
 	medium = 1,
 	high   = 2,
 }
 
-enums.premiumTier = enum {
+---@enum premiumTier
+enums.premiumTier = {
 	none  = 0,
 	tier1 = 1,
 	tier2 = 2,
 	tier3 = 3,
 }
 
-local function flag(n)
-	return 2^n
-end
-
-enums.permission = enum {
-	createInstantInvite   = flag(0),
-	kickMembers           = flag(1),
-	banMembers            = flag(2),
-	administrator         = flag(3),
-	manageChannels        = flag(4),
-	manageGuild           = flag(5),
-	addReactions          = flag(6),
-	viewAuditLog          = flag(7),
-	prioritySpeaker       = flag(8),
-	stream                = flag(9),
-	readMessages          = flag(10),
-	sendMessages          = flag(11),
-	sendTextToSpeech      = flag(12),
-	manageMessages        = flag(13),
-	embedLinks            = flag(14),
-	attachFiles           = flag(15),
-	readMessageHistory    = flag(16),
-	mentionEveryone       = flag(17),
-	useExternalEmojis     = flag(18),
-	viewGuildInsights     = flag(19),
-	connect               = flag(20),
-	speak                 = flag(21),
-	muteMembers           = flag(22),
-	deafenMembers         = flag(23),
-	moveMembers           = flag(24),
-	useVoiceActivity      = flag(25),
-	changeNickname        = flag(26),
-	manageNicknames       = flag(27),
-	manageRoles           = flag(28),
-	manageWebhooks        = flag(29),
-	manageEmojis          = flag(30),
-	useSlashCommands      = flag(31),
-	requestToSpeak        = flag(32),
-	manageEvents          = flag(33),
-	manageThreads         = flag(34),
-	usePublicThreads      = flag(35),
-	usePrivateThreads     = flag(36),
-	useExternalStickers   = flag(37),
-	sendMessagesInThreads = flag(38),
-	useEmbeddedActivities = flag(39),
-	moderateMembers       = flag(40),
-	monetizationAnalytics = flag(41),
-	useSoundboard         = flag(42),
-	createExpressions     = flag(43),
-	createEvents          = flag(44),
-	useExternalSounds     = flag(45),
-	sendVoiceMessages     = flag(46),
+---@enum permission
+enums.permission = {
+	createInstantInvite   = 0x0000000000000001,	-- 0
+	kickMembers           = 0x0000000000000002, -- 1
+	banMembers            = 0x0000000000000004, -- 2
+	administrator         = 0x0000000000000008, -- 3
+	manageChannels        = 0x0000000000000010, -- 4
+	manageGuild           = 0x0000000000000020, -- 5
+	addReactions          = 0x0000000000000040, -- 6
+	viewAuditLog          = 0x0000000000000080, -- 7
+	prioritySpeaker       = 0x0000000000000100, -- 8
+	stream                = 0x0000000000000200, -- 9
+	readMessages          = 0x0000000000000400, -- 10
+	sendMessages          = 0x0000000000000800, -- 11
+	sendTextToSpeech      = 0x0000000000001000, -- 12
+	manageMessages        = 0x0000000000002000, -- 13
+	embedLinks            = 0x0000000000004000, -- 14
+	attachFiles           = 0x0000000000008000, -- 15
+	readMessageHistory    = 0x0000000000010000, -- 16
+	mentionEveryone       = 0x0000000000020000, -- 17
+	useExternalEmojis     = 0x0000000000040000, -- 18
+	viewGuildInsights     = 0x0000000000080000, -- 19
+	connect               = 0x0000000000100000, -- 20
+	speak                 = 0x0000000000200000, -- 21
+	muteMembers           = 0x0000000000400000, -- 22
+	deafenMembers         = 0x0000000000800000, -- 23
+	moveMembers           = 0x0000000001000000, -- 24
+	useVoiceActivity      = 0x0000000002000000, -- 25
+	changeNickname        = 0x0000000004000000, -- 26
+	manageNicknames       = 0x0000000008000000, -- 27
+	manageRoles           = 0x0000000010000000, -- 28
+	manageWebhooks        = 0x0000000020000000, -- 29
+	manageEmojis          = 0x0000000040000000, -- 30
+	useSlashCommands      = 0x0000000080000000, -- 31
+	requestToSpeak        = 0x0000000100000000, -- 32
+	manageEvents          = 0x0000000200000000, -- 33
+	manageThreads         = 0x0000000400000000, -- 34
+	usePublicThreads      = 0x0000000800000000, -- 35
+	usePrivateThreads     = 0x0000001000000000, -- 36
+	useExternalStickers   = 0x0000002000000000, -- 37
+	sendMessagesInThreads = 0x0000004000000000, -- 38
+	useEmbeddedActivities = 0x0000008000000000, -- 39
+	moderateMembers       = 0x0000010000000000, -- 40
+	monetizationAnalytics = 0x0000020000000000, -- 41
+	useSoundboard         = 0x0000040000000000, -- 42
+	createExpressions     = 0x0000080000000000, -- 43
+	createEvents          = 0x0000100000000000, -- 44
+	useExternalSounds     = 0x0000200000000000, -- 45
+	sendVoiceMessages     = 0x0000400000000000, -- 46
 }
 
-enums.overwriteType = enum {
+---@enum overwriteType
+enums.overwriteType = {
 	role   = 0,
 	member = 1,
 }
 
-enums.messageFlag = enum {
-	crossposted                = flag(0),
-	isCrosspost                = flag(1),
-	suppressEmbeds             = flag(2),
-	sourceMessageDeleted       = flag(3),
-	urgent                     = flag(4),
-	hasThread                  = flag(5),
-	ephemeral                  = flag(6),
-	loading                    = flag(7),
-	threadFailedToMentionRoles = flag(8),
-	-- unused                  = flag(9),
-	-- unused                  = flag(10),
-	-- unused                  = flag(11),
-	suppressNotification       = flag(12),
-	isVoiceMessage             = flag(13),
+---@enum forumSortOrder
+enums.forumSortOrder = {
+	latestActivity = 0,
+	creationDate   = 1,
 }
 
-enums.gatewayIntent = enum {
-	guilds                = flag(0),
-	guildMembers          = flag(1), -- privileged
-	guildModeration       = flag(2),
-	guildEmojis           = flag(3),
-	guildIntegrations     = flag(4),
-	guildWebhooks         = flag(5),
-	guildInvites          = flag(6),
-	guildVoiceStates      = flag(7),
-	guildPresences        = flag(8), -- privileged
-	guildMessages         = flag(9),
-	guildMessageReactions = flag(10),
-	guildMessageTyping    = flag(11),
-	directMessage         = flag(12),
-	directMessageRections = flag(13),
-	directMessageTyping   = flag(14),
-	messageContent        = flag(15), -- privileged
-	guildScheduledEvents  = flag(16),
-	-- unused             = flag(17),
-	-- unused             = flag(18),
-	-- unused             = flag(19),
-	autoModConfiguration  = flag(20),
-	autoModExecution      = flag(21),
+---@enum forumLayout
+enums.forumLayout = {
+	notSet      = 0,
+	listView    = 1,
+	galleryView = 2,
 }
 
-enums.actionType = enum {
+---@enum messageFlag
+enums.messageFlag = {
+	crossposted                = 0x0001, -- 0
+	isCrosspost                = 0x0002, -- 1
+	suppressEmbeds             = 0x0003, -- 2
+	sourceMessageDeleted       = 0x0004, -- 3
+	urgent                     = 0x0008, -- 4
+	hasThread                  = 0x0010, -- 5
+	ephemeral                  = 0x0020, -- 6
+	loading                    = 0x0040, -- 7
+	threadFailedToMentionRoles = 0x0080, -- 8
+	-- unused                  = 0x0100, -- 9
+	-- unused                  = 0x0200, -- 10
+	-- unused                  = 0x0400, -- 11
+	suppressNotification       = 0x0800, -- 12
+	isVoiceMessage             = 0x1000, -- 13
+}
+
+---@enum gatewayIntent
+enums.gatewayIntent = {
+	guilds                = 0x00000001,	-- 0
+	guildMembers          = 0x00000002, -- 1 privileged
+	guildModeration       = 0x00000004, -- 2
+	guildEmojis           = 0x00000008, -- 3
+	guildIntegrations     = 0x00000010, -- 4
+	guildWebhooks         = 0x00000020, -- 5
+	guildInvites          = 0x00000040, -- 6
+	guildVoiceStates      = 0x00000080, -- 7
+	guildPresences        = 0x00000100, -- 8 privileged
+	guildMessages         = 0x00000200, -- 9
+	guildMessageReactions = 0x00000400, -- 10
+	guildMessageTyping    = 0x00000800, -- 11
+	directMessage         = 0x00001000, -- 12
+	directMessageRections = 0x00002000, -- 13
+	directMessageTyping   = 0x00004000, -- 14
+	messageContent        = 0x00008000, -- 15 privileged
+	guildScheduledEvents  = 0x00010000, -- 16
+	-- unused             = 0x00020000, -- 17
+	-- unused             = 0x00040000, -- 18
+	-- unused             = 0x00080000, -- 19
+	autoModConfiguration  = 0x00100000, -- 20
+	autoModExecution      = 0x00200000, -- 21
+}
+
+---@enum actionType
+enums.actionType = {
 	guildUpdate            = 1,
 	channelCreate          = 10,
 	channelUpdate          = 11,
@@ -321,7 +349,8 @@ enums.actionType = enum {
 	autoModUserTimeout     = 145,
 }
 
-enums.locale = enum {
+---@enum localeName
+enums.locale = {
 	danish      = "da",
 	german      = "de",
 	englishUK   = "en-GB",
@@ -354,7 +383,8 @@ enums.locale = enum {
 	korean      = "ko",
 }
 
-enums.logLevel = enum {
+---@enum logLevel
+enums.logLevel = {
 	none    = 0,
 	error   = 1,
 	warning = 2,
@@ -362,7 +392,8 @@ enums.logLevel = enum {
 	debug   = 4,
 }
 
-enums.interactionType = enum {
+---@enum interactionType
+enums.interactionType = {
 	ping               = 1,
 	applicationCommand = 2,
 	messageComponent   = 3,
@@ -370,7 +401,8 @@ enums.interactionType = enum {
 	modalSubmit        = 5,
 }
 
-enums.callbackType = enum {
+---@enum callbackType
+enums.callbackType = {
 	pong         = 1,
 	reply        = 4,
 	deferReply   = 5,
@@ -380,19 +412,22 @@ enums.callbackType = enum {
 	modal        = 9,
 }
 
-enums.applicationCommandType = enum {
+---@enum applicationCommandType
+enums.applicationCommandType = {
 	chatInput = 1,
 	user      = 2,
 	message   = 3,
 }
 
-enums.interactionContextType = enum {
+---@enum interactionContextType
+enums.interactionContextType = {
 	guild          = 0,
 	dm             = 1,
 	privateChannel = 2,
 }
 
-enums.applicationCommandOptionType = enum {
+---@enum applicationCommandOptionType
+enums.applicationCommandOptionType = {
 	subcommand      = 1,
 	subcommandGroup = 2,
 	string          = 3,
@@ -406,7 +441,8 @@ enums.applicationCommandOptionType = enum {
 	attachment      = 11,
 }
 
-enums.componentType = enum {
+---@enum componentType
+enums.componentType = {
 	row               = 1,
 	button            = 2,
 	stringSelect      = 3,
@@ -417,7 +453,8 @@ enums.componentType = enum {
 	channelSelect     = 8,
 }
 
-enums.buttonStyle = enum {
+---@enum buttonStyle
+enums.buttonStyle = {
 	primary   = 1,
 	secondary = 2,
 	success   = 3,
@@ -425,9 +462,16 @@ enums.buttonStyle = enum {
 	link      = 5,
 }
 
-enums.inputStyle = enum {
+---@enum inputStyle
+enums.inputStyle = {
 	short     = 1,
 	paragraph = 2,
 }
+
+for name, t in pairs(enums) do
+	if t ~= enum then
+		enums[name] = enum(t)
+	end
+end
 
 return enums

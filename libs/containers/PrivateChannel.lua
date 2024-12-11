@@ -6,6 +6,9 @@ the current user and one other recipient.
 
 local TextChannel = require('containers/abstract/TextChannel')
 
+--[=[Represents a private Discord text channel used to track correspondences between
+the current user and one other recipient.]=]
+---@class PrivateChannel : TextChannel
 local PrivateChannel, get = require('class')('PrivateChannel', TextChannel)
 
 function PrivateChannel:__init(data, parent)
@@ -20,6 +23,8 @@ end
 @d Closes the channel. This does not delete the channel. To re-open the channel,
 use `User:getPrivateChannel`.
 ]=]
+--[=[Closes the channel. This does not delete the channel. To re-open the channel,
+use `User:getPrivateChannel`.]=]
 function PrivateChannel:close()
 	return self:_delete()
 end

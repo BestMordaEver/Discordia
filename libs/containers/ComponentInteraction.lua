@@ -9,6 +9,9 @@ local MessagingInteraction = require('containers/abstract/MessagingInteraction')
 local Resolver = require('client/Resolver')
 local callbackType = assert(enums.callbackType)
 
+--[=[Represents an interaction that your application receives when a user uses
+a message component.]=]
+---@class ComponentInteraction : MessagingInteraction
 local ComponentInteraction, get = require('class')('ComponentInteraction', MessagingInteraction)
 
 function ComponentInteraction:__init(data, client)
@@ -36,6 +39,9 @@ end
 If `content` is a string, then it is simply set as the message content. If it is a table,
 more advanced formatting is allowed. See [[managing messages]] for more information.
 ]=]
+--[=[Acknowledge the interaction and update the message that the component is attached to.
+If `content` is a string, then it is simply set as the message content. If it is a table,
+more advanced formatting is allowed. See [[managing messages]] for more information.]=]
 function ComponentInteraction:update(payload)
 	return self:_callbackWithContent(callbackType.update, payload)
 end
@@ -47,6 +53,8 @@ end
 @d Acknowledge the interaction and update the message that the component
 is attached to later. The user won't see a loading state.
 ]=]
+--[=[Acknowledge the interaction and update the message that the component
+is attached to later. The user won't see a loading state.]=]
 function ComponentInteraction:deferUpdate()
 	return self:_callback(callbackType.deferUpdate)
 end

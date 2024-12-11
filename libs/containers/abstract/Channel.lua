@@ -10,6 +10,13 @@ local enums = require('enums')
 local format = string.format
 local channelType = assert(enums.channelType)
 
+--[=[Defines the base methods and properties for all Discord channel types.]=]
+---@class Channel : Snowflake
+---@field type channelType
+---@field mentionString string
+---@field protected _modify fun(self : Channel, payload : table) : success : boolean, error : string?
+---@field protected _delete fun(self : Channel) : success : boolean, error : string?
+---@field protected __init fun(self : Channel, data : table, parent : Snowflake | Client)
 local Channel, get = require('class')('Channel', Snowflake)
 
 function Channel:__init(data, parent)

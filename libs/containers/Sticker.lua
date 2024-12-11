@@ -8,6 +8,8 @@ local json = require('json')
 
 local format = string.format
 
+--[=[Represents a sticker object.]=]
+---@class Sticker : Snowflake
 local Sticker, get = require('class')('Sticker', Snowflake)
 
 function Sticker:__init(data, parent)
@@ -42,6 +44,7 @@ end
 @r boolean
 @d Sets the stickers's name. The name must be between 2 and 30 characters in length.
 ]=]
+--[=[Sets the stickers's name. The name must be between 2 and 30 characters in length.]=]
 function Sticker:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -53,6 +56,7 @@ end
 @r boolean
 @d Sets the stickers's description. The description must be between 2 and 30 characters in length.
 ]=]
+--[=[Sets the stickers's description. The description must be between 2 and 30 characters in length.]=]
 function Sticker:setDescription(description)
 	return self:_modify({description = description or json.null})
 end
@@ -64,6 +68,7 @@ end
 @r boolean
 @d Sets the stickers's tags. The tags can only be up to 200 characters long.
 ]=]
+--[=[Sets the stickers's tags. The tags can only be up to 200 characters long.]=]
 function Sticker:setTags(tags)
 	return self:_modify({tags = tags or json.null})
 end
@@ -74,6 +79,7 @@ end
 @r boolean
 @d Permanently deletes the sticker. This cannot be undone!
 ]=]
+--[=[Permanently deletes the sticker. This cannot be undone!]=]
 function Sticker:delete()
 	local data, err = self.client._api:deleteGuildSticker(self._parent._id, self._id)
 	if data then

@@ -7,6 +7,9 @@ an application command.
 local MessagingInteraction = require('containers/abstract/MessagingInteraction')
 local SlashInteraction = require('containers/abstract/SlashInteraction')
 
+--[=[Represents an interaction that your application receives when a user uses
+an application command.]=]
+---@class CommandInteraction : MessagingInteraction, SlashInteraction
 local CommandInteraction = require('class')('CommandInteraction', MessagingInteraction, SlashInteraction)
 
 function CommandInteraction:__init(data, client)

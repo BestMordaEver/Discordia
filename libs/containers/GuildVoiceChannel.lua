@@ -11,6 +11,9 @@ local TextChannel = require('containers/abstract/TextChannel')
 local VoiceConnection = require('voice/VoiceConnection')
 local TableIterable = require('iterables/TableIterable')
 
+--[=[Represents a voice channel in a Discord guild, where guild members can connect
+and communicate via voice chat.]=]
+---@class GuildVoiceChannel : GuildChannel, TextChannel
 local GuildVoiceChannel, get = require('class')('GuildVoiceChannel', GuildChannel, TextChannel)
 
 function GuildVoiceChannel:__init(data, parent)
@@ -32,6 +35,9 @@ end
 8000 and 96000 (or 128000 for partnered servers). If `nil` is passed, the
 default is set, which is 64000.
 ]=]
+--[=[Sets the channel's audio bitrate in bits per second (bps). This must be between
+8000 and 96000 (or 128000 for partnered servers). If `nil` is passed, the
+default is set, which is 64000.]=]
 function GuildVoiceChannel:setBitrate(bitrate)
 	return self:_modify({bitrate = bitrate or json.null})
 end
@@ -44,6 +50,8 @@ end
 @d Sets the channel's user limit. This must be between 0 and 99 (where 0 is
 unlimited). If `nil` is passed, the default is set, which is 0.
 ]=]
+--[=[Sets the channel's user limit. This must be between 0 and 99 (where 0 is
+unlimited). If `nil` is passed, the default is set, which is 0.]=]
 function GuildVoiceChannel:setUserLimit(user_limit)
 	return self:_modify({user_limit = user_limit or json.null})
 end
@@ -54,6 +62,7 @@ end
 @r VoiceConnection
 @d Join this channel and form a connection to the Voice Gateway.
 ]=]
+--[=[Join this channel and form a connection to the Voice Gateway.]=]
 function GuildVoiceChannel:join()
 
 	local success, err
@@ -105,6 +114,8 @@ end
 @d Leave this channel if there is an existing voice connection to it.
 Equivalent to GuildVoiceChannel.connection:close()
 ]=]
+--[=[Leave this channel if there is an existing voice connection to it.
+Equivalent to GuildVoiceChannel.connection:close()]=]
 function GuildVoiceChannel:leave()
 	if self._connection then
 		return self._connection:close()

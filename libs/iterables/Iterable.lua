@@ -12,6 +12,15 @@ all stored objects should have a `__hash` method.
 local random = math.random
 local insert, sort, pack, unpack = table.insert, table.sort, table.pack, table.unpack
 
+--[=[Abstract base class that defines the base methods and properties for a
+general purpose data structure with features that are better suited for an
+object-oriented environment.
+
+Note: All sub-classes should implement their own `__init` and `iter` methods and
+all stored objects should have a `__hash` method.]=]
+---@class Iterable
+---@field protected __pairs function
+---@field protected __len function
 local Iterable = require('class')('Iterable')
 
 --[=[
@@ -52,6 +61,10 @@ end
 @d Returns an individual object by key, where the key should match the result of
 calling `__hash` on the contained objects. Operates with up to O(n) complexity.
 ]=]
+--[=[Returns an individual object by key, where the key should match the result of
+calling `__hash` on the contained objects. Operates with up to O(n) complexity.]=]
+---@param k string
+---@return any?
 function Iterable:get(k) -- objects must be hashable
 	for obj in self:iter() do
 		if obj:__hash() == k then
@@ -67,6 +80,10 @@ end
 @r *
 @d Returns the first object that satisfies a predicate.
 ]=]
+--[=[Returns the first object that satisfies a predicate.]=]
+---@generic T
+---@param fn fun(T) : boolean
+---@return T?
 function Iterable:find(fn)
 	for obj in self:iter() do
 		if fn(obj) then
@@ -82,6 +99,10 @@ end
 @r function
 @d Returns an iterator that returns all objects that satisfy a predicate.
 ]=]
+--[=[Returns an iterator that returns all objects that satisfy a predicate.]=]
+---@generic T
+---@param fn fun(obj:T) : boolean
+---@return fun() : T?
 function Iterable:findAll(fn)
 	local gen = self:iter()
 	return function()
@@ -104,6 +125,9 @@ end
 @d Iterates through all objects and calls a function `fn` that takes the
 objects as an argument.
 ]=]
+--[=[Iterates through all objects and calls a function `fn` that takes the
+objects as an argument.]=]
+---@param fn fun(any)
 function Iterable:forEach(fn)
 	for obj in self:iter() do
 		fn(obj)
@@ -115,6 +139,8 @@ end
 @r *
 @d Returns a random object that is contained in the iterable.
 ]=]
+--[=[Returns a random object that is contained in the iterable.]=]
+---@return any
 function Iterable:random()
 	local n = 1
 	local rand = random(#self)
@@ -123,6 +149,7 @@ function Iterable:random()
 			return obj
 		end
 		n = n + 1
+---@diagnostic disable-next-line: missing-return
 	end
 end
 
@@ -133,6 +160,10 @@ end
 @d If a predicate is provided, this returns the number of objects in the iterable
 that satisfy the predicate; otherwise, the total number of objects.
 ]=]
+--[=[If a predicate is provided, this returns the number of objects in the iterable
+that satisfy the predicate; otherwise, the total number of objects.]=]
+---@param fn fun(any) : boolean
+---@return number
 function Iterable:count(fn)
 	if not fn then
 		return self:__len()
@@ -194,6 +225,14 @@ If a `sortBy` string is provided, then the table is sorted by that particular
 property. If a predicate is provided, then only objects that satisfy it will
 be included.
 ]=]
+--[=[Returns a sequentially-indexed table that contains references to all objects.
+If a `sortBy` string is provided, then the table is sorted by that particular
+property. If a predicate is provided, then only objects that satisfy it will
+be included.]=]
+---@generic T
+---@param sortBy? string
+---@param fn fun(obj:T) : boolean
+---@return T[]
 function Iterable:toArray(sortBy, fn)
 	local t1 = type(sortBy)
 	if t1 == 'string' then
@@ -224,6 +263,11 @@ end
 row corresponds to each object in the iterable, and each value in the row is
 selected from the objects according to the keys provided.
 ]=]
+--[=[Similarly to an SQL query, this returns a sorted Lua table of rows where each
+row corresponds to each object in the iterable, and each value in the row is
+selected from the objects according to the keys provided.]=]
+---@param ... string
+---@return table
 function Iterable:select(...)
 	local rows = {}
 	local keys = pack(...)
@@ -254,6 +298,13 @@ encountered object, picked by the provided keys. If a key is a string, the objec
 are indexed with the string. If a key is a function, the function is called with
 the object passed as its first argument.
 ]=]
+--[=[This returns an iterator that, when called, returns the values from each
+encountered object, picked by the provided keys. If a key is a string, the objects
+are indexed with the string. If a key is a function, the function is called with
+the object passed as its first argument.]=]
+---@generic T
+---@param ... string | fun(obj:T) : T
+---@return fun() : T? 
 function Iterable:pick(...)
 	local keys = pack(...)
 	local values = {}

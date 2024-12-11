@@ -11,6 +11,9 @@ local constants = require('constants')
 local format = string.format
 local DEFAULT_AVATARS = constants.DEFAULT_AVATARS
 
+--[=[Represents a single user of Discord, either a human or a bot, outside of any
+specific guild's context.]=]
+---@class User : Snowflake
 local User, get = require('class')('User', Snowflake)
 
 function User:__init(data, parent)
@@ -27,6 +30,9 @@ end
 size must be a power of 2 while the extension must be a valid image format. If
 the user does not have a custom avatar, the default URL is returned.
 ]=]
+--[=[Returns a URL that can be used to view the user's full avatar. If provided, the
+size must be a power of 2 while the extension must be a valid image format. If
+the user does not have a custom avatar, the default URL is returned.]=]
 function User:getAvatarURL(size, ext)
 	local avatar = self._avatar
 	if avatar then
@@ -48,6 +54,7 @@ end
 @r string
 @d Returns a URL that can be used to view the user's default avatar.
 ]=]
+--[=[Returns a URL that can be used to view the user's default avatar.]=]
 function User:getDefaultAvatarURL(size)
 	local avatar = self.defaultAvatar
 	if size then
@@ -64,6 +71,8 @@ end
 @d Returns a private channel that can be used to communicate with the user. If the
 channel is not cached an HTTP request is made to open one.
 ]=]
+--[=[Returns a private channel that can be used to communicate with the user. If the
+channel is not cached an HTTP request is made to open one.]=]
 function User:getPrivateChannel()
 	local id = self._id
 	local client = self.client
@@ -87,6 +96,7 @@ end
 @r Message
 @d Equivalent to `User:getPrivateChannel():send(content)`
 ]=]
+--[=[Equivalent to `User:getPrivateChannel():send(content)`]=]
 function User:send(content)
 	local channel, err = self:getPrivateChannel()
 	if channel then
@@ -103,6 +113,7 @@ end
 @r Message
 @d Equivalent to `User:getPrivateChannel():sendf(content)`
 ]=]
+--[=[Equivalent to `User:getPrivateChannel():sendf(content)`]=]
 function User:sendf(content, ...)
 	local channel, err = self:getPrivateChannel()
 	if channel then

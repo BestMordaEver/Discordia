@@ -8,6 +8,8 @@ local Snowflake = require('containers/abstract/Snowflake')
 local enums = require('enums')
 local actionType = assert(enums.actionType)
 
+--[=[Represents an entry made into a guild's audit log.]=]
+---@class AuditLogEntry : Snowflake
 local AuditLogEntry, get = require('class')('AuditLogEntry', Snowflake)
 
 function AuditLogEntry:__init(data, parent)
@@ -34,6 +36,7 @@ end
 @r table
 @d Returns two tables of the target's properties before the change, and after the change.
 ]=]
+--[=[Returns two tables of the target's properties before the change, and after the change.]=]
 function AuditLogEntry:getBeforeAfter()
 	local before, after = {}, {}
 	for k, change in pairs(self._changes) do
@@ -161,6 +164,8 @@ local targets = setmetatable({
 @d Gets the target object of the affected entity. The returned object can be: [[Guild]],
 [[GuildChannel]], [[User]], [[Member]], [[Role]], [[Webhook]], [[Emoji]], nil
 ]=]
+--[=[Gets the target object of the affected entity. The returned object can be: [[Guild]],
+[[GuildChannel]], [[User]], [[Member]], [[Role]], [[Webhook]], [[Emoji]], nil]=]
 function AuditLogEntry:getTarget()
 	return targets[self._action_type](self)
 end
@@ -171,6 +176,7 @@ end
 @r User
 @d Gets the user who performed the changes.
 ]=]
+--[=[Gets the user who performed the changes.]=]
 function AuditLogEntry:getUser()
 	return self._parent._parent:getUser(self._user_id)
 end
@@ -181,6 +187,7 @@ end
 @r Member/nil
 @d Gets the member object of the user who performed the changes.
 ]=]
+--[=[Gets the member object of the user who performed the changes.]=]
 function AuditLogEntry:getMember()
 	return self._parent:getMember(self._user_id)
 end

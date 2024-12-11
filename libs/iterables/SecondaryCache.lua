@@ -8,6 +8,19 @@ cache that it wraps.
 
 local Iterable = require('iterables/Iterable')
 
+--[=[Iterable class that wraps another cache. Objects added to or removed from a
+secondary cache are also automatically added to or removed from the primary
+cache that it wraps.]=]
+---@class SecondaryCache : Cache
+---@overload fun(array : any[], primary : Cache)
+---@field protected _count number
+---@field protected _objects table
+---@field protected _primary Cache
+---@field _insert fun(self : SecondaryCache, data : any) : any
+---@field _remove fun(self : SecondaryCache, data : any) : any
+---@field protected __init fun(self : SecondaryCache, array : any[], primary : Cache)
+---@field protected __pairs function
+---@field protected __len fun(self : SecondaryCache) : number
 local SecondaryCache = require('class')('SecondaryCache', Iterable)
 
 function SecondaryCache:__init(array, primary)
@@ -57,6 +70,11 @@ end
 calling `__hash` on the contained objects. Unlike the default version, this
 method operates with O(1) complexity.
 ]=]
+--[=[Returns an individual object by key, where the key should match the result of
+calling `__hash` on the contained objects. Unlike the default version, this
+method operates with O(1) complexity.]=]
+---@param k string
+---@return any
 function SecondaryCache:get(k)
 	return self._objects[k]
 end
@@ -67,6 +85,9 @@ end
 @d Returns an iterator that returns all contained objects. The order of the objects
 is not guaranteed.
 ]=]
+--[=[Returns an iterator that returns all contained objects. The order of the objects
+is not guaranteed.]=]
+---@return fun() : any
 function SecondaryCache:iter()
 	local objects, k, obj = self._objects, nil, nil
 	return function()

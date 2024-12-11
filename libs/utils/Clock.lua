@@ -11,6 +11,11 @@ local Emitter = require('utils/Emitter')
 local date = os.date
 local setInterval, clearInterval = timer.setInterval, timer.clearInterval
 
+--[=[Used to periodically execute code according to the ticking of the system clock instead of an arbitrary interval.]=]
+---@class Clock : Emitter
+---@overload fun() : Clock
+---@field protected _interval userdata
+---@field protected __init fun(self : Clock)
 local Clock = require('class')('Clock', Emitter)
 
 function Clock:__init()
@@ -26,13 +31,17 @@ time is used; otherwise, local time is used. As the clock ticks, an event is
 emitted for every `os.date` value change. The event name is the key of the value
 that changed and the event argument is the corresponding date table.
 ]=]
+--[=[Starts the main loop for the clock. As the clock ticks, an event is
+emitted for every `os.date` value change. The event name is the key of the value
+that changed and the event argument is the corresponding date table.]=]
+---@param utc? boolean If true, then UTC time is used; otherwise, local time is used
 function Clock:start(utc)
 	if self._interval then return end
 	local fmt = utc and '!*t' or '*t'
 	local prev = date(fmt)
 	self._interval = setInterval(1000, function()
 		local now = date(fmt)
-		for k, v in pairs(now) do ---@diagnostic disable-line: param-type-mismatch
+		for k, v in pairs(now) do
 			if v ~= prev[k] then
 				self:emit(k, now)
 			end
@@ -46,6 +55,7 @@ end
 @r nil
 @d Stops the main loop for the clock.
 ]=]
+--[=[Stops the main loop for the clock.]=]
 function Clock:stop()
 	if self._interval then
 		clearInterval(self._interval)

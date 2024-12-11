@@ -8,6 +8,9 @@ local Container = require('containers/abstract/Container')
 
 local format = string.format
 
+--[=[Represents a Discord user's presence data, either an application or streaming
+presence or a rich presence. Most if not all properties may be nil.]=]
+---@class Activity : Container
 local Activity, get = require('class')('Activity', Container)
 
 function Activity:__init(data, parent)
@@ -44,6 +47,7 @@ end
 @r string
 @d Returns `Activity.parent:__hash()`
 ]=]
+--[=[Returns `Activity.parent:__hash()`]=]
 function Activity:__hash()
 	return self._parent:__hash()
 end

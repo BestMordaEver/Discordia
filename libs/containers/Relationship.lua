@@ -7,6 +7,10 @@ relevant to user-accounts; bots cannot normally have relationships.
 
 local UserPresence = require('containers/abstract/UserPresence')
 
+--[=[Represents a relationship between the current user and another Discord user.
+This is generally either a friend or a blocked user. This class should only be
+relevant to user-accounts; bots cannot normally have relationships.]=]
+---@class Relationship : UserPresence
 local Relationship, get = require('class')('Relationship', UserPresence)
 
 function Relationship:__init(data, parent)

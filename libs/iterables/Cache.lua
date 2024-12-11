@@ -9,6 +9,21 @@ local Iterable = require('iterables/Iterable')
 
 local null = json.null
 
+--[=[Iterable class that holds references to Discordia Class objects in no particular order.]=]
+---@class Cache : Iterable
+---@overload fun(array : any[], constructor : function, parent : Container | Client)
+---@field protected _count number
+---@field protected _objects table
+---@field protected _constructor function
+---@field protected _parent Container | Client
+---@field protected _deleted table
+---@field _delete fun(self : Cache, obj : any) : any?
+---@field _insert fun(self : Cache, obj : any) : any
+---@field _load fun(self : Cache, array : any[], update? : boolean)
+---@field _remove fun(self : Cache, obj : any) : any?
+---@field protected __init fun(self : Cache, array : any[], constructor : function, parent : Container | Client)
+---@field protected __pairs function
+---@field protected __len fun(self : Cache) : number
 local Cache = require('class')('Cache', Iterable)
 
 local meta = {__mode = 'v'}
@@ -131,6 +146,11 @@ end
 calling `__hash` on the contained objects. Unlike Iterable:get, this
 method operates with O(1) complexity.
 ]=]
+--[=[Returns an individual object by key, where the key should match the result of
+calling `__hash` on the contained objects. Unlike Iterable:get, this
+method operates with O(1) complexity.]=]
+---@param k string
+---@return any
 function Cache:get(k)
 	return self._objects[k]
 end
@@ -141,6 +161,9 @@ end
 @d Returns an iterator that returns all contained objects. The order of the objects
 is not guaranteed.
 ]=]
+--[=[Returns an iterator that returns all contained objects. The order of the objects
+is not guaranteed.]=]
+---@return fun() : any
 function Cache:iter()
 	local objects, k, obj = self._objects, nil, nil
 	return function()

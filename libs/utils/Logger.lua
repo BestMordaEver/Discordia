@@ -15,7 +15,6 @@ local fs = require('fs')
 
 local date = os.date
 local format = string.format
----@diagnostic disable-next-line: undefined-field
 local stdout = _G.process.stdout.handle
 local openSync, writeSync = fs.openSync, fs.writeSync
 
@@ -44,6 +43,16 @@ do -- parse config
 	end
 end
 
+--[=[Used to log formatted messages to stdout (the console) or to a file.
+The `dateTime` argument should be a format string that is accepted by `os.date`.
+The file argument should be a relative or absolute file path or `nil` if no log
+file is desired. See the `logLevel` enumeration for acceptable log level values.]=]
+---@class Logger
+---@overload fun(level : number, dateTime : string, file? : string) : Logger
+---@field protected _level number
+---@field protected _dateTime string
+---@field protected _file? any
+---@field protected __init fun(self : Logger, level : number, dateTime : string, file? : string)
 local Logger = require('class')('Logger')
 
 function Logger:__init(level, dateTime, file)
@@ -56,13 +65,17 @@ end
 @m log
 @p level number
 @p msg string
-@p ... *
+@op ... *
 @r string
 @d If the provided level is less than or equal to the log level set on
 initialization, this logs a message to stdout as defined by Luvit's `process`
 module and to a file if one was provided on initialization. The `msg, ...` pair
 is formatted according to `string.format` and returned if the message is logged.
 ]=]
+---@param level number ignores calls if this is higher than log level set on initialization
+---@param msg string the log message
+---@param ... string? arguments that are used to format the `msg`
+---@return string? msg the formatted message is returned if the message is logged
 function Logger:log(level, msg, ...)
 
 	if self._level < level then return end

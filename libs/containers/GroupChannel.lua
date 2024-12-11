@@ -13,6 +13,10 @@ local Resolver = require('client/Resolver')
 
 local format = string.format
 
+--[=[Represents a Discord group channel. Essentially a private channel that may have
+more than one and up to ten recipients. This class should only be relevant to
+user-accounts; bots cannot normally join group channels.]=]
+---@class GroupChannel : TextChannel
 local GroupChannel, get = require('class')('GroupChannel', TextChannel)
 
 function GroupChannel:__init(data, parent)
@@ -27,6 +31,7 @@ end
 @r boolean
 @d Sets the channel's name. This must be between 1 and 100 characters in length.
 ]=]
+--[=[Sets the channel's name. This must be between 1 and 100 characters in length.]=]
 function GroupChannel:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -38,6 +43,7 @@ end
 @r boolean
 @d Sets the channel's icon. To remove the icon, pass `nil`.
 ]=]
+--[=[Sets the channel's icon. To remove the icon, pass `nil`.]=]
 function GroupChannel:setIcon(icon)
 	icon = icon and Resolver.base64(icon)
 	return self:_modify({icon = icon or json.null})
@@ -50,6 +56,7 @@ end
 @r boolean
 @d Adds a user to the channel.
 ]=]
+--[=[Adds a user to the channel.]=]
 function GroupChannel:addRecipient(id)
 	id = Resolver.userId(id)
 	local data, err = self.client._api:groupDMAddRecipient(self._id, id)
@@ -67,6 +74,7 @@ end
 @r boolean
 @d Removes a user from the channel.
 ]=]
+--[=[Removes a user from the channel.]=]
 function GroupChannel:removeRecipient(id)
 	id = Resolver.userId(id)
 	local data, err = self.client._api:groupDMRemoveRecipient(self._id, id)
@@ -84,6 +92,8 @@ end
 @d Removes the client's user from the channel. If no users remain, the channel
 is destroyed.
 ]=]
+--[=[Removes the client's user from the channel. If no users remain, the channel
+is destroyed.]=]
 function GroupChannel:leave()
 	return self:_delete()
 end

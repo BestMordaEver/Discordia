@@ -28,6 +28,9 @@ local channelType = assert(enums.channelType)
 local floor = math.floor
 local format = string.format
 
+--[=[Represents a Discord guild (or server). Guilds are a collection of members,
+channels, and roles that represents one community.]=]
+---@class Guild : Snowflake
 local Guild, get = require('class')('Guild', Snowflake)
 
 function Guild:__init(data, parent)
@@ -132,6 +135,9 @@ end
 if the `cacheAllMembers` client option (and the `syncGuilds` option for
 user-accounts) is enabled on start-up.
 ]=]
+--[=[Asynchronously loads all members for this guild. You do not need to call this
+if the `cacheAllMembers` client option (and the `syncGuilds` option for
+user-accounts) is enabled on start-up.]=]
 function Guild:requestMembers()
 	local shard = self.client._shards[self.shardId]
 	if not shard then
@@ -153,6 +159,11 @@ is enabled on start-up.
 
 Note: This is only for user accounts. Bot accounts never need to sync guilds!
 ]=]
+--[=[Asynchronously loads certain data and enables the receiving of certain events
+for this guild. You do not need to call this if the `syncGuilds` client option
+is enabled on start-up.
+
+Note: This is only for user accounts. Bot accounts never need to sync guilds!]=]
 function Guild:sync()
 	local shard = self.client._shards[self.shardId]
 	if not shard then
@@ -172,6 +183,8 @@ end
 @d Gets a member object by ID. If the object is already cached, then the cached
 object will be returned; otherwise, an HTTP request is made.
 ]=]
+--[=[Gets a member object by ID. If the object is already cached, then the cached
+object will be returned; otherwise, an HTTP request is made.]=]
 function Guild:getMember(id)
 	id = Resolver.userId(id)
 	local member = self._members:get(id)
@@ -194,6 +207,7 @@ end
 @r Role
 @d Gets a role object by ID.
 ]=]
+--[=[Gets a role object by ID.]=]
 function Guild:getRole(id)
 	id = Resolver.roleId(id)
 	return self._roles:get(id)
@@ -206,6 +220,7 @@ end
 @r Emoji
 @d Gets a emoji object by ID.
 ]=]
+--[=[Gets a emoji object by ID.]=]
 function Guild:getEmoji(id)
 	id = Resolver.emojiId(id)
 	return self._emojis:get(id)
@@ -218,6 +233,7 @@ end
 @r Sticker
 @d Gets a sticker object by ID.
 ]=]
+--[=[Gets a sticker object by ID.]=]
 function Guild:getSticker(id)
 	id = Resolver.stickerId(id)
 	return self._stickers:get(id)
@@ -230,6 +246,7 @@ end
 @r GuildChannel
 @d Gets a text, voice, or category channel object by ID.
 ]=]
+--[=[Gets a text, voice, or category channel object by ID.]=]
 function Guild:getChannel(id)
 	id = Resolver.channelId(id)
 	return self._text_channels:get(id) or self._voice_channels:get(id) or self._categories:get(id)
@@ -242,6 +259,7 @@ end
 @r GuildTextChannel/GuildVoiceChannel/GuildCategoryChannel
 @d Creates a new channel in this guild. For list of channel properties see (Discord documentation)[https://discord.com/developers/docs/resources/guild#create-guild-channel]
 ]=]
+--[=[Creates a new channel in this guild. For list of channel properties see (Discord documentation)[https://discord.com/developers/docs/resources/guild#create-guild-channel]]=]
 function Guild:createChannel(properties)
 	local data, err = self.client._api:createGuildChannel(self._id, properties)
 	if data then
@@ -266,6 +284,8 @@ end
 @d Creates a new text channel in this guild. The name must be between 2 and 100
 characters in length.
 ]=]
+--[=[Creates a new text channel in this guild. The name must be between 2 and 100
+characters in length.]=]
 function Guild:createTextChannel(name)
 	local data, err = self.client._api:createGuildChannel(self._id, {name = name, type = channelType.text})
 	if data then
@@ -283,6 +303,8 @@ end
 @d Creates a new voice channel in this guild. The name must be between 2 and 100
 characters in length.
 ]=]
+--[=[Creates a new voice channel in this guild. The name must be between 2 and 100
+characters in length.]=]
 function Guild:createVoiceChannel(name)
 	local data, err = self.client._api:createGuildChannel(self._id, {name = name, type = channelType.voice})
 	if data then
@@ -300,6 +322,8 @@ end
 @d Creates a channel category in this guild. The name must be between 2 and 100
 characters in length.
 ]=]
+--[=[Creates a channel category in this guild. The name must be between 2 and 100
+characters in length.]=]
 function Guild:createCategory(name)
 	local data, err = self.client._api:createGuildChannel(self._id, {name = name, type = channelType.category})
 	if data then
@@ -317,6 +341,8 @@ end
 @d Creates a new role in this guild. The name must be between 1 and 100 characters
 in length.
 ]=]
+--[=[Creates a new role in this guild. The name must be between 1 and 100 characters
+in length.]=]
 function Guild:createRole(name)
 	local data, err = self.client._api:createGuildRole(self._id, {name = name})
 	if data then
@@ -335,6 +361,8 @@ end
 @d Creates a new emoji in this guild. The name must be between 2 and 32 characters
 in length. The image must not be over 256kb, any higher will return a 400 Bad Request
 ]=]
+--[=[Creates a new emoji in this guild. The name must be between 2 and 32 characters
+in length. The image must not be over 256kb, any higher will return a 400 Bad Request]=]
 function Guild:createEmoji(name, image)
 	image = Resolver.base64(image)
 	local data, err = self.client._api:createGuildEmoji(self._id, {name = name, image = image})
@@ -357,6 +385,9 @@ end
 must be between 2 and 100 characters, and the tags must be between 2 and 200 characters. The file must
 be a PNG, APNG, or LOTTIE file, and must be under 500kb and 320x320 pixels.
 ]=]
+--[=[Creates a new sticker in this guild. The name must be between 2 and 30 characters. The description
+must be between 2 and 100 characters, and the tags must be between 2 and 200 characters. The file must
+be a PNG, APNG, or LOTTIE file, and must be under 500kb and 320x320 pixels.]=]
 function Guild:createSticker(name, description, tags, file)
 	file = Resolver.base64(file)
 	local data, err = self.client._api:createGuildSticker(self._id, {name = name, description = description, tags = tags, file = file})
@@ -374,6 +405,7 @@ end
 @r boolean
 @d Sets the guilds name. This must be between 2 and 100 characters in length.
 ]=]
+--[=[Sets the guilds name. This must be between 2 and 100 characters in length.]=]
 function Guild:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -386,6 +418,8 @@ end
 @d Sets the guild's voice region (eg: `us-east`). See `listVoiceRegions` for a list
 of acceptable regions.
 ]=]
+--[=[Sets the guild's voice region (eg: `us-east`). See `listVoiceRegions` for a list
+of acceptable regions.]=]
 function Guild:setRegion(region)
 	return self:_modify({region = region or json.null})
 end
@@ -398,6 +432,8 @@ end
 @d Sets the guild's verification level setting. See the `verificationLevel`
 enumeration for acceptable values.
 ]=]
+--[=[Sets the guild's verification level setting. See the `verificationLevel`
+enumeration for acceptable values.]=]
 function Guild:setVerificationLevel(verification_level)
 	return self:_modify({verification_level = verification_level or json.null})
 end
@@ -410,6 +446,8 @@ end
 @d Sets the guild's default notification setting. See the `notficationSetting`
 enumeration for acceptable values.
 ]=]
+--[=[Sets the guild's default notification setting. See the `notficationSetting`
+enumeration for acceptable values.]=]
 function Guild:setNotificationSetting(default_message_notifications)
 	return self:_modify({default_message_notifications = default_message_notifications or json.null})
 end
@@ -422,6 +460,8 @@ end
 @d Sets the guild's explicit content level setting. See the `explicitContentLevel`
 enumeration for acceptable values.
 ]=]
+--[=[Sets the guild's explicit content level setting. See the `explicitContentLevel`
+enumeration for acceptable values.]=]
 function Guild:setExplicitContentSetting(explicit_content_filter)
 	return self:_modify({explicit_content_filter = explicit_content_filter or json.null})
 end
@@ -433,6 +473,7 @@ end
 @r number
 @d Sets the guild's AFK timeout in seconds.
 ]=]
+--[=[Sets the guild's AFK timeout in seconds.]=]
 function Guild:setAFKTimeout(afk_timeout)
 	return self:_modify({afk_timeout = afk_timeout or json.null})
 end
@@ -444,6 +485,7 @@ end
 @r boolean
 @d Sets the guild's AFK channel.
 ]=]
+--[=[Sets the guild's AFK channel.]=]
 function Guild:setAFKChannel(id)
 	id = id and Resolver.channelId(id)
 	return self:_modify({afk_channel_id = id or json.null})
@@ -456,6 +498,7 @@ end
 @r boolean
 @d Sets the guild's join message channel.
 ]=]
+--[=[Sets the guild's join message channel.]=]
 function Guild:setSystemChannel(id)
 	id = id and Resolver.channelId(id)
 	return self:_modify({system_channel_id = id or json.null})
@@ -469,6 +512,8 @@ end
 @d Transfers ownership of the guild to another user. Only the current guild owner
 can do this.
 ]=]
+--[=[Transfers ownership of the guild to another user. Only the current guild owner
+can do this.]=]
 function Guild:setOwner(id)
 	id = id and Resolver.userId(id)
 	return self:_modify({owner_id = id or json.null})
@@ -481,6 +526,7 @@ end
 @r boolean
 @d Sets the guild's icon. To remove the icon, pass `nil`.
 ]=]
+--[=[Sets the guild's icon. To remove the icon, pass `nil`.]=]
 function Guild:setIcon(icon)
 	icon = icon and Resolver.base64(icon)
 	return self:_modify({icon = icon or json.null})
@@ -493,6 +539,7 @@ end
 @r boolean
 @d Sets the guild's banner. To remove the banner, pass `nil`.
 ]=]
+--[=[Sets the guild's banner. To remove the banner, pass `nil`.]=]
 function Guild:setBanner(banner)
 	banner = banner and Resolver.base64(banner)
 	return self:_modify({banner = banner or json.null})
@@ -505,6 +552,7 @@ end
 @r boolean
 @d Sets the guild's splash. To remove the splash, pass `nil`.
 ]=]
+--[=[Sets the guild's splash. To remove the splash, pass `nil`.]=]
 function Guild:setSplash(splash)
 	splash = splash and Resolver.base64(splash)
 	return self:_modify({splash = splash or json.null})
@@ -518,6 +566,8 @@ end
 @d Returns the number of members that would be pruned from the guild if a prune
 were to be executed.
 ]=]
+--[=[Returns the number of members that would be pruned from the guild if a prune
+were to be executed.]=]
 function Guild:getPruneCount(days)
 	local data, err = self.client._api:getGuildPruneCount(self._id, days and {days = days} or nil)
 	if data then
@@ -536,6 +586,8 @@ end
 @d Prunes (removes) inactive, roleless members from the guild who have not been online in the last provided days.
 If the `count` boolean is provided, the number of pruned members is returned; otherwise, `0` is returned.
 ]=]
+--[=[Prunes (removes) inactive, roleless members from the guild who have not been online in the last provided days.
+If the `count` boolean is provided, the number of pruned members is returned; otherwise, `0` is returned.]=]
 function Guild:pruneMembers(days, count)
 	local t1 = type(days)
 	if t1 == 'number' then
@@ -563,6 +615,9 @@ end
 cache and its objects are not automatically updated via gateway events. You must
 call this method again to get the updated objects.
 ]=]
+--[=[Returns a newly constructed cache of all ban objects for the guild. The
+cache and its objects are not automatically updated via gateway events. You must
+call this method again to get the updated objects.]=]
 function Guild:getBans()
 	local data, err = self.client._api:getGuildBans(self._id)
 	if data then
@@ -580,6 +635,8 @@ end
 @d This will return a Ban object for a giver user if that user is banned
 from the guild; otherwise, `nil` is returned.
 ]=]
+--[=[This will return a Ban object for a giver user if that user is banned
+from the guild; otherwise, `nil` is returned.]=]
 function Guild:getBan(id)
 	id = Resolver.userId(id)
 	local data, err = self.client._api:getGuildBan(self._id, id)
@@ -598,6 +655,9 @@ end
 cache and its objects are not automatically updated via gateway events. You must
 call this method again to get the updated objects.
 ]=]
+--[=[Returns a newly constructed cache of all invite objects for the guild. The
+cache and its objects are not automatically updated via gateway events. You must
+call this method again to get the updated objects.]=]
 function Guild:getInvites()
 	local data, err = self.client._api:getGuildInvites(self._id)
 	if data then
@@ -619,6 +679,12 @@ call this method again to get the updated objects.
 If included, the query parameters include: query.limit: number, query.user: UserId Resolvable
 query.before: EntryId Resolvable, query.type: ActionType Resolvable
 ]=]
+--[=[Returns a newly constructed cache of audit log entry objects for the guild. The
+cache and its objects are not automatically updated via gateway events. You must
+call this method again to get the updated objects.
+
+If included, the query parameters include: query.limit: number, query.user: UserId Resolvable
+query.before: EntryId Resolvable, query.type: ActionType Resolvable]=]
 function Guild:getAuditLogs(query)
 	if type(query) == 'table' then
 		query = {
@@ -646,6 +712,9 @@ end
 cache and its objects are not automatically updated via gateway events. You must
 call this method again to get the updated objects.
 ]=]
+--[=[Returns a newly constructed cache of all webhook objects for the guild. The
+cache and its objects are not automatically updated via gateway events. You must
+call this method again to get the updated objects.]=]
 function Guild:getWebhooks()
 	local data, err = self.client._api:getGuildWebhooks(self._id)
 	if data then
@@ -662,6 +731,8 @@ end
 @d Returns a raw data table that contains a list of available voice regions for
 this guild, as provided by Discord, with no additional parsing.
 ]=]
+--[=[Returns a raw data table that contains a list of available voice regions for
+this guild, as provided by Discord, with no additional parsing.]=]
 function Guild:listVoiceRegions()
 	return self.client._api:getGuildVoiceRegions(self._id)
 end
@@ -672,6 +743,7 @@ end
 @r boolean
 @d Removes the current user from the guild.
 ]=]
+--[=[Removes the current user from the guild.]=]
 function Guild:leave()
 	local data, err = self.client._api:leaveGuild(self._id)
 	if data then
@@ -687,6 +759,7 @@ end
 @r boolean
 @d Permanently deletes the guild. The current user must owner the server. This cannot be undone!
 ]=]
+--[=[Permanently deletes the guild. The current user must owner the server. This cannot be undone!]=]
 function Guild:delete()
 	local data, err = self.client._api:deleteGuild(self._id)
 	if data then
@@ -708,6 +781,7 @@ end
 @r boolean
 @d Kicks a user/member from the guild with an optional reason.
 ]=]
+--[=[Kicks a user/member from the guild with an optional reason.]=]
 function Guild:kickUser(id, reason)
 	id = Resolver.userId(id)
 	local query = reason and {reason = reason}
@@ -729,6 +803,8 @@ end
 @d Bans a user/member from the guild with an optional reason. The `days` parameter
 is the number of days to consider when purging messages, up to 7.
 ]=]
+--[=[Bans a user/member from the guild with an optional reason. The `days` parameter
+is the number of days to consider when purging messages, up to 7.]=]
 function Guild:banUser(id, reason, days)
 	local query = reason and {reason = reason}
 	if days then
@@ -752,6 +828,7 @@ end
 @r boolean
 @d Unbans a user/member from the guild with an optional reason.
 ]=]
+--[=[Unbans a user/member from the guild with an optional reason.]=]
 function Guild:unbanUser(id, reason)
 	id = Resolver.userId(id)
 	local query = reason and {reason = reason}
