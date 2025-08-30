@@ -59,7 +59,7 @@ local function parseFile(obj, files)
 end
 
 ---@param obj User
----@param mentions? User[]
+---@param mentions? User[] | Role[]
 ---@return [string]?
 ---@return string?
 local function parseMention(obj, mentions)
@@ -98,10 +98,10 @@ end
 ---@field embeds? table[]
 ---@field file? string | fileContent
 ---@field files? [string | fileContent]
----@field mention? User
----@field mentions? User[]
+---@field mention? User | Role
+---@field mentions? User[] | Role[]
 ---@field components? table[]
----@field code? string
+---@field code? string | boolean
 ---@field reference? {message : Message, mention : boolean}
 ---@field sticker? Sticker
 ---@field ephemeral? boolean
