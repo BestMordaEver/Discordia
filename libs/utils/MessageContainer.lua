@@ -106,6 +106,7 @@ end
 ---@field sticker? Sticker
 ---@field ephemeral? boolean
 ---@field silent? boolean
+---@field v2_components? boolean
 
 ---@param content messageParams
 ---@return table?
@@ -142,8 +143,17 @@ function MessageContainer.parseContent(content)
 		end
 
 		if mentions then
-			insert(mentions, content)
-			content = concat(mentions, ' ')
+			local prefix = {}
+			for _, mention in ipairs(mentions) do
+				if not content:find(mention, 1, true) then
+					insert(prefix, mention)
+				end
+			end
+
+			if prefix[1] then
+				insert(prefix, content)
+				content = concat(mentions, ' ')
+			end
 		end
 
 		local embeds
@@ -198,6 +208,10 @@ function MessageContainer.parseContent(content)
 
 		if tbl.silent then
 			tbl.flags = bor(tbl.flags or 0, messageFlag.suppressNotification)
+		end
+
+		if tbl.v2_components then
+			tbl.flags = bor(tbl.flags or 0, messageFlag.is_components_v2)
 		end
 
 		return {

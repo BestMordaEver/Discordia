@@ -113,6 +113,12 @@ enums.messageType = {
 	-- unused                      = 30,
 	stageTopic                     = 31,
 	applicationPremiumSubscription = 32,
+	guildIncidentAlertModeEnabled  = 36,
+	guildIncidentAlertModeDisabled = 37,
+	guildIncidentReportRaid        = 38,
+	guildIncidentReportFalseAlarm  = 39,
+	purchaseNotification           = 44,
+	pollResult                     = 46,
 }
 
 ---@enum relationshipType
@@ -266,6 +272,8 @@ enums.messageFlag = {
 	-- unused                  = 0x0400, -- 11
 	suppressNotification       = 0x0800, -- 12
 	isVoiceMessage             = 0x1000, -- 13
+	hasSnapshot                = 0x2000, -- 14
+	is_components_v2           = 0x4000, -- 15
 }
 
 ---@enum gatewayIntent
@@ -464,6 +472,16 @@ enums.componentType = {
 	roleSelect        = 6,
 	mentionableSelect = 7,
 	channelSelect     = 8,
+	section           = 9,	-- requires IS_COMPONENTS_V2
+	textDisplay       = 10,	-- requires IS_COMPONENTS_V2
+	thumbnail         = 11,	-- requires IS_COMPONENTS_V2
+	mediaGallery      = 12,	-- requires IS_COMPONENTS_V2
+	file              = 13,	-- requires IS_COMPONENTS_V2
+	separator         = 14,	-- requires IS_COMPONENTS_V2
+	-- unused         = 15,
+	-- unused         = 16,
+	container         = 17,	-- requires IS_COMPONENTS_V2
+	label             = 18,
 }
 
 ---@enum buttonStyle
@@ -473,12 +491,19 @@ enums.buttonStyle = {
 	success   = 3,
 	danger    = 4,
 	link      = 5,
+	premium   = 6,
 }
 
 ---@enum inputStyle
 enums.inputStyle = {
 	short     = 1,
 	paragraph = 2,
+}
+
+---@enum separatorSpacing
+enums.separatorSpacing = {
+	small = 1,
+	large = 2,
 }
 
 for name, t in pairs(enums) do
