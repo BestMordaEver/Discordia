@@ -260,20 +260,20 @@ enums.forumLayout = {
 enums.messageFlag = {
 	crossposted                = 0x0001, -- 0
 	isCrosspost                = 0x0002, -- 1
-	suppressEmbeds             = 0x0003, -- 2
-	sourceMessageDeleted       = 0x0004, -- 3
-	urgent                     = 0x0008, -- 4
-	hasThread                  = 0x0010, -- 5
-	ephemeral                  = 0x0020, -- 6
-	loading                    = 0x0040, -- 7
-	threadFailedToMentionRoles = 0x0080, -- 8
-	-- unused                  = 0x0100, -- 9
-	-- unused                  = 0x0200, -- 10
-	-- unused                  = 0x0400, -- 11
-	suppressNotification       = 0x0800, -- 12
-	isVoiceMessage             = 0x1000, -- 13
-	hasSnapshot                = 0x2000, -- 14
-	is_components_v2           = 0x4000, -- 15
+	suppressEmbeds             = 0x0004, -- 2
+	sourceMessageDeleted       = 0x0008, -- 3
+	urgent                     = 0x0010, -- 4
+	hasThread                  = 0x0020, -- 5
+	ephemeral                  = 0x0040, -- 6
+	loading                    = 0x0080, -- 7
+	threadFailedToMentionRoles = 0x0100, -- 8
+	-- unused                  = 0x0200, -- 9
+	-- unused                  = 0x0400, -- 10
+	-- unused                  = 0x0800, -- 11
+	suppressNotification       = 0x1000, -- 12
+	isVoiceMessage             = 0x2000, -- 13
+	hasSnapshot                = 0x4000, -- 14
+	is_components_v2           = 0x8000, -- 15
 }
 
 ---@enum gatewayIntent
