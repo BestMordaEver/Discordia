@@ -54,7 +54,6 @@ function Interaction:__init(data, client)
 	end
 
 	self._user = client._users:_insert(data.user)
-	self._data = data.data
 	self._is_replied = false
 
 	self._guild_id = nil

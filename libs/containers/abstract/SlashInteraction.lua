@@ -5,9 +5,14 @@ that are received when a user uses a slash command.
 ]=]
 
 local enums = require('enums')
-local channelType, applicationCommandType = assert(enums.channelType), assert(enums.applicationCommandType)
+local channelType, commandType, optionType = assert(enums.channelType), assert(enums.applicationCommandType), assert(enums.applicationCommandOptionType)
 local Interaction = require('containers/abstract/Interaction')
-local CommandOption = require('utils/CommandOption')
+
+---@class CommandOption
+---@field name string
+---@field type applicationCommandOptionType
+---@field value string|number|boolean|Member|Role|GuildChannel
+---@field focused? boolean
 
 --[=[Defines the base methods and properties for Discord interactions
 that are received when a user uses a slash command.]=]
@@ -18,82 +23,8 @@ that are received when a user uses a slash command.]=]
 ---@field target? Member | Message
 ---@field options? table<string, CommandOption>
 ---@field option? CommandOption
----@field _loadOptions fun(self : SlashInteraction, options : table, parent : Client)
----@field _users table<string, User>
----@field protected _members table<string, Member>
----@field _roles table<string, Role>
----@field _channels table<string, GuildChannel>
----@field protected _messages table<string, Message>
----@field protected _target Member | Message
----@field protected _options table<string, CommandOption>
----@field protected _option CommandOption
 ---@field protected __init fun(self : SlashInteraction, data : table, client : Client)
 local SlashInteraction, get = require('class')('SlashInteraction', Interaction)
-
-function SlashInteraction:__init(data, client)
-	Interaction.__init(self, data, client)
-
-	data = data.data
-	if data.resolved then
-		local resolved = data.resolved
-		local guild = self.guild
-
-		if resolved.users then
-			self._users = {}
-			for snowflake, obj in pairs(resolved.users) do
-				self._users[snowflake] = client._users:get(snowflake) or client._users:_insert(obj)
-			end
-		end
-
-		if resolved.members then
-			self._members = {}
-			for snowflake, obj in pairs(resolved.members) do
-				obj.user = resolved.users[snowflake]
-				self._members[snowflake] = guild._members:get(snowflake) or guild._members:_insert(obj)
-			end
-		end
-
-		if resolved.roles then
-			self._roles = {}
-			for snowflake, obj in pairs(resolved.roles) do
-				self._roles[snowflake] = guild._roles:get(snowflake) or guild._roles:_insert(obj)
-			end
-		end
-
-		if resolved.channels then
-			self._channels = {}
-			for snowflake, obj in pairs(resolved.channels) do
-				local channelCache
-				if obj.type == channelType.text then
-					channelCache = guild._text_channels
-				elseif obj.type == channelType.voice then
-					channelCache = guild._voice_channels
-				elseif obj.type == channelType.category then
-					channelCache = guild._categories
-				end
-
-				self._channels[snowflake] = channelCache:get(snowflake) or channelCache:_insert(obj)
-			end
-		end
-
-		if resolved.messages then
-			self._messages = {}
-			for snowflake, obj in pairs(resolved.messages) do
-				self._messages[snowflake] = self._channel._messages:get(snowflake) or self._channel._messages:_insert(obj)
-			end
-		end
-	end
-
-	if data.target_id then
-		if data.type == applicationCommandType.message then
-			self._target = self._messages[data.target_id]
-		elseif data.type == applicationCommandType.user then
-			self._target = self._members[data.target_id]
-		end
-	end
-
-	return self:_loadOptions(data.options, self)
-end
 
 local meta = {__len = function (self)
 	local a,i = -1
@@ -104,14 +35,74 @@ local meta = {__len = function (self)
 	return a
 end}
 
-function SlashInteraction:_loadOptions(options, parent)
-	if options and next(options) then
+function SlashInteraction:__init(data, client)
+	Interaction.__init(self, data, client)
+
+	data = data.data
+	self._commandId = data.id
+	self._commandName = data.name
+	self._commandType = data.type
+
+	local resolved = data.resolved
+	local guild = self.guild
+
+	if data.target_id then
+		if data.type == commandType.message then
+			self._target = self._channel._messages:get(data.target_id) or self._channel._messages:_insert(resolved.messages[data.target_id])
+		elseif data.type == commandType.user then
+			resolved.members[data.target_id].user = resolved.users[data.target_id]
+			self._target = guild._members:get(data.target_id) or guild._members:_insert(resolved.members[data.target_id])
+		end
+	end
+
+	local options = data.options
+
+	if options and options[1] and not options[1].value then
+		self._subcommand = options[1].name
+		options = options[1].options
+	end
+
+	if options and options[1] and not options[1].value then
+		self._subcommandOption = options[1].name
+		options = options[1].options
+	end
+
+	if options then
 		self._options = setmetatable({}, meta)
 		for i, option in ipairs(options) do
-			self._options[option.name] = CommandOption(option, parent)
+			self._options[option.name] = option
+
+			if resolved then
+				if option.type == optionType.user then
+					option.value = client._users:get(option.value) or client._users:_insert(resolved.users[option.value])
+
+					if resolved.members and resolved.members[option.value] then
+						resolved.members[option.value].user = resolved.users[option.value]
+						guild._members:_insert(resolved.members[option.value])
+					end
+				elseif option.type == optionType.channel then
+					local channelCache
+					local obj = resolved.channels[option.value]
+
+					if obj.type == channelType.text then
+						channelCache = guild._text_channels
+					elseif obj.type == channelType.voice then
+						channelCache = guild._voice_channels
+					elseif obj.type == channelType.category then
+						channelCache = guild._categories
+					end
+
+					option.value = channelCache:get(option.value) or channelCache:_insert(obj)
+
+				elseif option.type == optionType.role then
+					option.value = guild._roles:get(option.value) or guild._roles:_insert(resolved.roles[option.value])
+				end
+			end
 		end
+
 		if #options == 1 then
 			local _, val = next(self._options)
+---@diagnostic disable-next-line: assign-type-mismatch
 			self._option = val
 		end
 	end
@@ -119,17 +110,27 @@ end
 
 --[=[@p commandId string The ID of the invoked command.]=]
 function get.commandId(self)
-	return self._data.id
+	return self._commandId
 end
 
 --[=[@p commandName string The name of the invoked command.]=]
 function get.commandName(self)
-	return self._data.name
+	return self._commandName
+end
+
+--[=[@op subcommand string The name of the invoked subcommand or subcommand group if one is present.]=]
+function get.subcommand(self)
+	return self._subcommand
+end
+
+--[=[@p subcommandOption string The name of the invoked subcommand. Only exists if a subcommand group is invoked.]=]
+function get.subcommandOption(self)
+	return self._subcommandOption
 end
 
 --[=[@p commandType number The type of the invoked command. See the `applicationCommandType` enumeration for a human-readable representation.]=]
 function get.commandType(self)
-	return self._data.type
+	return self._commandType
 end
 
 --[=[@p target Member/Message/nil Member or message targetted by a user or message command.]=]
