@@ -65,6 +65,9 @@ local ignore = {
 	['AUTO_MODERATION_RULE_UPDATE'] = true,
 	['AUTO_MODERATION_RULE_DELETE'] = true,
 	['AUTO_MODERATION_ACTION_EXECUTION'] = true,
+	['VOICE_CHANNEL_START_TIME_UPDATE'] = true,
+	['GUILD_APPLIED_BOOSTS_UPDATE'] = true,
+	['GUILD_POWERUP_ENTITLEMENTS_DELETE'] = true,
 }
 
 ---@class Shard : WebSocket
