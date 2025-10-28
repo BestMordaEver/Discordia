@@ -276,13 +276,7 @@ end
 function EventHandler.THREAD_LIST_SYNC(d, client)
 end
 
-local garbageCount = 0
 function EventHandler.GUILD_CREATE(d, client, shard)
-	garbageCount = (garbageCount + 1) % 30
-	if garbageCount == 0 then
-		collectgarbage()
-	end
-
 	if client._options.syncGuilds and not d.unavailable and not client._user._bot then
 		shard:syncGuilds({d.id})
 	end
