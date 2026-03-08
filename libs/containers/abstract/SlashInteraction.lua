@@ -21,6 +21,8 @@ that are received when a user uses a slash command.]=]
 ---@field commandName string
 ---@field commandType applicationCommandType
 ---@field target? Member | Message
+---@field subcommand? string
+---@field subcommandOption? string
 ---@field options? table<string, CommandOption>
 ---@field option? CommandOption
 ---@field protected __init fun(self : SlashInteraction, data : table, client : Client)
@@ -57,12 +59,12 @@ function SlashInteraction:__init(data, client)
 
 	local options = data.options
 
-	if options and options[1] and not options[1].value then
+	if options and options[1] and options[1].value == nil then
 		self._subcommand = options[1].name
 		options = options[1].options
 	end
 
-	if options and options[1] and not options[1].value then
+	if options and options[1] and options[1].value == nil then
 		self._subcommandOption = options[1].name
 		options = options[1].options
 	end

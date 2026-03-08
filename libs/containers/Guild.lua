@@ -1071,4 +1071,9 @@ function get.categories(self)
 	return self._categories
 end
 
+--[=[@p locale string The preferred locale of a Coommunity guild; defaults to "en-US".]=]
+function get.locale(self)
+	return self._preferred_locale
+end
+
 return Guild

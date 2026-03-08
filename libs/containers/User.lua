@@ -213,4 +213,9 @@ function get.mutualGuilds(self)
 	return self._mutual_guilds
 end
 
+--[=[@p locale string The user's chosen language option; defaults to "en-US".]=]
+function get.locale(self)
+	return self._locale or "en-US"
+end
+
 return User
