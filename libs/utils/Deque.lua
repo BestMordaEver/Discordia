@@ -26,6 +26,7 @@ end
 @d Returns the total number of values stored.
 ]=]
 --[=[Returns the total number of values stored.]=]
+---@return number
 function Deque:getCount()
 	return self._last - self._first + 1
 end
@@ -37,6 +38,7 @@ end
 @d Adds a value of any type to the left side of the deque.
 ]=]
 --[=[Adds a value of any type to the left side of the deque.]=]
+---@param obj any
 function Deque:pushLeft(obj)
 	self._first = self._first - 1
 	self._objects[self._first] = obj
@@ -49,6 +51,7 @@ end
 @d Adds a value of any type to the right side of the deque.
 ]=]
 --[=[Adds a value of any type to the right side of the deque.]=]
+---@param obj any
 function Deque:pushRight(obj)
 	self._last = self._last + 1
 	self._objects[self._last] = obj
@@ -60,6 +63,7 @@ end
 @d Removes and returns a value from the left side of the deque.
 ]=]
 --[=[Removes and returns a value from the left side of the deque.]=]
+---@return any?
 function Deque:popLeft()
 	if self._first > self._last then return nil end
 	local obj = self._objects[self._first]
@@ -74,6 +78,7 @@ end
 @d Removes and returns a value from the right side of the deque.
 ]=]
 --[=[Removes and returns a value from the right side of the deque.]=]
+---@return any?
 function Deque:popRight()
 	if self._first > self._last then return nil end
 	local obj = self._objects[self._last]
@@ -88,6 +93,7 @@ end
 @d Returns the value at the left side of the deque without removing it.
 ]=]
 --[=[Returns the value at the left side of the deque without removing it.]=]
+---@return any?
 function Deque:peekLeft()
 	return self._objects[self._first]
 end
@@ -98,6 +104,7 @@ end
 @d Returns the value at the right side of the deque without removing it.
 ]=]
 --[=[Returns the value at the right side of the deque without removing it.]=]
+---@return any?
 function Deque:peekRight()
 	return self._objects[self._last]
 end
@@ -108,6 +115,7 @@ end
 @d Iterates over the deque from left to right.
 ]=]
 --[=[Iterates over the deque from left to right.]=]
+---@return function
 function Deque:iter()
 	local t = self._objects
 	local i = self._first - 1

@@ -12,6 +12,10 @@ local callbackType = assert(enums.callbackType)
 --[=[Represents an interaction that your application receives when a user uses
 a message component.]=]
 ---@class ComponentInteraction : MessagingInteraction
+---@field message Message
+---@field customId string
+---@field componentType number
+---@field values? table
 local ComponentInteraction, get = require('class')('ComponentInteraction', MessagingInteraction)
 
 function ComponentInteraction:__init(data, client)
@@ -42,6 +46,9 @@ more advanced formatting is allowed. See [[managing messages]] for more informat
 --[=[Acknowledge the interaction and update the message that the component is attached to.
 If `content` is a string, then it is simply set as the message content. If it is a table,
 more advanced formatting is allowed. See [[managing messages]] for more information.]=]
+---@param payload string | table
+---@return boolean?
+---@return string? error
 function ComponentInteraction:update(payload)
 	return self:_callbackWithContent(callbackType.update, payload)
 end
@@ -55,6 +62,8 @@ is attached to later. The user won't see a loading state.
 ]=]
 --[=[Acknowledge the interaction and update the message that the component
 is attached to later. The user won't see a loading state.]=]
+---@return boolean?
+---@return string? error
 function ComponentInteraction:deferUpdate()
 	return self:_callback(callbackType.deferUpdate)
 end

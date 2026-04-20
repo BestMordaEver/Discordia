@@ -91,6 +91,7 @@ useful for "catching" the current time and comparing its many forms as required.
 ]=]
 --[=[Returns a new Time object that represents the currently elapsed time. This is
 useful for "catching" the current time and comparing its many forms as required.]=]
+---@return Time
 function Stopwatch:getTime()
 	return Time(self.milliseconds)
 end

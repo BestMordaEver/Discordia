@@ -1,3 +1,4 @@
+---@class PCMGenerator
 local PCMGenerator = require('class')('PCMGenerator')
 
 function PCMGenerator:__init(fn)

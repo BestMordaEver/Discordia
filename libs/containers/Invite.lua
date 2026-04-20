@@ -17,6 +17,29 @@ end
 --[=[Represents an invitation to a Discord guild channel. Invites can be used to join
 a guild, though they are not always permanent.]=]
 ---@class Invite : Container
+---@field code string
+---@field guildId string
+---@field guildName string
+---@field channelId string
+---@field channelName string
+---@field channelType channelType
+---@field guildIcon? string
+---@field guildBanner? string
+---@field guildSplash? string
+---@field guildIconURL? string
+---@field guildBannerURL? string
+---@field guildSplashURL? string
+---@field guildDescription? string
+---@field guildVerificationLevel? verificationLevel
+---@field inviter? User
+---@field uses? number
+---@field maxUses? number
+---@field maxAge? number
+---@field temporary? boolean
+---@field createdAt? string
+---@field revoked? boolean
+---@field approximatePresenceCount? number
+---@field approximateMemberCount? number
 local Invite, get = require('class')('Invite', Container)
 
 function Invite:__init(data, parent)
@@ -53,6 +76,8 @@ end
 @d Permanently deletes the invite. This cannot be undone!
 ]=]
 --[=[Permanently deletes the invite. This cannot be undone!]=]
+---@return boolean success
+---@return string? error
 function Invite:delete()
 	local data, err = self.client._api:deleteInvite(self._code)
 	if data then

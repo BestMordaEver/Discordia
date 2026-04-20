@@ -10,6 +10,8 @@ local FilteredIterable = require('iterables/FilteredIterable')
 --[=[Represents a thread in a Discord guild, a kind of text
 sub-channel inside an existing channel.]=]
 ---@class Thread : TextChannel
+---@field flags number
+---@field members FilteredIterable
 local Thread, get = require('class')('Thread', TextChannel)
 
 function Thread:__init(data, parent)
@@ -24,6 +26,8 @@ end
 @d Permanently deletes the thread. This cannot be undone!
 ]=]
 --[=[Permanently deletes the thread. This cannot be undone!]=]
+---@return boolean success
+---@return string? error
 function Thread:delete()
 	return self:_delete()
 end
@@ -35,6 +39,8 @@ end
 @d Permanently deletes the thread. This cannot be undone!
 ]=]
 --[=[Permanently deletes the thread. This cannot be undone!]=]
+---@return boolean success
+---@return string? error
 function Thread:join()
 	return self:_delete()
 end

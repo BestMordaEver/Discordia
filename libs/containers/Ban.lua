@@ -9,6 +9,9 @@ local Container = require('containers/abstract/Container')
 --[=[Represents a Discord guild ban. Essentially a combination of the banned user and
 a reason explaining the ban, if one was provided.]=]
 ---@class Ban : Container
+---@field reason? string
+---@field guild Guild
+---@field user User
 local Ban, get = require('class')('Ban', Container)
 
 function Ban:__init(data, parent)
@@ -35,6 +38,8 @@ Equivalent to `Ban.guild:unbanUser(Ban.user)`.
 ]=]
 --[=[Deletes the ban object, unbanning the corresponding user.
 Equivalent to `Ban.guild:unbanUser(Ban.user)`.]=]
+---@return boolean success
+---@return string? error
 function Ban:delete()
 	return self._parent:unbanUser(self._user)
 end

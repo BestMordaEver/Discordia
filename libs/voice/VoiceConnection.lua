@@ -73,6 +73,7 @@ end
 
 --[=[Represents a connection to a Discord voice server.]=]
 ---@class VoiceConnection
+---@field channel? GuildVoiceChannel
 local VoiceConnection, get = require('class')('VoiceConnection')
 
 function VoiceConnection:__init(channel)
@@ -161,6 +162,7 @@ end
 @d Returns the bitrate of the interal Opus encoder in bits per second (bps).
 ]=]
 --[=[Returns the bitrate of the interal Opus encoder in bits per second (bps).]=]
+---@return number
 function VoiceConnection:getBitrate()
 	return self._encoder:get(opus.GET_BITRATE_REQUEST)
 end
@@ -175,6 +177,7 @@ This should be between 8000 and 128000, inclusive.
 ]=]
 --[=[Sets the bitrate of the interal Opus encoder in bits per second (bps).
 This should be between 8000 and 128000, inclusive.]=]
+---@param bitrate number
 function VoiceConnection:setBitrate(bitrate)
 	bitrate = check(bitrate, MIN_BITRATE, MAX_BITRATE)
 	self._encoder:set(opus.SET_BITRATE_REQUEST, bitrate)
@@ -187,6 +190,7 @@ end
 @d Returns the complexity of the interal Opus encoder.
 ]=]
 --[=[Returns the complexity of the interal Opus encoder.]=]
+---@return number
 function VoiceConnection:getComplexity()
 	return self._encoder:get(opus.GET_COMPLEXITY_REQUEST)
 end
@@ -201,6 +205,7 @@ This should be between 0 and 10, inclusive.
 ]=]
 --[=[Sets the complexity of the interal Opus encoder.
 This should be between 0 and 10, inclusive.]=]
+---@param complexity number
 function VoiceConnection:setComplexity(complexity)
 	complexity = check(complexity, MIN_COMPLEXITY, MAX_COMPLEXITY)
 	self._encoder:set(opus.SET_COMPLEXITY_REQUEST, complexity)
@@ -380,6 +385,10 @@ otherwise, it will play until the source is exhausted. The returned number is th
 time elapsed while streaming and the returned string is a message detailing the
 reason why the stream stopped. For more information about acceptable sources,
 see the [[voice]] page.]=]
+---@param source string | function | table | userdata
+---@param duration? number
+---@return number? elapsed
+---@return string? reason
 function VoiceConnection:playPCM(source, duration)
 
 	if not self._ready then
@@ -425,6 +434,10 @@ otherwise, it will play until the source is exhausted. The returned number is th
 time elapsed while streaming and the returned string is a message detailing the
 reason why the stream stopped. For more information about using FFmpeg,
 see the [[voice]] page.]=]
+---@param path string
+---@param duration? number
+---@return number? elapsed
+---@return string? reason
 function VoiceConnection:playFFmpeg(path, duration)
 
 	if not self._ready then
@@ -507,6 +520,7 @@ methods, this must be called inside of a coroutine.
 --[=[Stops the audio stream for this connection, if one is active, disconnects from
 the voice server, and leaves the corresponding voice channel. Like most Discordia
 methods, this must be called inside of a coroutine.]=]
+---@return boolean success
 function VoiceConnection:close()
 	self:stopStream()
 	if self._socket then

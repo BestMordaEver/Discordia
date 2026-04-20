@@ -23,6 +23,34 @@ local band, bor, bnot = bit.band, bit.bor, bit.bnot
 --[=[Represents a text message sent in a Discord text channel. Messages can contain
 simple content strings, rich embeds, attachments, or reactions.]=]
 ---@class Message : Snowflake
+---@field reactions Cache
+---@field mentionedUsers ArrayIterable
+---@field mentionedRoles ArrayIterable
+---@field mentionedEmojis ArrayIterable
+---@field mentionedChannels ArrayIterable
+---@field stickers ArrayIterable
+---@field sticker? Sticker
+---@field cleanContent string
+---@field mentionsEveryone boolean
+---@field pinned boolean
+---@field tts boolean
+---@field nonce string | number | boolean | nil
+---@field editedTimestamp? string
+---@field oldContent? table
+---@field content string
+---@field author User
+---@field channel TextChannel
+---@field type messageType
+---@field embed? table
+---@field attachment? table
+---@field embeds? table
+---@field components? table
+---@field attachments? table
+---@field guild? Guild
+---@field member? Member
+---@field referencedMessage? Message
+---@field link string
+---@field webhookId? string
 local Message, get = require('class')('Message', Snowflake)
 
 function Message:__init(data, parent)
@@ -204,6 +232,9 @@ must be from 1 to 2000 characters in length.
 --[=[Sets the message's content. The message must be authored by the current user
 (ie: you cannot change the content of messages sent by other users). The content
 must be from 1 to 2000 characters in length.]=]
+---@param content string
+---@return boolean success
+---@return string? error
 function Message:setContent(content)
 	return self:_modify({
 		content = content or null,
@@ -224,6 +255,9 @@ end
 ]=]
 --[=[Sets the message's embed. The message must be authored by the current user.
 (ie: you cannot change the embed of messages sent by other users).]=]
+---@param embed table
+---@return boolean success
+---@return string? error
 function Message:setEmbed(embed)
 	return self:_modify({embed = embed or null})
 end
@@ -235,6 +269,8 @@ end
 @d Hides all embeds for this message.
 ]=]
 --[=[Hides all embeds for this message.]=]
+---@return boolean success
+---@return string? error
 function Message:hideEmbeds()
 	local flags = bor(self._flags or 0, messageFlag.suppressEmbeds)
 	return self:_modify({flags = flags})
@@ -247,6 +283,8 @@ end
 @d Shows all embeds for this message.
 ]=]
 --[=[Shows all embeds for this message.]=]
+---@return boolean success
+---@return string? error
 function Message:showEmbeds()
 	local flags = band(self._flags or 0, bnot(messageFlag.suppressEmbeds))
 	return self:_modify({flags = flags})
@@ -260,6 +298,8 @@ end
 @d Indicates whether the message has a particular flag set.
 ]=]
 --[=[Indicates whether the message has a particular flag set.]=]
+---@param flag MessageFlag-Resolvable
+---@return boolean
 function Message:hasFlag(flag)
 	flag = Resolver.messageFlag(flag)
 	return band(self._flags or 0, flag) > 0
@@ -281,10 +321,13 @@ to the one supported by `TextChannel.send`, except only `content` and `embeds`
 are valid fields; `mention(s)`, `file(s)`, etc are not supported. The message
 must be authored by the current user. (ie: you cannot change the embed of messages
 sent by other users).]=]
+---@param content string | table
+---@return boolean success
+---@return string? error
 function Message:update(content)
 	local data, files = MessageContainer.parseContent(content)
 	if not data then
-		return nil, files
+		return false, files --[[ @as string]]
 	end
 
 	return self:_modify(data, files)
@@ -297,6 +340,8 @@ end
 @d Pins the message in the channel.
 ]=]
 --[=[Pins the message in the channel.]=]
+---@return boolean success
+---@return string? error
 function Message:pin()
 	local data, err = self.client._api:addPinnedChannelMessage(self._parent._id, self._id)
 	if data then
@@ -314,6 +359,8 @@ end
 @d Unpins the message in the channel.
 ]=]
 --[=[Unpins the message in the channel.]=]
+---@return boolean success
+---@return string? error
 function Message:unpin()
 	local data, err = self.client._api:deletePinnedChannelMessage(self._parent._id, self._id)
 	if data then
@@ -334,6 +381,9 @@ object; wait for the `reactionAdd` event instead.
 ]=]
 --[=[Adds a reaction to the message. Note that this does not return the new reaction
 object; wait for the `reactionAdd` event instead.]=]
+---@param emoji Emoji-Resolvable
+---@return boolean success
+---@return string? error
 function Message:addReaction(emoji)
 	emoji = Resolver.emoji(emoji)
 	local data, err = self.client._api:createReaction(self._parent._id, self._id, emoji)
@@ -357,6 +407,10 @@ indicated, then this will remove the current user's reaction.
 --[=[Removes a reaction from the message. Note that this does not return the old
 reaction object; wait for the `reactionRemove` event instead. If no user is
 indicated, then this will remove the current user's reaction.]=]
+---@param emoji Emoji-Resolvable
+---@param id? User-ID-Resolvable
+---@return boolean success
+---@return string? error
 function Message:removeReaction(emoji, id)
 	emoji = Resolver.emoji(emoji)
 	local data, err
@@ -381,6 +435,9 @@ end
 @d Removes all reactions for a given emoji from the message.
 ]=]
 --[=[Removes all reactions for a given emoji from the message.]=]
+---@param emoji Emoji-Resolvable
+---@return boolean success
+---@return string? error
 function Message:clearEmoji(emoji)
 	emoji = Resolver.emoji(emoji)
 	local data, err = self.client._api:deleteAllReactionsForEmoji(self._parent._id, self._id, emoji)
@@ -398,6 +455,8 @@ end
 @d Removes all reactions from the message.
 ]=]
 --[=[Removes all reactions from the message.]=]
+---@return boolean success
+---@return string? error
 function Message:clearReactions()
 	local data, err = self.client._api:deleteAllReactions(self._parent._id, self._id)
 	if data then
@@ -414,6 +473,8 @@ end
 @d Permanently deletes the message. This cannot be undone!
 ]=]
 --[=[Permanently deletes the message. This cannot be undone!]=]
+---@return boolean success
+---@return string? error
 function Message:delete()
 	local data, err = self.client._api:deleteMessage(self._parent._id, self._id)
 	if data then
@@ -435,6 +496,9 @@ end
 @d Equivalent to `Message.channel:send(content)`.
 ]=]
 --[=[Equivalent to `Message.channel:send(content)`.]=]
+---@param content string | table
+---@return Message?
+---@return string? error
 function Message:reply(content)
 	return self._parent:send(content)
 end
@@ -448,6 +512,8 @@ for Announcement Channels (`channelType.news`). Returns the crossposted message
 ]=]
 --[=[Crosspost a message in the channel to following channels. Works only
 for Announcement Channels (`channelType.news`). Returns the crossposted message]=]
+---@return boolean success
+---@return string? error
 function Message:crosspost()
 	local data, err = self.client._api:crosspostMessage(self._parent._id, self._id)
 	if data then

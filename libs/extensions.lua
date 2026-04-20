@@ -25,6 +25,8 @@ local ceil, floor = math.ceil, math.floor
 
 local table = {}
 
+---@param tbl table
+---@return number
 function table.count(tbl)
 	local n = 0
 	for _ in pairs(tbl) do
@@ -33,6 +35,8 @@ function table.count(tbl)
 	return n
 end
 
+---@param tbl table
+---@return number
 function table.deepcount(tbl)
 	local n = 0
 	for _, v in pairs(tbl) do
@@ -41,6 +45,8 @@ function table.deepcount(tbl)
 	return n
 end
 
+---@param tbl table
+---@return table
 function table.copy(tbl)
 	local ret = {}
 	for k, v in pairs(tbl) do
@@ -49,6 +55,8 @@ function table.copy(tbl)
 	return ret
 end
 
+---@param tbl table
+---@return table
 function table.deepcopy(tbl)
 	local ret = {}
 	for k, v in pairs(tbl) do
@@ -57,12 +65,15 @@ function table.deepcopy(tbl)
 	return ret
 end
 
+---@param tbl table
 function table.reverse(tbl)
 	for i = 1, #tbl do
 		insert(tbl, i, remove(tbl))
 	end
 end
 
+---@param tbl table
+---@return table
 function table.reversed(tbl)
 	local ret = {}
 	for i = #tbl, 1, -1 do
@@ -71,6 +82,8 @@ function table.reversed(tbl)
 	return ret
 end
 
+---@param tbl table
+---@return table
 function table.keys(tbl)
 	local ret = {}
 	for k in pairs(tbl) do
@@ -79,6 +92,8 @@ function table.keys(tbl)
 	return ret
 end
 
+---@param tbl table
+---@return table
 function table.values(tbl)
 	local ret = {}
 	for _, v in pairs(tbl) do
@@ -87,11 +102,17 @@ function table.values(tbl)
 	return ret
 end
 
+---@param tbl table
+---@return number index
+---@return any value
 function table.randomipair(tbl)
 	local i = random(#tbl)
 	return i, tbl[i]
 end
 
+---@param tbl table
+---@return any? key
+---@return any? value
 function table.randompair(tbl)
 	local rand = random(table.count(tbl))
 	local n = 0
@@ -103,6 +124,9 @@ function table.randompair(tbl)
 	end
 end
 
+---@param tbl table
+---@param fn? fun(a: any, b: any): boolean
+---@return table
 function table.sorted(tbl, fn)
 	local ret = {}
 	for i, v in ipairs(tbl) do
@@ -112,6 +136,9 @@ function table.sorted(tbl, fn)
 	return ret
 end
 
+---@param tbl table
+---@param value any
+---@return any?
 function table.search(tbl, value)
 	for k, v in pairs(tbl) do
 		if v == value then
@@ -121,6 +148,11 @@ function table.search(tbl, value)
 	return nil
 end
 
+---@param tbl table
+---@param start? number
+---@param stop? number
+---@param step? number
+---@return table
 function table.slice(tbl, start, stop, step)
 	local ret = {}
 	for i = start or 1, stop or #tbl, step or 1 do
@@ -131,6 +163,9 @@ end
 
 local string = {}
 
+---@param str? string
+---@param delim? string
+---@return string[]
 function string.split(str, delim)
 	local ret = {}
 	if not str then
@@ -153,10 +188,17 @@ function string.split(str, delim)
 	return ret
 end
 
+---@param str string
+---@return string
 function string.trim(str)
 	return match(str, '^%s*(.-)%s*$')
 end
 
+---@param str string
+---@param len number
+---@param align? 'left' | 'right' | 'center'
+---@param pattern? string
+---@return string
 function string.pad(str, len, align, pattern)
 	pattern = pattern or ' '
 	if align == 'right' then
@@ -169,16 +211,27 @@ function string.pad(str, len, align, pattern)
 	end
 end
 
+---@param str string
+---@param pattern string
+---@param plain? boolean
+---@return boolean
 function string.startswith(str, pattern, plain)
 	local start = 1
 	return find(str, pattern, start, plain) == start
 end
 
+---@param str string
+---@param pattern string
+---@param plain? boolean
+---@return boolean
 function string.endswith(str, pattern, plain)
 	local start = #str - #pattern + 1
 	return find(str, pattern, start, plain) == start
 end
 
+---@param str1 string
+---@param str2 string
+---@return number
 function string.levenshtein(str1, str2)
 
 	if str1 == str2 then return 0 end
@@ -211,6 +264,10 @@ function string.levenshtein(str1, str2)
 
 end
 
+---@param len number
+---@param mn? number
+---@param mx? number
+---@return string
 function string.random(len, mn, mx)
 	local ret = {}
 	mn = mn or 0
@@ -223,10 +280,17 @@ end
 
 local math = {}
 
+---@param n number
+---@param minValue number
+---@param maxValue number
+---@return number
 function math.clamp(n, minValue, maxValue)
 	return min(max(n, minValue), maxValue)
 end
 
+---@param n number
+---@param i? number
+---@return number
 function math.round(n, i)
 	local m = 10 ^ (i or 0)
 	return floor(n * m + 0.5) / m

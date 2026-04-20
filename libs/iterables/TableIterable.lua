@@ -27,6 +27,7 @@ end
 @d Returns an iterator that returns all contained objects. The order of the objects is not guaranteed.
 ]=]
 --[=[Returns an iterator that returns all contained objects. The order of the objects is not guaranteed.]=]
+---@return function
 function TableIterable:iter()
 	local tbl = self._tbl
 	if not tbl then

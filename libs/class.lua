@@ -26,14 +26,21 @@ function default:__hash()
 	return self
 end
 
+---@param cls any
+---@return boolean
 local function isClass(cls)
 	return not not classes[cls]
 end
 
+---@param obj any
+---@return boolean
 local function isObject(obj)
 	return not not objects[obj]
 end
 
+---@param sub any
+---@param cls any
+---@return boolean
 local function isSubclass(sub, cls)
 	if isClass(sub) and isClass(cls) then
 		if sub == cls then
@@ -49,10 +56,14 @@ local function isSubclass(sub, cls)
 	return false
 end
 
+---@param obj any
+---@param cls any
+---@return boolean
 local function isInstance(obj, cls)
 	return isObject(obj) and isSubclass(obj.__class, cls)
 end
 
+---@return table<string, number>
 local function profile()
 	local ret = setmetatable({}, {__index = function() return 0 end})
 	for obj in pairs(objects) do
@@ -68,6 +79,8 @@ local function _getPrimitive(v)
 	return types[type(v)] and v or v ~= nil and tostring(v) or nil
 end
 
+---@param obj any
+---@return table | string | number | boolean | nil
 local function serialize(obj)
 	if isObject(obj) then
 		local ret = {}
@@ -81,6 +94,8 @@ local function serialize(obj)
 end
 
 local rawtype = type
+---@param obj any
+---@return string
 local function type(obj)
 	return isObject(obj) and obj.__name or rawtype(obj)
 end

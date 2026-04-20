@@ -17,6 +17,16 @@ local defaultAvatar = assert(enums.defaultAvatar)
 one-way fashion. This class defines methods and properties for managing the
 webhook, not for sending messages.]=]
 ---@class Webhook : Snowflake
+---@field guildId string
+---@field channelId string
+---@field user? User
+---@field token string
+---@field name string
+---@field type webhookType
+---@field avatar? string
+---@field avatarURL string
+---@field defaultAvatar defaultAvatar
+---@field defaultAvatarURL string
 local Webhook, get = require('class')('Webhook', Snowflake)
 
 function Webhook:__init(data, parent)
@@ -47,6 +57,9 @@ If the webhook does not have a custom avatar, the default URL is returned.
 --[=[Returns a URL that can be used to view the webhooks's full avatar. If provided,
 the size must be a power of 2 while the extension must be a valid image format.
 If the webhook does not have a custom avatar, the default URL is returned.]=]
+---@param size? number
+---@param ext? string
+---@return string
 function Webhook:getAvatarURL(size, ext)
 	return User.getAvatarURL(self, size, ext)
 end
@@ -59,6 +72,8 @@ end
 @d Returns a URL that can be used to view the webhooks's default avatar.
 ]=]
 --[=[Returns a URL that can be used to view the webhooks's default avatar.]=]
+---@param size? number
+---@return string
 function Webhook:getDefaultAvatarURL(size)
 	return User.getDefaultAvatarURL(self, size)
 end
@@ -71,6 +86,9 @@ end
 @d Sets the webhook's name. This must be between 2 and 32 characters in length.
 ]=]
 --[=[Sets the webhook's name. This must be between 2 and 32 characters in length.]=]
+---@param name string
+---@return boolean success
+---@return string? error
 function Webhook:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -83,6 +101,9 @@ end
 @d Sets the webhook's avatar. If `nil` is passed, the avatar is removed.
 ]=]
 --[=[Sets the webhook's avatar. If `nil` is passed, the avatar is removed.]=]
+---@param avatar? Base64-Resolvable
+---@return boolean success
+---@return string? error
 function Webhook:setAvatar(avatar)
 	avatar = avatar and Resolver.base64(avatar)
 	return self:_modify({avatar = avatar or json.null})
@@ -95,6 +116,8 @@ end
 @d Permanently deletes the webhook. This cannot be undone!
 ]=]
 --[=[Permanently deletes the webhook. This cannot be undone!]=]
+---@return boolean success
+---@return string? error
 function Webhook:delete()
 	local data, err = self.client._api:deleteWebhook(self._id)
 	if data then

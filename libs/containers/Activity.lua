@@ -11,6 +11,25 @@ local format = string.format
 --[=[Represents a Discord user's presence data, either an application or streaming
 presence or a rich presence. Most if not all properties may be nil.]=]
 ---@class Activity : Container
+---@field start? number
+---@field stop? number
+---@field name? string
+---@field type? activityType
+---@field url? string
+---@field applicationId? string
+---@field state? string
+---@field details? string
+---@field textSmall? string
+---@field textLarge? string
+---@field imageSmall? string
+---@field imageLarge? string
+---@field partyId? string
+---@field partySize? number
+---@field partyMax? number
+---@field emojiId? string
+---@field emojiName? string
+---@field emojiHash? string
+---@field emojiURL? string
 local Activity, get = require('class')('Activity', Container)
 
 function Activity:__init(data, parent)

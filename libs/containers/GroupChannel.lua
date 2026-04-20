@@ -17,6 +17,12 @@ local format = string.format
 more than one and up to ten recipients. This class should only be relevant to
 user-accounts; bots cannot normally join group channels.]=]
 ---@class GroupChannel : TextChannel
+---@field recipients SecondaryCache
+---@field name string
+---@field ownerId string
+---@field owner? User
+---@field icon? string
+---@field iconURL? string
 local GroupChannel, get = require('class')('GroupChannel', TextChannel)
 
 function GroupChannel:__init(data, parent)
@@ -32,6 +38,9 @@ end
 @d Sets the channel's name. This must be between 1 and 100 characters in length.
 ]=]
 --[=[Sets the channel's name. This must be between 1 and 100 characters in length.]=]
+---@param name string
+---@return boolean success
+---@return string? error
 function GroupChannel:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -44,6 +53,9 @@ end
 @d Sets the channel's icon. To remove the icon, pass `nil`.
 ]=]
 --[=[Sets the channel's icon. To remove the icon, pass `nil`.]=]
+---@param icon? Base64-Resolvable
+---@return boolean success
+---@return string? error
 function GroupChannel:setIcon(icon)
 	icon = icon and Resolver.base64(icon)
 	return self:_modify({icon = icon or json.null})
@@ -57,6 +69,9 @@ end
 @d Adds a user to the channel.
 ]=]
 --[=[Adds a user to the channel.]=]
+---@param id User-ID-Resolvable
+---@return boolean success
+---@return string? error
 function GroupChannel:addRecipient(id)
 	id = Resolver.userId(id)
 	local data, err = self.client._api:groupDMAddRecipient(self._id, id)
@@ -75,6 +90,9 @@ end
 @d Removes a user from the channel.
 ]=]
 --[=[Removes a user from the channel.]=]
+---@param id User-ID-Resolvable
+---@return boolean success
+---@return string? error
 function GroupChannel:removeRecipient(id)
 	id = Resolver.userId(id)
 	local data, err = self.client._api:groupDMRemoveRecipient(self._id, id)
@@ -94,6 +112,8 @@ is destroyed.
 ]=]
 --[=[Removes the client's user from the channel. If no users remain, the channel
 is destroyed.]=]
+---@return boolean success
+---@return string? error
 function GroupChannel:leave()
 	return self:_delete()
 end

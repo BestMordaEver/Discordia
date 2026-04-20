@@ -13,6 +13,8 @@ local channelType = assert(enums.channelType)
 --[=[Represents a channel category in a Discord guild, used to organize individual
 text or voice channels in that guild.]=]
 ---@class GuildCategoryChannel : GuildChannel
+---@field textChannels FilteredIterable
+---@field voiceChannels FilteredIterable
 local GuildCategoryChannel, get = require('class')('GuildCategoryChannel', GuildChannel)
 
 function GuildCategoryChannel:__init(data, parent)
@@ -27,6 +29,9 @@ end
 @d Creates a new GuildTextChannel with this category as it's parent. Similar to `Guild:createTextChannel(name)`
 ]=]
 --[=[Creates a new GuildTextChannel with this category as it's parent. Similar to `Guild:createTextChannel(name)`]=]
+---@param name string
+---@return GuildTextChannel?
+---@return string? error
 function GuildCategoryChannel:createTextChannel(name)
 	local guild = self._parent
 	local data, err = guild.client._api:createGuildChannel(guild._id, {
@@ -49,6 +54,9 @@ end
 @d Creates a new GuildVoiceChannel with this category as it's parent. Similar to `Guild:createVoiceChannel(name)`
 ]=]
 --[=[Creates a new GuildVoiceChannel with this category as it's parent. Similar to `Guild:createVoiceChannel(name)`]=]
+---@param name string
+---@return GuildVoiceChannel?
+---@return string? error
 function GuildCategoryChannel:createVoiceChannel(name)
 	local guild = self._parent
 	local data, err = guild.client._api:createGuildChannel(guild._id, {

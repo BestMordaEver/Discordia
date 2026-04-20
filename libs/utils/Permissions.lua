@@ -61,6 +61,7 @@ end
 ]=]
 --[=[Returns a Permissions object with all of the defined permissions.]=]
 ---@param ... Permission-Resolvable
+---@return Permissions
 function Permissions.fromMany(...)
 	local ret = Permissions()
 	ret:enable(...)
@@ -74,6 +75,7 @@ end
 @d Returns a Permissions object with all permissions.
 ]=]
 --[=[Returns a Permissions object with all permissions.]=]
+---@return Permissions
 function Permissions.all()
 	return Permissions(ALL)
 end
@@ -184,6 +186,7 @@ end
 @d Returns the hexadecimal string that represents the permissions value.
 ]=]
 --[=[Returns the hexadecimal string that represents the permissions value.]=]
+---@return string
 function Permissions:toHex()
 	return format('0x%08X', self._value)
 end
@@ -234,6 +237,7 @@ either `self` or `other` (bitwise OR).
 --[=[Returns a new Permissions object that contains the permissions that are in
 either `self` or `other` (bitwise OR).]=]
 ---@param other Permissions
+---@return Permissions
 function Permissions:union(other)
 	return Permissions(bor(self._value, other._value))
 end
@@ -248,6 +252,7 @@ both `self` and `other` (bitwise AND).
 --[=[Returns a new Permissions object that contains the permissions that are in
 both `self` and `other` (bitwise AND).]=]
 ---@param other Permissions
+---@return Permissions
 function Permissions:intersection(other) -- in both
 	return Permissions(band(self._value, other._value))
 end
@@ -262,6 +267,7 @@ in `self` or `other` (bitwise XOR).
 --[=[Returns a new Permissions object that contains the permissions that are not
 in `self` or `other` (bitwise XOR).]=]
 ---@param other Permissions
+---@return Permissions
 function Permissions:difference(other) -- not in both
 	return Permissions(bxor(self._value, other._value))
 end
@@ -276,6 +282,7 @@ in `self`, but are in `other` (or the set of all permissions if omitted).
 --[=[Returns a new Permissions object that contains the permissions that are not
 in `self`, but are in `other` (or the set of all permissions if omitted).]=]
 ---@param other Permissions
+---@return Permissions
 function Permissions:complement(other) -- in other not in self
 	local value = other and other._value or ALL
 	return Permissions(band(bnot(self._value), value))
@@ -287,6 +294,7 @@ end
 @d Returns a new copy of the original permissions object.
 ]=]
 --[=[Returns a new copy of the original permissions object.]=]
+---@return Permissions
 function Permissions:copy()
 	return Permissions(self._value)
 end

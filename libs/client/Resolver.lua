@@ -135,7 +135,7 @@ function Resolver.entryId(obj)
 	return int(obj)
 end
 
----@param objs table<any, Message-ID-Resolvable> | Iterable<Message-ID-Resolvable>
+---@param objs {any: Message-ID-Resolvable} | Iterable<Message-ID-Resolvable>
 ---@return string[]
 function Resolver.messageIds(objs)
 	local ret = {}
@@ -151,7 +151,7 @@ function Resolver.messageIds(objs)
 	return ret
 end
 
----@param objs table<any, Role-ID-Resolvable> | Iterable<Message-ID-Resolvable>
+---@param objs {any: Role-ID-Resolvable} | Iterable<Role-ID-Resolvable>
 ---@return string[]
 function Resolver.roleIds(objs)
 	local ret = {}
@@ -201,7 +201,7 @@ function Resolver.color(obj)
 	return tonumber(obj)
 end
 
----@alias Permissions-Resolvable Permissions | permission | number
+---@alias Permissions-Resolvable Permissions | number | string
 ---@param obj Permissions-Resolvable
 ---@return number?
 function Resolver.permissions(obj)
@@ -213,7 +213,7 @@ end
 
 ---@alias Permission-Resolvable permission | number
 ---@param obj Permission-Resolvable
----@return number?
+---@return permission?
 function Resolver.permission(obj)
 	local t = type(obj)
 	local n = nil
@@ -222,12 +222,12 @@ function Resolver.permission(obj)
 	elseif t == 'number' then
 		n = permission(obj) and obj
 	end
-	return n --[=[@as number]=]
+	return n
 end
 
 ---@alias Intent-Resolvable gatewayIntent | number
 ---@param obj Intent-Resolvable
----@return number?
+---@return gatewayIntent?
 function Resolver.gatewayIntent(obj)
 	local t = type(obj)
 	local n = nil
@@ -236,12 +236,12 @@ function Resolver.gatewayIntent(obj)
 	elseif t == 'number' then
 		n = gatewayIntent(obj) and obj
 	end
-	return n --[=[@as number]=]
+	return n --[=[@as gatewayIntent]=]
 end
 
 ---@alias ActionType-Resolvable actionType | number
 ---@param obj ActionType-Resolvable
----@return number?
+---@return actionType?
 function Resolver.actionType(obj)
 	local t = type(obj)
 	local n = nil
@@ -250,12 +250,12 @@ function Resolver.actionType(obj)
 	elseif t == 'number' then
 		n = actionType(obj) and obj
 	end
-	return n --[=[@as number]=]
+	return n --[=[@as actionType]=]
 end
 
 ---@alias MessageFlag-Resolvable messageFlag | number
 ---@param obj MessageFlag-Resolvable
----@return number?
+---@return messageFlag?
 function Resolver.messageFlag(obj)
 	local t = type(obj)
 	local n = nil
@@ -264,7 +264,7 @@ function Resolver.messageFlag(obj)
 	elseif t == 'number' then
 		n = messageFlag(obj) and obj
 	end
-	return n --[=[@as number]=]
+	return n --[=[@as messageFlag]=]
 end
 
 ---@alias Base64-Resolvable string

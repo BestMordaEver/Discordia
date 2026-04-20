@@ -11,6 +11,8 @@ local UserPresence = require('containers/abstract/UserPresence')
 This is generally either a friend or a blocked user. This class should only be
 relevant to user-accounts; bots cannot normally have relationships.]=]
 ---@class Relationship : UserPresence
+---@field name string
+---@field type relationshipType
 local Relationship, get = require('class')('Relationship', UserPresence)
 
 function Relationship:__init(data, parent)

@@ -9,6 +9,7 @@ local fmt = setmetatable({}, {
 	end
 })
 
+---@class PCMString
 local PCMString = require('class')('PCMString')
 
 function PCMString:__init(str)

@@ -39,6 +39,7 @@ local function checkMode(modes)
 	end
 end
 
+---@class VoiceSocket : WebSocket
 local VoiceSocket = class('VoiceSocket', WebSocket)
 
 for name in pairs(logLevel) do

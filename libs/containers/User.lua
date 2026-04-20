@@ -14,6 +14,19 @@ local DEFAULT_AVATARS = constants.DEFAULT_AVATARS
 --[=[Represents a single user of Discord, either a human or a bot, outside of any
 specific guild's context.]=]
 ---@class User : Snowflake
+---@field bot boolean
+---@field name string
+---@field username string
+---@field globalName? string
+---@field discriminator string
+---@field tag string
+---@field avatar? string
+---@field defaultAvatar number
+---@field avatarURL string
+---@field defaultAvatarURL string
+---@field mentionString string
+---@field mutualGuilds FilteredIterable
+---@field locale string
 local User, get = require('class')('User', Snowflake)
 
 function User:__init(data, parent)
@@ -33,6 +46,9 @@ the user does not have a custom avatar, the default URL is returned.
 --[=[Returns a URL that can be used to view the user's full avatar. If provided, the
 size must be a power of 2 while the extension must be a valid image format. If
 the user does not have a custom avatar, the default URL is returned.]=]
+---@param size? number
+---@param ext? string
+---@return string
 function User:getAvatarURL(size, ext)
 	local avatar = self._avatar
 	if avatar then
@@ -55,6 +71,8 @@ end
 @d Returns a URL that can be used to view the user's default avatar.
 ]=]
 --[=[Returns a URL that can be used to view the user's default avatar.]=]
+---@param size? number
+---@return string
 function User:getDefaultAvatarURL(size)
 	local avatar = self.defaultAvatar
 	if size then
@@ -73,6 +91,8 @@ channel is not cached an HTTP request is made to open one.
 ]=]
 --[=[Returns a private channel that can be used to communicate with the user. If the
 channel is not cached an HTTP request is made to open one.]=]
+---@return PrivateChannel?
+---@return string? error
 function User:getPrivateChannel()
 	local id = self._id
 	local client = self.client
@@ -97,6 +117,9 @@ end
 @d Equivalent to `User:getPrivateChannel():send(content)`
 ]=]
 --[=[Equivalent to `User:getPrivateChannel():send(content)`]=]
+---@param content string | table
+---@return Message?
+---@return string? error
 function User:send(content)
 	local channel, err = self:getPrivateChannel()
 	if channel then
@@ -114,6 +137,10 @@ end
 @d Equivalent to `User:getPrivateChannel():sendf(content)`
 ]=]
 --[=[Equivalent to `User:getPrivateChannel():sendf(content)`]=]
+---@param content string
+---@param ... any
+---@return Message?
+---@return string? error
 function User:sendf(content, ...)
 	local channel, err = self:getPrivateChannel()
 	if channel then

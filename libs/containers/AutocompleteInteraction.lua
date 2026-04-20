@@ -27,6 +27,9 @@ consists of "name" and "value" fields
 ]=]
 --[=[Reply to interaction with an array of choices. A choice
 consists of "name" and "value" fields]=]
+---@param choices table
+---@return boolean?
+---@return string? error
 function AutocompleteInteraction:provideChoices(choices)
 	return self:_callback(callbackType.autocomplete, {choices = choices})
 end

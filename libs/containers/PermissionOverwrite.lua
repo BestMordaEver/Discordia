@@ -14,6 +14,11 @@ local overwriteType = assert(enums.overwriteType)
 --[=[Represents an object that is used to allow or deny specific permissions for a
 role or member in a Discord guild channel.]=]
 ---@class PermissionOverwrite : Snowflake
+---@field type number
+---@field channel GuildChannel
+---@field guild Guild
+---@field allowedPermissions number
+---@field deniedPermissions number
 local PermissionOverwrite, get = require('class')('PermissionOverwrite', Snowflake)
 
 function PermissionOverwrite:__init(data, parent)
@@ -29,6 +34,8 @@ the same overwrite.
 ]=]
 --[=[Deletes the permission overwrite. This can be undone by creating a new version of
 the same overwrite.]=]
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:delete()
 	local data, err = self.client._api:deleteChannelPermission(self._parent._id, self._id)
 	if data then
@@ -51,6 +58,8 @@ This may make an HTTP request if the object is not cached.
 ]=]
 --[=[Returns the object associated with this overwrite, either a role or member.
 This may make an HTTP request if the object is not cached.]=]
+---@return Role | Member | nil
+---@return string? error
 function PermissionOverwrite:getObject()
 	local guild = self._parent._parent
 	if self.type == overwriteType.role then
@@ -85,6 +94,7 @@ explicitly allows.
 ]=]
 --[=[Returns a permissions object that represents the permissions that this overwrite
 explicitly allows.]=]
+---@return Permissions
 function PermissionOverwrite:getAllowedPermissions()
 	return Permissions(self._allow_new or self._allow)
 end
@@ -98,6 +108,7 @@ explicitly denies.
 ]=]
 --[=[Returns a permissions object that represents the permissions that this overwrite
 explicitly denies.]=]
+---@return Permissions
 function PermissionOverwrite:getDeniedPermissions()
 	return Permissions(self._deny_new or self._deny)
 end
@@ -113,6 +124,10 @@ method does NOT resolve conflicts. Please be sure to use the correct parameters.
 ]=]
 --[=[Sets the permissions that this overwrite explicitly allows and denies. This
 method does NOT resolve conflicts. Please be sure to use the correct parameters.]=]
+---@param allowed Permissions-Resolvable
+---@param denied Permissions-Resolvable
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:setPermissions(allowed, denied)
 	local allow = Resolver.permissions(allowed)
 	local deny = Resolver.permissions(denied)
@@ -127,6 +142,9 @@ end
 @d Sets the permissions that this overwrite explicitly allows.
 ]=]
 --[=[Sets the permissions that this overwrite explicitly allows.]=]
+---@param allowed Permissions-Resolvable
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:setAllowedPermissions(allowed)
 	local allow = Permissions(Resolver.permissions(allowed))
 	local deny = allow:complement(self:getDeniedPermissions()) -- un-deny the allowed permissions
@@ -141,6 +159,9 @@ end
 @d Sets the permissions that this overwrite explicitly denies.
 ]=]
 --[=[Sets the permissions that this overwrite explicitly denies.]=]
+---@param denied Permissions-Resolvable
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:setDeniedPermissions(denied)
 	local deny = Permissions(Resolver.permissions(denied))
 	local allow = deny:complement(self:getAllowedPermissions()) -- un-allow the denied permissions
@@ -155,6 +176,9 @@ end
 @d Allows individual permissions in this overwrite.
 ]=]
 --[=[Allows individual permissions in this overwrite.]=]
+---@param ... Permission-Resolvable[]
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:allowPermissions(...)
 	local allowed, denied = getPermissions(self)
 	allowed:enable(...); denied:disable(...)
@@ -169,6 +193,9 @@ end
 @d Denies individual permissions in this overwrite.
 ]=]
 --[=[Denies individual permissions in this overwrite.]=]
+---@param ... Permission-Resolvable[]
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:denyPermissions(...)
 	local allowed, denied = getPermissions(self)
 	allowed:disable(...); denied:enable(...)
@@ -183,6 +210,9 @@ end
 @d Clears individual permissions in this overwrite.
 ]=]
 --[=[Clears individual permissions in this overwrite.]=]
+---@param ... Permission-Resolvable[]
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:clearPermissions(...)
 	local allowed, denied = getPermissions(self)
 	allowed:disable(...); denied:disable(...)
@@ -196,6 +226,8 @@ end
 @d Allows all permissions in this overwrite.
 ]=]
 --[=[Allows all permissions in this overwrite.]=]
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:allowAllPermissions()
 	local allowed, denied = getPermissions(self)
 	allowed:enableAll(); denied:disableAll()
@@ -209,6 +241,8 @@ end
 @d Denies all permissions in this overwrite.
 ]=]
 --[=[Denies all permissions in this overwrite.]=]
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:denyAllPermissions()
 	local allowed, denied = getPermissions(self)
 	allowed:disableAll(); denied:enableAll()
@@ -222,6 +256,8 @@ end
 @d Clears all permissions in this overwrite.
 ]=]
 --[=[Clears all permissions in this overwrite.]=]
+---@return boolean success
+---@return string? error
 function PermissionOverwrite:clearAllPermissions()
 	local allowed, denied = getPermissions(self)
 	allowed:disableAll(); denied:disableAll()

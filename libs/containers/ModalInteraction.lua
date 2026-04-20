@@ -9,6 +9,8 @@ local MessagingInteraction = require('containers/abstract/MessagingInteraction')
 --[=[Represents an interaction that your application receives when a user uses
 a message component.]=]
 ---@class ModalInteraction : MessagingInteraction
+---@field customId string
+---@field components table
 local ModalInteraction, get = require('class')('ModalInteraction', MessagingInteraction)
 
 function ModalInteraction:__init(data, client)

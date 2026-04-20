@@ -24,6 +24,17 @@ local permission = assert(enums.permission)
 --[=[Represents a Discord guild role, which is used to assign priority, permissions,
 and a color to guild members.]=]
 ---@class Role : Snowflake
+---@field hoisted boolean
+---@field mentionable boolean
+---@field managed boolean
+---@field name string
+---@field position number
+---@field color number
+---@field permissions number
+---@field mentionString string
+---@field guild Guild
+---@field members FilteredIterable
+---@field emojis FilteredIterable
 local Role, get = require('class')('Role', Snowflake)
 
 function Role:__init(data, parent)
@@ -48,6 +59,8 @@ end
 @d Permanently deletes the role. This cannot be undone!
 ]=]
 --[=[Permanently deletes the role. This cannot be undone!]=]
+---@return boolean success
+---@return string? error
 function Role:delete()
 	local data, err = self.client._api:deleteGuildRole(self._parent._id, self._id)
 	if data then
@@ -107,6 +120,9 @@ the default everyone role cannot be moved.
 role should be moved, clamped to the lowest position, with a default of 1 if
 it is omitted. This will also normalize the positions of all roles. Note that
 the default everyone role cannot be moved.]=]
+---@param n? number how many spaces the role should be moved, default is 1
+---@return boolean success
+---@return string? error
 function Role:moveDown(n) -- TODO: fix attempt to move roles that cannot be moved
 
 	n = tonumber(n) or 1
@@ -147,6 +163,9 @@ the default everyone role cannot be moved.
 role should be moved, clamped to the highest position, with a default of 1 if
 it is omitted. This will also normalize the positions of all roles. Note that
 the default everyone role cannot be moved.]=]
+---@param n? number how many spaces the role should be moved, default is 1
+---@return boolean success
+---@return string? error
 function Role:moveUp(n) -- TODO: fix attempt to move roles that cannot be moved
 
 	n = tonumber(n) or 1
@@ -181,6 +200,9 @@ end
 @d Sets the role's name. The name must be between 1 and 100 characters in length.
 ]=]
 --[=[Sets the role's name. The name must be between 1 and 100 characters in length.]=]
+---@param name string
+---@return boolean success
+---@return string? error
 function Role:setName(name)
 	return self:_modify({name = name or json.null})
 end
@@ -193,6 +215,9 @@ end
 @d Sets the role's display color.
 ]=]
 --[=[Sets the role's display color.]=]
+---@param color? Color-Resolvable
+---@return boolean success
+---@return string? error
 function Role:setColor(color)
 	color = color and Resolver.color(color)
 	return self:_modify({color = color or json.null})
@@ -206,6 +231,9 @@ end
 @d Sets the permissions that this role explicitly allows.
 ]=]
 --[=[Sets the permissions that this role explicitly allows.]=]
+---@param permissions? Permissions-Resolvable
+---@return boolean success
+---@return string? error
 function Role:setPermissions(permissions)
 	permissions = permissions and Resolver.permissions(permissions)
 	return self:_modify({permissions = permissions or json.null})
@@ -220,6 +248,8 @@ list.
 ]=]
 --[=[Causes members with this role to display above unhoisted roles in the member
 list.]=]
+---@return boolean success
+---@return string? error
 function Role:hoist()
 	return self:_modify({hoist = true})
 end
@@ -231,6 +261,8 @@ end
 @d Causes member with this role to display amongst other unhoisted members.
 ]=]
 --[=[Causes member with this role to display amongst other unhoisted members.]=]
+---@return boolean success
+---@return string? error
 function Role:unhoist()
 	return self:_modify({hoist = false})
 end
@@ -242,6 +274,8 @@ end
 @d Allows anyone to mention this role in text messages.
 ]=]
 --[=[Allows anyone to mention this role in text messages.]=]
+---@return boolean success
+---@return string? error
 function Role:enableMentioning()
 	return self:_modify({mentionable = true})
 end
@@ -253,6 +287,8 @@ end
 @d Disallows anyone to mention this role in text messages.
 ]=]
 --[=[Disallows anyone to mention this role in text messages.]=]
+---@return boolean success
+---@return string? error
 function Role:disableMentioning()
 	return self:_modify({mentionable = false})
 end
@@ -267,6 +303,9 @@ allow the permissions.
 ]=]
 --[=[Enables individual permissions for this role. This does not necessarily fully
 allow the permissions.]=]
+---@param ... Permission-Resolvable
+---@return boolean success
+---@return string? error
 function Role:enablePermissions(...)
 	local permissions = self:getPermissions()
 	permissions:enable(...)
@@ -283,6 +322,9 @@ disallow the permissions.
 ]=]
 --[=[Disables individual permissions for this role. This does not necessarily fully
 disallow the permissions.]=]
+---@param ... Permission-Resolvable
+---@return boolean success
+---@return string? error
 function Role:disablePermissions(...)
 	local permissions = self:getPermissions()
 	permissions:disable(...)
@@ -298,6 +340,8 @@ allow the permissions.
 ]=]
 --[=[Enables all permissions for this role. This does not necessarily fully
 allow the permissions.]=]
+---@return boolean success
+---@return string? error
 function Role:enableAllPermissions()
 	local permissions = self:getPermissions()
 	permissions:enableAll()
@@ -313,6 +357,8 @@ disallow the permissions.
 ]=]
 --[=[Disables all permissions for this role. This does not necessarily fully
 disallow the permissions.]=]
+---@return boolean success
+---@return string? error
 function Role:disableAllPermissions()
 	local permissions = self:getPermissions()
 	permissions:disableAll()
@@ -326,6 +372,7 @@ end
 @d Returns a color object that represents the role's display color.
 ]=]
 --[=[Returns a color object that represents the role's display color.]=]
+---@return Color
 function Role:getColor()
 	return Color(self._color)
 end
@@ -342,7 +389,9 @@ use the `getPermissions` method and check the resulting object.
 --[=[Checks whether the role has a specific permission. This is a relatively
 expensive operation. If you need to check multiple permissions at once,
 use the `getPermissions` method and check the resulting object.]=]
-
+---@param channel GuildChannel
+---@param perm Permissions-Resolvable
+---@return boolean?
 function Role:hasPermission(channel, perm)
 
 	local guild = self._parent
@@ -399,6 +448,8 @@ you just need to check one permission, use the `hasPermission` method.
 --[=[Returns a permissions object that represents the permissions that this role
 has enabled for the guild, or for a specific channel if one is provided. If
 you just need to check one permission, use the `hasPermission` method.]=]
+---@param channel? GuildChannel
+---@return Permissions?
 function Role:getPermissions(channel)
 
 	local guild = self._parent

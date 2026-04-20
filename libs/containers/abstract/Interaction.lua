@@ -1,3 +1,4 @@
+---@diagnostic disable: invisible
 --[=[
 @c Interaction x Snowflake
 @t abc

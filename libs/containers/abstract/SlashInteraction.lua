@@ -1,3 +1,4 @@
+---@diagnostic disable: invisible
 --[=[
 @c SlashInteraction x Interaction
 @d Defines the base methods and properties for Discord interactions

@@ -113,6 +113,7 @@ not be prefixed by `#`; all other characters are interpreted as a hex string.
 ]=]
 --[=[Constructs a new Color object from a hexadecimal string.]=]
 ---@param hex string may or may not be prefixed by `#`; all other characters are interpreted as a hex string
+---@return Color
 function Color.fromHex(hex)
 	return Color(tonumber(hex:match('#?(.*)'), 16))
 end
@@ -131,6 +132,7 @@ though one component will not overflow to the next component.
 ---@param r number between 0x000000 and 0xFF0000
 ---@param g number between 0x000000 and 0x00FF00
 ---@param b number between 0x000000 and 0x0000FF
+---@return Color
 function Color.fromRGB(r, g, b)
 	r = band(lshift(r, 16), 0xFF0000)
 	g = band(lshift(g, 8), 0x00FF00)
@@ -208,6 +210,7 @@ while saturation and value are clamped to [0, 1].
 ---@param h number can overflow 360
 ---@param s number clamped to [0, 1]
 ---@param v number clamped to [0, 1]
+---@return Color
 function Color.fromHSV(h, s, v)
 	h = h % 360
 	s = clamp(s, 0, 1)
@@ -232,6 +235,7 @@ while saturation and lightness are clamped to [0, 1].
 ---@param h number can overflow 360
 ---@param s number clamped to [0, 1]
 ---@param l number clamped to [0, 1]
+---@return Color
 function Color.fromHSL(h, s, l)
 	h = h % 360
 	s = clamp(s, 0, 1)
@@ -248,6 +252,7 @@ end
 @d Returns a 6-digit hexadecimal string that represents the color value.
 ]=]
 --[=[Returns a 6-digit hexadecimal string that represents the color value.]=]
+---@return string
 function Color:toHex()
 	return format('#%06X', self._value)
 end
@@ -260,6 +265,9 @@ end
 @d Returns the red, green, and blue values that are packed into the color value.
 ]=]
 --[=[Returns the red, green, and blue values that are packed into the color value.]=]
+---@return number r
+---@return number g
+---@return number b
 function Color:toRGB()
 	return self.r, self.g, self.b
 end
@@ -272,6 +280,9 @@ end
 @d Returns the hue, saturation, and value that represents the color value.
 ]=]
 --[=[Returns the hue, saturation, and value that represents the color value.]=]
+---@return number h
+---@return number s
+---@return number v
 function Color:toHSV()
 	local h, d, mx = toHue(self.r, self.g, self.b)
 	local v = mx
@@ -287,6 +298,9 @@ end
 @d Returns the hue, saturation, and lightness that represents the color value.
 ]=]
 --[=[Returns the hue, saturation, and lightness that represents the color value.]=]
+---@return number h
+---@return number s
+---@return number l
 function Color:toHSL()
 	local h, d, mx, mn = toHue(self.r, self.g, self.b)
 	local l = (mx + mn) * 0.5

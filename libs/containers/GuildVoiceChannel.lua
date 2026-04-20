@@ -14,6 +14,10 @@ local TableIterable = require('iterables/TableIterable')
 --[=[Represents a voice channel in a Discord guild, where guild members can connect
 and communicate via voice chat.]=]
 ---@class GuildVoiceChannel : GuildChannel, TextChannel
+---@field bitrate number
+---@field userLimit number
+---@field connectedMembers TableIterable
+---@field connection? VoiceConnection
 local GuildVoiceChannel, get = require('class')('GuildVoiceChannel', GuildChannel, TextChannel)
 
 function GuildVoiceChannel:__init(data, parent)
@@ -38,6 +42,9 @@ default is set, which is 64000.
 --[=[Sets the channel's audio bitrate in bits per second (bps). This must be between
 8000 and 96000 (or 128000 for partnered servers). If `nil` is passed, the
 default is set, which is 64000.]=]
+---@param bitrate? number
+---@return boolean success
+---@return string? error
 function GuildVoiceChannel:setBitrate(bitrate)
 	return self:_modify({bitrate = bitrate or json.null})
 end
@@ -52,6 +59,9 @@ unlimited). If `nil` is passed, the default is set, which is 0.
 ]=]
 --[=[Sets the channel's user limit. This must be between 0 and 99 (where 0 is
 unlimited). If `nil` is passed, the default is set, which is 0.]=]
+---@param user_limit? number
+---@return boolean success
+---@return string? error
 function GuildVoiceChannel:setUserLimit(user_limit)
 	return self:_modify({user_limit = user_limit or json.null})
 end
@@ -63,6 +73,8 @@ end
 @d Join this channel and form a connection to the Voice Gateway.
 ]=]
 --[=[Join this channel and form a connection to the Voice Gateway.]=]
+---@return VoiceConnection?
+---@return string? error
 function GuildVoiceChannel:join()
 
 	local success, err
@@ -77,7 +89,7 @@ function GuildVoiceChannel:join()
 
 	else
 
-		local guild = self._parent
+		local guild = self._parent	--[[ @as Guild ]]
 		local client = guild._parent
 
 		success, err = client._shards[guild.shardId]:updateVoice(guild._id, self._id)
@@ -86,10 +98,12 @@ function GuildVoiceChannel:join()
 			return nil, err
 		end
 
+		---@diagnostic disable-next-line: invisible
 		connection = guild._connection
 
 		if not connection then
 			connection = VoiceConnection(self)
+			---@diagnostic disable-next-line: invisible
 			guild._connection = connection
 		end
 
@@ -116,6 +130,8 @@ Equivalent to GuildVoiceChannel.connection:close()
 ]=]
 --[=[Leave this channel if there is an existing voice connection to it.
 Equivalent to GuildVoiceChannel.connection:close()]=]
+---@return boolean success
+---@return string? error
 function GuildVoiceChannel:leave()
 	if self._connection then
 		return self._connection:close()

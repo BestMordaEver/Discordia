@@ -13,6 +13,7 @@ local MessageContainer = require('utils/MessageContainer')
 
 --[=[Represents a guild channel that can only contain threads.]=]
 ---@class ForumChannel : GuildChannel
+---@field isNews boolean
 local ForumChannel, get = require('class')('ForumChannel', GuildChannel)
 
 function ForumChannel:__init(data, parent)
@@ -32,10 +33,14 @@ end
 @d Creates a new thread using the raw table of parameters for initialization.
 ]=]
 --[=[Creates a new thread using the raw table of parameters for initialization.]=]
+---@param params table
+---@param content? string | table
+---@return Thread?
+---@return string? error
 function ForumChannel:startThread(params, content)
 	local data, files = MessageContainer.parseContent(content)
 	if not data then
-		return nil, files
+		return nil, files --[[ @as string]]
 	end
 
 	data, files = self.client._api:startThreadInForumChannel(self._id, params, data)	-- TODO: files
@@ -57,6 +62,9 @@ in length.
 ]=]
 --[=[Creates a new public thread
 in length.]=]
+---@param name string
+---@return Thread?
+---@return string? error
 function ForumChannel:startPublicThread(name)
 	return self:startThread({name = name, type = channelType.publicThread})
 end
@@ -71,6 +79,9 @@ in length.
 ]=]
 --[=[Creates a new private thread
 in length.]=]
+---@param name string
+---@return Thread?
+---@return string? error
 function ForumChannel:startPrivateThread(name)
 	return self:startThread({name = name, type = channelType.privateThread})
 end

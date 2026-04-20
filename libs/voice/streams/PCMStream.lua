@@ -9,6 +9,7 @@ local fmt = setmetatable({}, {
 	end
 })
 
+---@class PCMStream
 local PCMStream = require('class')('PCMStream')
 
 function PCMStream:__init(stream)

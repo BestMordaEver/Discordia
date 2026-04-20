@@ -248,8 +248,12 @@ end
 @d Interprets a Discord timestamp format string `<t:seconds:style>`,
 returns Unix time in seconds and the style if one was present.
 ]=]
+---@param str string
+---@return number? seconds
+---@return string style
 function Date.parseDiscordTimestamp(str)
 	local t, s = string.match(str, '<t:(%d+):?(%a?)>')
+	---@diagnostic disable-next-line: return-type-mismatch
 	return tonumber(t), s
 end
 
@@ -264,6 +268,7 @@ end
 --[=[Constructs a new Date object from an ISO 8601 string. Equivalent to
 `Date(Date.parseISO(str))`.]=]
 ---@param str string
+---@return Date
 function Date.fromISO(str)
 	return Date(Date.parseISO(str))
 end
@@ -279,6 +284,7 @@ end
 --[=[Constructs a new Date object from an RFC 2822 string. Equivalent to
 `Date(Date.parseHeader(str))`.]=]
 ---@param str string
+---@return Date
 function Date.fromHeader(str)
 	return Date(Date.parseHeader(str))
 end
@@ -294,6 +300,7 @@ end
 --[=[Constructs a new Date object from a Discord/Twitter Snowflake ID. Equivalent to
 `Date(Date.parseSnowflake(id))`.]=]
 ---@param id string
+---@return Date
 function Date.fromSnowflake(id)
 	return Date(Date.parseSnowflake(id))
 end
@@ -309,6 +316,7 @@ Equivalent to `Date(Date.parseTable(tbl))`.
 --[=[Constructs a new Date object from a Lua date table interpreted as a local time.
 Equivalent to `Date(Date.parseTable(tbl))`.]=]
 ---@param tbl osdateparam
+---@return Date
 function Date.fromTable(tbl)
 	return Date(Date.parseTable(tbl))
 end
@@ -324,6 +332,7 @@ Equivalent to `Date(Date.parseTableUTC(tbl))`.
 --[=[Constructs a new Date object from a Lua date table interpreted as a UTC time.
 Equivalent to `Date(Date.parseTableUTC(tbl))`.]=]
 ---@param tbl osdateparam
+---@return Date
 function Date.fromTableUTC(tbl)
 	return Date(Date.parseTableUTC(tbl))
 end
@@ -337,6 +346,7 @@ end
 ]=]
 --[=[Constructs a new Date object from a Unix time in seconds.]=]
 ---@param s number
+---@return Date
 function Date.fromSeconds(s)
 	return Date(s)
 end
@@ -350,6 +360,7 @@ end
 ]=]
 --[=[Constructs a new Date object from a Unix time in milliseconds.]=]
 ---@param ms number
+---@return Date
 function Date.fromMilliseconds(ms)
 	return Date(ms / MS_PER_S)
 end
@@ -363,6 +374,7 @@ end
 ]=]
 --[=[Constructs a new Date object from a Unix time in microseconds.]=]
 ---@param us number
+---@return Date
 function Date.fromMicroseconds(us)
 	return Date(0, us)
 end
@@ -374,6 +386,8 @@ end
 @r Date
 @d Constructs a new Date object from the Discord timestamp format `<t:seconds:style>`.
 ]=]
+---@param str string
+---@return Date
 function Date.fromDiscordTimestamp(str)
 	return Date((Date.parseDiscordTimestamp(str)))
 end
@@ -391,6 +405,7 @@ the timezone, plus microseconds if available.
 --[=[Returns an ISO 8601 string that represents the stored date and time, plus microseconds if available.]=]
 ---@param sep? string custom separator, default is `T`
 ---@param tz? string timezone, default is `+00:00`
+---@return string
 function Date:toISO(sep, tz)
 	if sep and tz then
 		local ret = date('!%F%%s%T%%s', self._s)
@@ -410,6 +425,7 @@ end
 @d Returns an RFC 2822 string that represents the stored date and time.
 ]=]
 --[=[Returns an RFC 2822 string that represents the stored date and time.]=]
+---@return string
 function Date:toHeader()
 	return ---@type string
 	date('!%a, %d %b %Y %T GMT', self._s)
@@ -439,6 +455,7 @@ time. Equivalent to `os.date('*t', s)` where `s` is the Unix time in seconds.
 ]=]
 --[=[Returns a Lua date table that represents the stored date and time as a local
 time. Equivalent to `os.date('*t', s)` where `s` is the Unix time in seconds.]=]
+---@return osdate
 function Date:toTable()
 	return ---@type osdate
 	date('*t', self._s)
@@ -452,9 +469,9 @@ time. Equivalent to `os.date('!*t', s)` where `s` is the Unix time in seconds.
 ]=]
 --[=[Returns a Lua date table that represents the stored date and time as a UTC
 time. Equivalent to `os.date('!*t', s)` where `s` is the Unix time in seconds.]=]
+---@return osdate
 function Date:toTableUTC()
-	return ---@type osdate
-	date('!*t', self._s)
+	return date('!*t', self._s) --[[@as osdate]]
 end
 
 --[=[
@@ -463,6 +480,7 @@ end
 @d Returns a Unix time in seconds that represents the stored date and time.
 ]=]
 --[=[Returns a Unix time in seconds that represents the stored date and time.]=]
+---@return number
 function Date:toSeconds()
 	return self._s + self._us / US_PER_S
 end
@@ -473,6 +491,7 @@ end
 @d Returns a Unix time in milliseconds that represents the stored date and time.
 ]=]
 --[=[Returns a Unix time in milliseconds that represents the stored date and time.]=]
+---@return number
 function Date:toMilliseconds()
 	return self._s * MS_PER_S + self._us / US_PER_MS
 end
@@ -483,6 +502,7 @@ end
 @d Returns a Unix time in microseconds that represents the stored date and time.
 ]=]
 --[=[Returns a Unix time in microseconds that represents the stored date and time.]=]
+---@return number
 function Date:toMicroseconds()
 	return self._s * US_PER_S + self._us
 end
@@ -493,6 +513,8 @@ end
 @r string
 @d Returns the date converted to the Discord timestamp format `<t:seconds:style>`.
 ]=]
+---@param style? string
+---@return string
 function Date:toDiscordTimestamp(style)
 	local t = floor(self:toSeconds())
 	if style then

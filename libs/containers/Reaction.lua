@@ -15,6 +15,13 @@ local format = string.format
 --[=[Represents an emoji that has been used to react to a Discord text message. Both
 standard and custom emojis can be used.]=]
 ---@class Reaction : Container
+---@field emojiId? string
+---@field emojiName string
+---@field emojiHash string
+---@field emojiURL? string
+---@field me boolean
+---@field count number
+---@field message Message
 local Reaction, get = require('class')('Reaction', Container)
 
 function Reaction:__init(data, parent)
@@ -63,6 +70,9 @@ method again to guarantee that the objects are update to date.
 its parent message. The cache is not automatically updated via gateway events,
 but the internally referenced user objects may be updated. You must call this
 method again to guarantee that the objects are update to date.]=]
+---@param limit? number
+---@return SecondaryCache?
+---@return string? error
 function Reaction:getUsers(limit)
 	return getUsers(self, limit and {limit = limit})
 end
@@ -82,6 +92,10 @@ method again to guarantee that the objects are update to date.
 its parent message. The cache is not automatically updated via gateway events,
 but the internally referenced user objects may be updated. You must call this
 method again to guarantee that the objects are update to date.]=]
+---@param id User-ID-Resolvable
+---@param limit? number
+---@return SecondaryCache?
+---@return string? error
 function Reaction:getUsersBefore(id, limit)
 	id = Resolver.userId(id)
 	return getUsers(self, {before = id, limit = limit})
@@ -102,6 +116,10 @@ updated. You must call this method again to guarantee that the objects are updat
 after the specified id in its parent message. The cache is not automatically
 updated via gateway events, but the internally referenced user objects may be
 updated. You must call this method again to guarantee that the objects are update to date.]=]
+---@param id User-ID-Resolvable
+---@param limit? number
+---@return SecondaryCache?
+---@return string? error
 function Reaction:getUsersAfter(id, limit)
 	id = Resolver.userId(id)
 	return getUsers(self, {after = id, limit = limit})
@@ -115,6 +133,9 @@ end
 @d Equivalent to `Reaction.message:removeReaction(Reaction)`
 ]=]
 --[=[Equivalent to `Reaction.message:removeReaction(Reaction)`]=]
+---@param id? User-ID-Resolvable
+---@return boolean success
+---@return string? error
 function Reaction:delete(id)
 	return self._parent:removeReaction(self, id)
 end

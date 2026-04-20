@@ -29,6 +29,7 @@ is not guaranteed.
 ]=]
 --[=[Returns an iterator that returns all contained objects. The order of the objects
 is not guaranteed.]=]
+---@return function
 function FilteredIterable:iter()
 	return self._base:findAll(self._predicate)
 end

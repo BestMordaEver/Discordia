@@ -111,6 +111,18 @@ client data should not be expected and most client methods should not be called
 until after the `ready` event is received. Base emitter methods may be called
 at any time. See [[client options]].]=]
 ---@class Client : Emitter
+---@field shardCount? number
+---@field totalShardCount? number
+---@field user? User
+---@field owner? User
+---@field verified? boolean
+---@field mfaEnabled? boolean
+---@field email? string
+---@field guilds Cache
+---@field users Cache
+---@field privateChannels Cache
+---@field groupChannels Cache
+---@field relationships Cache
 local Client, get = require('class')('Client', Emitter)
 
 function Client:__init(options)
@@ -312,6 +324,8 @@ and multiple shards per client can operate concurrently. This should be the last
 method called after all other code and event handlers have been initialized. If
 a presence table is provided, it will act as if the user called `setStatus`
 and `setActivity` after `run`.]=]
+---@param token string
+---@param presence? table
 function Client:run(token, presence)
 	self._presence = presence or {}
 	return wrap(run)(self, token)
@@ -348,6 +362,7 @@ end
 @d Returns a number that represents the gateway intents enabled for this client.
 ]=]
 --[=[Returns a number that represents the gateway intents enabled for this client.]=]
+---@return number
 function Client:getIntents()
 	return self._intents
 end
@@ -362,6 +377,7 @@ used internally until the client (re-)identifies.
 ]=]
 --[=[Sets the gateway intents that this client will use. The new value will not be
 used internally until the client (re-)identifies.]=]
+---@param intents number
 function Client:setIntents(intents)
 	self._intents = tonumber(intents) or 0
 end
@@ -376,6 +392,7 @@ used internally until the client (re-)identifies.
 ]=]
 --[=[Enables individual gateway intents for this client. The new value will not be
 used internally until the client (re-)identifies.]=]
+---@param ... number
 function Client:enableIntents(...)
 	for i = 1, select('#', ...) do
 		local intent = getIntent(i, ...)
@@ -393,6 +410,7 @@ used internally until the client (re-)identifies.
 ]=]
 --[=[Disables individual gateway intents for this client. The new value will not be
 used internally until the client (re-)identifies.]=]
+---@param ... number
 function Client:disableIntents(...)
 	for i = 1, select('#', ...) do
 		local intent = getIntent(i, ...)
@@ -409,6 +427,7 @@ used internally until the client (re-)identifies.
 ]=]
 --[=[Enables all known gateway intents for this client. The new value will not be
 used internally until the client (re-)identifies.]=]
+---@return Client self
 function Client:enableAllIntents()
 	for _, value in pairs(gatewayIntent) do
 		self._intents = bor(self._intents, value)
@@ -450,6 +469,9 @@ length. This does not change the application name.
 ]=]
 --[=[Sets the client's username. This must be between 2 and 32 characters in
 length. This does not change the application name.]=]
+---@param username string
+---@return boolean success
+---@return string? error
 function Client:setUsername(username)
 	return self:_modify({username = username or null})
 end
@@ -464,6 +486,9 @@ This does not change the application image.
 ]=]
 --[=[Sets the client's avatar. To remove the avatar, pass an empty string or nil.
 This does not change the application image.]=]
+---@param avatar? Base64-Resolvable
+---@return boolean success
+---@return string? error
 function Client:setAvatar(avatar)
 	avatar = avatar and Resolver.base64(avatar)
 	return self:_modify({avatar = avatar or null})
@@ -483,6 +508,9 @@ this does not return the created guild object; wait for the corresponding
 This method may not work if the current user is in too many guilds. Note that
 this does not return the created guild object; wait for the corresponding
 `guildCreate` event if you need the object.]=]
+---@param name string
+---@return boolean success
+---@return string? error
 function Client:createGuild(name)
 	local data, err = self._api:createGuild({name = name})
 	if data then
@@ -499,6 +527,8 @@ end
 @d Creates a new group channel. This method is only available for user accounts.
 ]=]
 --[=[Creates a new group channel. This method is only available for user accounts.]=]
+---@return GroupChannel?
+---@return string? error
 function Client:createGroupChannel()
 	local data, err = self._api:createGroupDM()
 	if data then
@@ -518,6 +548,9 @@ static object that is not cached and is not updated by gateway events.
 ]=]
 --[=[Gets a webhook object by ID. This always makes an HTTP request to obtain a
 static object that is not cached and is not updated by gateway events.]=]
+---@param id string
+---@return Webhook?
+---@return string? error
 function Client:getWebhook(id)
 	local data, err = self._api:getWebhook(id)
 	if data then
@@ -538,6 +571,10 @@ static object that is not cached and is not updated by gateway events.
 ]=]
 --[=[Gets an invite object by code. This always makes an HTTP request to obtain a
 static object that is not cached and is not updated by gateway events.]=]
+---@param code string
+---@param counts? boolean
+---@return Invite?
+---@return string? error
 function Client:getInvite(code, counts)
 	local data, err = self._api:getInvite(code, counts and {with_counts = true})
 	if data then
@@ -561,6 +598,9 @@ gateway events.
 object will be returned; otherwise, an HTTP request is made. Under circumstances
 which should be rare, the user object may be an old version, not updated by
 gateway events.]=]
+---@param id User-ID-Resolvable
+---@return User?
+---@return string? error
 function Client:getUser(id)
 	id = Resolver.userId(id)
 	local user = self._users:get(id)
@@ -588,6 +628,8 @@ makes an HTTP request to obtain a guild.
 --[=[Gets a guild object by ID. The current user must be in the guild and the client
 must be running the appropriate shard that serves this guild. This method never
 makes an HTTP request to obtain a guild.]=]
+---@param id Guild-ID-Resolvable
+---@return Guild?
 function Client:getGuild(id)
 	id = Resolver.guildId(id)
 	return self._guilds:get(id)
@@ -611,6 +653,8 @@ serves the channel's guild.
 
 For private channels, the channel must have been previously opened and cached.
 If the channel is not cached, `User:getPrivateChannel` should be used instead.]=]
+---@param id Channel-ID-Resolvable
+---@return Channel?
 function Client:getChannel(id)
 	id = Resolver.channelId(id)
 	local guild = self._channel_map[id]
@@ -631,6 +675,8 @@ the client must be running the appropriate shard that serves the role's guild.
 ]=]
 --[=[Gets a role object by ID. The current user must be in the role's guild and
 the client must be running the appropriate shard that serves the role's guild.]=]
+---@param id Role-ID-Resolvable
+---@return Role?
 function Client:getRole(id)
 	id = Resolver.roleId(id)
 	local guild = self._role_map[id]
@@ -647,6 +693,8 @@ the client must be running the appropriate shard that serves the emoji's guild.
 ]=]
 --[=[Gets an emoji object by ID. The current user must be in the emoji's guild and
 the client must be running the appropriate shard that serves the emoji's guild.]=]
+---@param id Emoji-ID-Resolvable
+---@return Emoji?
 function Client:getEmoji(id)
 	id = Resolver.emojiId(id)
 	local guild = self._emoji_map[id]
@@ -663,6 +711,8 @@ and the client must be running the appropriate shard that serves the sticker's g
 ]=]
 --[=[Gets a sticker object by ID. The current user must be in the sticker's guild
 and the client must be running the appropriate shard that serves the sticker's guild.]=]
+---@param id Sticker-ID-Resolvable
+---@return Sticker?
 function Client:getSticker(id)
 	id = Resolver.stickerId(id)
 	local guild = self._sticker_map[id]
@@ -678,6 +728,8 @@ Discord, with no formatting beyond what is provided by the Discord API.
 ]=]
 --[=[Returns a raw data table that contains a list of voice regions as provided by
 Discord, with no formatting beyond what is provided by the Discord API.]=]
+---@return table?
+---@return string? error
 function Client:listVoiceRegions()
 	return self._api:listVoiceRegions()
 end
@@ -693,6 +745,8 @@ This is unrelated to voice connections.
 --[=[Returns a raw data table that contains a list of connections as provided by
 Discord, with no formatting beyond what is provided by the Discord API.
 This is unrelated to voice connections.]=]
+---@return table?
+---@return string? error
 function Client:getConnections()
 	return self._api:getUsersConnections()
 end
@@ -706,6 +760,8 @@ application, with no formatting beyond what is provided by the Discord API.
 ]=]
 --[=[Returns a raw data table that contains information about the current OAuth2
 application, with no formatting beyond what is provided by the Discord API.]=]
+---@return table?
+---@return string? error
 function Client:getApplicationInformation()
 	return self._api:getCurrentApplicationInformation()
 end
@@ -732,6 +788,7 @@ Passing `nil` removes previously set status.
 ]=]
 --[=[Sets the current user's status on all shards that are managed by this client.
 See the `status` enumeration for acceptable status values.]=]
+---@param status? string
 function Client:setStatus(status)
 	if type(status) == 'string' then
 		self._presence.status = status
@@ -767,6 +824,7 @@ Passing `nil` removes previously set activities.
 If a string is passed, it is treated as the activity name. If a table is passed, it
 must have a `name` field and may optionally have a `url` or `type` field. Pass `nil` to
 remove the activity status.]=]
+---@param activity? string | table
 function Client:setActivity(activity)
 	if type(activity) == 'string' then
 		activity = {name = activity, type = activityType.default}
@@ -800,6 +858,7 @@ Passing `nil` removes AFK status.
 ]=]
 --[=[Set the current user's AFK status on all shards that are managed by this client.
 This generally applies to user accounts and their push notifications.]=]
+---@param afk? boolean
 function Client:setAFK(afk)
 	if type(afk) == 'boolean' then
 		self._presence.afk = afk

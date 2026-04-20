@@ -14,6 +14,7 @@ local fmt = setmetatable({}, {
 	end
 })
 
+---@class FFmpegProcess
 local FFmpegProcess = require('class')('FFmpegProcess')
 
 function FFmpegProcess:__init(path, rate, channels)
