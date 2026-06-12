@@ -98,17 +98,19 @@ local function getSortedChannels(self)
 
 	local channels
 	local t = self._type
-	if t == channelType.text or t == channelType.news then
-		channels = self._parent._text_channels
+	if t == channelType.text or t == channelType.news or t == channelType.forum or t == channelType.media then
+		channels = {self._parent._text_channels, self._parent._forum_channels, self._parent._media_channels}
 	elseif t == channelType.voice then
-		channels = self._parent._voice_channels
+		channels = {self._parent._voice_channels}
 	elseif t == channelType.category then
-		channels = self._parent._categories
+		channels = {self._parent._categories}
 	end
 
 	local ret = {}
-	for channel in channels:iter() do
-		insert(ret, {id = channel._id, position = channel._position})
+	for _, cache in ipairs(channels) do
+		for channel in cache:iter() do
+			insert(ret, {id = channel._id, position = channel._position})
+		end
 	end
 	sort(ret, sorter)
 

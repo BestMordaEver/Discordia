@@ -14,6 +14,8 @@ local channelType = assert(enums.channelType)
 text or voice channels in that guild.]=]
 ---@class GuildCategoryChannel : GuildChannel
 ---@field textChannels FilteredIterable
+---@field forumChannels FilteredIterable
+---@field mediaChannels FilteredIterable
 ---@field voiceChannels FilteredIterable
 local GuildCategoryChannel, get = require('class')('GuildCategoryChannel', GuildChannel)
 
@@ -71,6 +73,56 @@ function GuildCategoryChannel:createVoiceChannel(name)
 	end
 end
 
+--[=[
+@m createForumChannel
+@t http
+@p name string
+@r ForumChannel
+@d Creates a new ForumChannel with this category as its parent. Similar to `Guild:createForumChannel(name)`.
+]=]
+--[=[Creates a new ForumChannel with this category as its parent. Similar to `Guild:createForumChannel(name)`.]=]
+---@param name string
+---@return ForumChannel?
+---@return string? error
+function GuildCategoryChannel:createForumChannel(name)
+	local guild = self._parent
+	local data, err = guild.client._api:createGuildChannel(guild._id, {
+		name = name,
+		type = channelType.forum,
+		parent_id = self._id
+	})
+	if data then
+		return guild._forum_channels:_insert(data)
+	else
+		return nil, err
+	end
+end
+
+--[=[
+@m createMediaChannel
+@t http
+@p name string
+@r MediaChannel
+@d Creates a new MediaChannel with this category as its parent. Similar to `Guild:createMediaChannel(name)`.
+]=]
+--[=[Creates a new MediaChannel with this category as its parent. Similar to `Guild:createMediaChannel(name)`.]=]
+---@param name string
+---@return MediaChannel?
+---@return string? error
+function GuildCategoryChannel:createMediaChannel(name)
+	local guild = self._parent
+	local data, err = guild.client._api:createGuildChannel(guild._id, {
+		name = name,
+		type = channelType.media,
+		parent_id = self._id
+	})
+	if data then
+		return guild._media_channels:_insert(data)
+	else
+		return nil, err
+	end
+end
+
 --[=[@p textChannels FilteredIterable Iterable of all textChannels in the Category.]=]
 function get.textChannels(self)
 	if not self._text_channels then
@@ -80,6 +132,28 @@ function get.textChannels(self)
 		end)
 	end
 	return self._text_channels
+end
+
+--[=[@p forumChannels FilteredIterable Iterable of all forum channels in the Category.]=]
+function get.forumChannels(self)
+	if not self._forum_channels then
+		local id = self._id
+		self._forum_channels = FilteredIterable(self._parent._forum_channels, function(c)
+			return c._parent_id == id
+		end)
+	end
+	return self._forum_channels
+end
+
+--[=[@p mediaChannels FilteredIterable Iterable of all media channels in the Category.]=]
+function get.mediaChannels(self)
+	if not self._media_channels then
+		local id = self._id
+		self._media_channels = FilteredIterable(self._parent._media_channels, function(c)
+			return c._parent_id == id
+		end)
+	end
+	return self._media_channels
 end
 
 --[=[@p voiceChannels FilteredIterable Iterable of all voiceChannels in the Category.]=]

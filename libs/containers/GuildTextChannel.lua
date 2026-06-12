@@ -5,6 +5,7 @@ can send and receive messages.
 ]=]
 
 local json = require('json')
+local enums = require('enums')
 
 local TextChannel = require('containers/abstract/TextChannel')
 local ForumChannel = require('containers/ForumChannel')
@@ -12,6 +13,8 @@ local FilteredIterable = require('iterables/FilteredIterable')
 local Webhook = require('containers/Webhook')
 local Cache = require('iterables/Cache')
 local Resolver = require('client/Resolver')
+
+local channelType = assert(enums.channelType)
 
 --[=[Represents a text channel in a Discord guild, where guild members and webhooks
 can send and receive messages.]=]
@@ -31,6 +34,108 @@ end
 function GuildTextChannel:_load(data)
 	TextChannel._load(self, data)
 	ForumChannel._load(self, data)
+end
+
+--[=[
+@m startThread
+@t http
+@p params table
+@r Thread
+@d Creates a new thread in this channel using the provided parameter table.
+]=]
+--[=[Creates a new thread in this channel using the provided parameter table.]=]
+---@param params table | string
+---@return Thread?
+---@return string? error
+function GuildTextChannel:startThread(params)
+	if type(params) == 'string' then
+		params = {name = params}
+	else
+		params = params or {}
+	end
+
+	local data, err = self.client._api:startThread(self._id, params)
+	if data then
+		return self._parent._threads:_insert(data)
+	else
+		return nil, err
+	end
+end
+
+--[=[
+@m startThreadFromMessage
+@t http
+@p message Message-ID-Resolvable
+@p params table
+@r Thread
+@d Creates a new thread from an existing message in this channel.
+]=]
+--[=[Creates a new thread from an existing message in this channel.]=]
+---@param message Message-ID-Resolvable
+---@param params table | string
+---@return Thread?
+---@return string? error
+function GuildTextChannel:startThreadFromMessage(message, params)
+	local message_id = Resolver.messageId(message)
+	if not message_id then
+		return nil, 'Invalid message: ' .. tostring(message)
+	end
+
+	if type(params) == 'string' then
+		params = {name = params}
+	else
+		params = params or {}
+	end
+
+	local payload = {}
+	for k, v in pairs(params) do
+		if k ~= 'type' and k ~= 'invitable' then
+			payload[k] = v
+		end
+	end
+
+	local data, err = self.client._api:startThreadFromMessage(self._id, message_id, payload)
+	if data then
+		return self._parent._threads:_insert(data)
+	else
+		return nil, err
+	end
+end
+
+--[=[
+@m startPublicThread
+@t http
+@p name string
+@op message Message-ID-Resolvable
+@r Thread
+@d Creates a new public thread in this channel. When `message` is provided, the thread is created from that message.
+]=]
+--[=[Creates a new public thread in this channel. When `message` is provided, the thread is created from that message.]=]
+---@param name string
+---@param message? Message-ID-Resolvable
+---@return Thread?
+---@return string? error
+function GuildTextChannel:startPublicThread(name, message)
+	if message ~= nil then
+		return self:startThreadFromMessage(message, {name = name})
+	else
+		return self:startThread({name = name, type = channelType.publicThread})
+	end
+end
+
+--[=[
+@m startPrivateThread
+@t http
+@p name string
+@r Thread
+@d Creates a new private thread in this channel.
+]=]
+--[=[Creates a new private thread in this channel.]=]
+---@param name string
+---@return Thread?
+---@return string? error
+function GuildTextChannel:startPrivateThread(name)
+	return self:startThread({name = name, type = channelType.privateThread})
 end
 
 --[=[

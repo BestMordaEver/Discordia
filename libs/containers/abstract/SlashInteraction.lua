@@ -9,6 +9,22 @@ local enums = require('enums')
 local channelType, commandType, optionType = assert(enums.channelType), assert(enums.applicationCommandType), assert(enums.applicationCommandOptionType)
 local Interaction = require('containers/abstract/Interaction')
 
+local function getChannelCache(guild, t)
+	if t == channelType.text or t == channelType.news then
+		return guild._text_channels
+	elseif t == channelType.voice then
+		return guild._voice_channels
+	elseif t == channelType.category then
+		return guild._categories
+	elseif t == channelType.forum then
+		return guild._forum_channels
+	elseif t == channelType.media then
+		return guild._media_channels
+	elseif t == channelType.newsThread or t == channelType.publicThread or t == channelType.privateThread then
+		return guild._threads
+	end
+end
+
 ---@class CommandOption
 ---@field name string
 ---@field type applicationCommandOptionType
@@ -84,18 +100,14 @@ function SlashInteraction:__init(data, client)
 						guild._members:_insert(resolved.members[option.value])
 					end
 				elseif option.type == optionType.channel then
-					local channelCache
 					local obj = resolved.channels[option.value]
+					local channelCache = getChannelCache(guild, obj.type)
 
-					if obj.type == channelType.text then
-						channelCache = guild._text_channels
-					elseif obj.type == channelType.voice then
-						channelCache = guild._voice_channels
-					elseif obj.type == channelType.category then
-						channelCache = guild._categories
+					if channelCache then
+						option.value = channelCache:get(option.value) or channelCache:_insert(obj)
+					else
+						option.value = guild:getChannel(option.value)
 					end
-
-					option.value = channelCache:get(option.value) or channelCache:_insert(obj)
 
 				elseif option.type == optionType.role then
 					option.value = guild._roles:get(option.value) or guild._roles:_insert(resolved.roles[option.value])

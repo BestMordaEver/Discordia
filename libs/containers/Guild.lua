@@ -18,8 +18,10 @@ local GuildTextChannel = require('containers/GuildTextChannel')
 local GuildVoiceChannel = require('containers/GuildVoiceChannel')
 local GuildCategoryChannel = require('containers/GuildCategoryChannel')
 local ForumChannel = require('containers/ForumChannel')
+local MediaChannel = require('containers/MediaChannel')
 local Thread = require('containers/Thread')
 local Snowflake = require('containers/abstract/Snowflake')
+local SecondaryCache = require('iterables/SecondaryCache')
 
 local json = require('json')
 local enums = require('enums')
@@ -27,6 +29,16 @@ local enums = require('enums')
 local channelType = assert(enums.channelType)
 local floor = math.floor
 local format = string.format
+
+local function mergeThreadMembers(cache, members)
+	for _, member in ipairs(members or {}) do
+		local thread = cache:get(member.id)
+		if thread then
+			thread:_load({member = member})
+		end
+	end
+	return cache
+end
 
 --[=[Represents a Discord guild (or server). Guilds are a collection of members,
 channels, and roles that represents one community.]=]
@@ -71,6 +83,9 @@ channels, and roles that represents one community.]=]
 ---@field stickers Cache
 ---@field members Cache
 ---@field textChannels Cache
+---@field forumChannels Cache
+---@field mediaChannels Cache
+---@field threads Cache
 ---@field voiceChannels Cache
 ---@field categories Cache
 ---@field locale string
@@ -81,6 +96,7 @@ channels, and roles that represents one community.]=]
 ---@field protected _text_channels Cache
 ---@field protected _voice_channels Cache
 ---@field protected _forum_channels Cache
+---@field protected _media_channels Cache
 ---@field protected _categories Cache
 ---@field protected _threads Cache
 ---@field protected _voice_states table
@@ -96,6 +112,7 @@ function Guild:__init(data, parent)
 	self._text_channels = Cache({}, GuildTextChannel, self)
 	self._voice_channels = Cache({}, GuildVoiceChannel, self)
 	self._forum_channels = Cache({}, ForumChannel, self)
+	self._media_channels = Cache({}, MediaChannel, self)
 	self._categories = Cache({}, GuildCategoryChannel, self)
 	self._threads = Cache({}, Thread, self)
 	self._voice_states = {}
@@ -133,6 +150,7 @@ function Guild:_makeAvailable(data)
 	local voice_channels = self._voice_channels
 	local categories = self._categories
 	local forum_channels = self._forum_channels
+	local media_channels = self._media_channels
 
 	for _, channel in ipairs(data.channels) do
 		local t = channel.type
@@ -144,12 +162,14 @@ function Guild:_makeAvailable(data)
 			categories:_insert(channel)
 		elseif t == channelType.forum then
 			forum_channels:_insert(channel)
+		elseif t == channelType.media then
+			media_channels:_insert(channel)
 		end
 	end
 
 	local threads = self._threads
 
-	for _, thread in ipairs(data.threads) do
+	for _, thread in ipairs(data.threads or {}) do
 		threads:_insert(thread)
 	end
 
@@ -318,7 +338,12 @@ end
 ---@return GuildChannel?
 function Guild:getChannel(id)
 	id = Resolver.channelId(id)
-	return self._text_channels:get(id) or self._voice_channels:get(id) or self._categories:get(id)
+	return self._text_channels:get(id)
+		or self._voice_channels:get(id)
+		or self._categories:get(id)
+		or self._forum_channels:get(id)
+		or self._media_channels:get(id)
+		or self._threads:get(id)
 end
 
 --[=[
@@ -330,7 +355,7 @@ end
 ]=]
 --[=[Creates a new channel in this guild. For list of channel properties see (Discord documentation)[https://discord.com/developers/docs/resources/guild#create-guild-channel]]=]
 ---@param properties table
----@return GuildTextChannel | GuildVoiceChannel | GuildCategoryChannel | nil
+---@return GuildTextChannel | GuildVoiceChannel | GuildCategoryChannel | ForumChannel | MediaChannel | nil
 ---@return string? error
 function Guild:createChannel(properties)
 	local data, err = self.client._api:createGuildChannel(self._id, properties)
@@ -342,6 +367,10 @@ function Guild:createChannel(properties)
 			return self._voice_channels:_insert(data)
 		elseif t == channelType.category then
 			return self._categories:_insert(data)
+		elseif t == channelType.forum then
+			return self._forum_channels:_insert(data)
+		elseif t == channelType.media then
+			return self._media_channels:_insert(data)
 		end
 	else
 		return nil, err
@@ -409,6 +438,65 @@ function Guild:createCategory(name)
 	local data, err = self.client._api:createGuildChannel(self._id, {name = name, type = channelType.category})
 	if data then
 		return self._categories:_insert(data)
+	else
+		return nil, err
+	end
+end
+
+--[=[
+@m createForumChannel
+@t http
+@p name string
+@r ForumChannel
+@d Creates a new forum channel in this guild. The name must be between 2 and 100 characters in length.
+]=]
+--[=[Creates a new forum channel in this guild. The name must be between 2 and 100 characters in length.]=]
+---@param name string
+---@return ForumChannel?
+---@return string? error
+function Guild:createForumChannel(name)
+	local data, err = self.client._api:createGuildChannel(self._id, {name = name, type = channelType.forum})
+	if data then
+		return self._forum_channels:_insert(data)
+	else
+		return nil, err
+	end
+end
+
+--[=[
+@m createMediaChannel
+@t http
+@p name string
+@r MediaChannel
+@d Creates a new media channel in this guild. The name must be between 2 and 100 characters in length.
+]=]
+--[=[Creates a new media channel in this guild. The name must be between 2 and 100 characters in length.]=]
+---@param name string
+---@return MediaChannel?
+---@return string? error
+function Guild:createMediaChannel(name)
+	local data, err = self.client._api:createGuildChannel(self._id, {name = name, type = channelType.media})
+	if data then
+		return self._media_channels:_insert(data)
+	else
+		return nil, err
+	end
+end
+
+--[=[
+@m getActiveThreads
+@t http
+@r SecondaryCache
+@d Returns a newly constructed secondary cache of active threads in this guild.
+]=]
+--[=[Returns a newly constructed secondary cache of active threads in this guild.]=]
+---@return SecondaryCache?
+---@return string? error
+function Guild:getActiveThreads()
+	local data, err = self.client._api:listActiveGuildThreads(self._id)
+	if data then
+		local cache = SecondaryCache(data.threads or {}, self._threads)
+		return mergeThreadMembers(cache, data.members)
 	else
 		return nil, err
 	end
@@ -1227,6 +1315,21 @@ end
 --[=[@p textChannels Cache An iterable cache of all text channels that exist in this guild.]=]
 function get.textChannels(self)
 	return self._text_channels
+end
+
+--[=[@p forumChannels Cache An iterable cache of all forum channels that exist in this guild.]=]
+function get.forumChannels(self)
+	return self._forum_channels
+end
+
+--[=[@p mediaChannels Cache An iterable cache of all media channels that exist in this guild.]=]
+function get.mediaChannels(self)
+	return self._media_channels
+end
+
+--[=[@p threads Cache An iterable cache of all thread channels that are cached for this guild.]=]
+function get.threads(self)
+	return self._threads
 end
 
 --[=[@p voiceChannels Cache An iterable cache of all voice channels that exist in this guild.]=]

@@ -396,9 +396,9 @@ function API:startThread(channel_id, payload) -- GuildTextChannel:startThread
 	return self:request("POST", endpoint, payload)
 end
 
-function API:startThreadInForumChannel(channel_id, payload) -- ForumChannel:startThread
+function API:startThreadInForumChannel(channel_id, payload, files) -- ForumChannel:startThread, MediaChannel:startThread
 	local endpoint = f(endpoints.CHANNEL_THREADS, channel_id)
-	return self:request("POST", endpoint, payload)
+	return self:request("POST", endpoint, payload, nil, files)
 end
 
 function API:joinThread(channel_id) -- Thread:join
@@ -413,12 +413,12 @@ end
 
 function API:leaveThread(channel_id) -- Thread:leave
 	local endpoint = f(endpoints.CHANNEL_THREAD_MEMBERS_ME, channel_id)
-	return self:request("PUT", endpoint)
+	return self:request("DELETE", endpoint)
 end
 
 function API:removeThreadMember(channel_id, user_id) -- Thread:removeMember
 	local endpoint = f(endpoints.CHANNEL_THREAD_MEMBER, channel_id, user_id)
-	return self:request("PUT", endpoint)
+	return self:request("DELETE", endpoint)
 end
 
 function API:getThreadMember(channel_id, user_id) -- not exposed, use cache
@@ -431,17 +431,22 @@ function API:listThreadMembers(channel_id) -- not exposed, use cache
 	return self:request("GET", endpoint)
 end
 
-function API:listPublicArchivedThreads(channel_id, query) -- GuildTextChannel:getPublicArchivedThreads and ForumChannel:getPublicArchivedThreads
+function API:listActiveThreads(channel_id) -- GuildTextChannel:getActiveThreads, ForumChannel:getActiveThreads, MediaChannel:getActiveThreads
+	local endpoint = f(endpoints.CHANNEL_THREADS_ACTIVE, channel_id)
+	return self:request("GET", endpoint)
+end
+
+function API:listPublicArchivedThreads(channel_id, query) -- GuildTextChannel:getPublicArchivedThreads, ForumChannel:getPublicArchivedThreads, MediaChannel:getPublicArchivedThreads
 	local endpoint = f(endpoints.CHANNEL_THREADS_ARCHIVED_PUBLIC, channel_id)
 	return self:request("GET", endpoint, nil, query)
 end
 
-function API:listPrivateArchivedThreads(channel_id, query) -- GuildTextChannel:getPrivateArchivedThreads and ForumChannel:getPrivateArchivedThreads
+function API:listPrivateArchivedThreads(channel_id, query) -- GuildTextChannel:getPrivateArchivedThreads, ForumChannel:getPrivateArchivedThreads, MediaChannel:getPrivateArchivedThreads
 	local endpoint = f(endpoints.CHANNEL_THREADS_ARCHIVED_PRIVATE, channel_id)
 	return self:request("GET", endpoint, nil, query)
 end
 
-function API:listJoinedPrivateArchivedThreads(channel_id, query) -- GuildTextChannel:getJoinedPrivateArchivedThreads and ForumChannel:getJoinedPrivateArchivedThreads
+function API:listJoinedPrivateArchivedThreads(channel_id, query) -- GuildTextChannel:getJoinedPrivateArchivedThreads, ForumChannel:getJoinedPrivateArchivedThreads, MediaChannel:getJoinedPrivateArchivedThreads
 	local endpoint = f(endpoints.CHANNEL_USERS_ME_THREADS_ARCHIVED_PRIVATE, channel_id)
 	return self:request("GET", endpoint, nil, query)
 end
