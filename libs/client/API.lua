@@ -213,7 +213,7 @@ function API:commit(method, url, req, payload, retries)
 
 			local retry
 			if res.code == 429 then -- TODO: global ratelimiting
-				delay = data.retry_after
+				delay = data.retry_after * 1000 -- retry_after is in seconds on API v8+
 				retry = retries < options.maxRetries
 			elseif res.code == 502 then
 				delay = delay + random(2000)
