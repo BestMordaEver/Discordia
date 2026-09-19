@@ -179,7 +179,19 @@ end
 
 function Guild:_loadMembers(data)
 	local members = self._members
-	members:_load(data.members)
+	local filter = self.client._options.presenceFilter
+	if filter then
+		local me = self.client._user and self.client._user._id
+		local subset = {}
+		for _, member in ipairs(data.members) do
+			if (me and member.user.id == me) or filter(member.user.id, self._id) then
+				subset[#subset + 1] = member
+			end
+		end
+		members:_load(subset)
+	else
+		members:_load(data.members)
+	end
 	for _, presence in ipairs(data.presences) do
 		local member = members:get(presence.user.id)
 		if member then -- rogue presence check
@@ -223,6 +235,22 @@ function Guild:requestMembers()
 		shard._loading.chunks[self._id] = true
 	end
 	return shard:requestGuildMembers(self._id)
+end
+
+--[=[
+@m requestMember
+@t ws
+@r boolean
+@d Asynchronously loads a single member and their presence for this guild.
+]=]
+---@return boolean
+---@return string? error
+function Guild:requestMember(id, nonce)
+	local shard = self.client._shards[self.shardId]
+	if not shard then
+		return false, 'Invalid shard'
+	end
+	return shard:requestGuildMember(self._id, Resolver.userId(id), nonce)
 end
 
 --[=[

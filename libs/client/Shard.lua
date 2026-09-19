@@ -262,6 +262,17 @@ function Shard:requestGuildMembers(id)
 	})
 end
 
+function Shard:requestGuildMember(guild_id, user_id, nonce)
+	return self:_send(REQUEST_GUILD_MEMBERS, {
+		guild_id = guild_id,
+		query = '',
+		limit = 1,
+		presences = true,
+		user_ids = {user_id},
+		nonce = nonce,
+	})
+end
+
 function Shard:updateStatus(presence)
 	return self:_send(STATUS_UPDATE, presence)
 end

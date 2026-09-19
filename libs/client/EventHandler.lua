@@ -124,6 +124,13 @@ function EventHandler.GUILD_MEMBERS_CHUNK(d, client, shard)
 	local guild = client._guilds:get(d.guild_id)
 	if not guild then return warning(client, 'Guild', d.guild_id, 'GUILD_MEMBERS_CHUNK') end
 	guild._members:_load(d.members)
+	for _, presence in ipairs(d.presences or {}) do
+		local member = guild._members:get(presence.user.id)
+		if member then -- rogue presence check
+			member:_loadPresence(presence)
+		end
+	end
+	client:emit('guildMembersChunk', guild, d)
 	if shard._loading and guild._member_count == #guild._members then
 		shard._loading.chunks[d.guild_id] = nil
 		return checkReady(shard)
@@ -541,6 +548,12 @@ function EventHandler.PRESENCE_UPDATE(d, client) -- may have incomplete data
 		if client._options.cacheAllMembers then
 			member = guild._members:get(d.user.id)
 			if not member then return end -- still loading or member left
+		elseif client._options.presenceFilter and not client._options.presenceFilter(d.user.id, d.guild_id) then
+			-- presence of untracked users is not retained, drop from cache if present
+			if d.status == 'offline' then
+				member = guild._members:_delete(d.user.id)
+			end
+			return
 		else
 			if d.status == 'offline' then -- uncache offline members
 				member = guild._members:_delete(d.user.id)
