@@ -58,8 +58,12 @@ end
 
 function UserPresence:_loadPresence(presence)
 	self._status = presence.status
+	local cs = presence.client_status
+	self._web_status = cs and cs.web
+	self._mobile_status = cs and cs.mobile
+	self._desktop_status = cs and cs.desktop
 
-	if next(presence.activities) then
+	if presence.activities and next(presence.activities) then
 		local activities = {}
 		for i, activity in pairs(presence.activities) do
 			activities[activity.type] = activity
