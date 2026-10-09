@@ -179,23 +179,14 @@ end
 
 function Guild:_loadMembers(data)
 	local members = self._members
+	members:_load(data.members)
 	local filter = self.client._options.presenceFilter
-	if filter then
-		local me = self.client._user and self.client._user._id
-		local subset = {}
-		for _, member in ipairs(data.members) do
-			if (me and member.user.id == me) or filter(member.user.id, self._id) then
-				subset[#subset + 1] = member
-			end
-		end
-		members:_load(subset)
-	else
-		members:_load(data.members)
-	end
 	for _, presence in ipairs(data.presences) do
-		local member = members:get(presence.user.id)
-		if member then -- rogue presence check
-			member:_loadPresence(presence)
+		if not filter or filter(presence.user.id, self._id) then
+			local member = members:get(presence.user.id)
+			if member then -- rogue presence check
+				member:_loadPresence(presence)
+			end
 		end
 	end
 	if self._large and self.client._options.cacheAllMembers then
